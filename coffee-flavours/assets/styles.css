@@ -1,0 +1,77 @@
+.datacard {
+    padding: 5px 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+    height: 7vh;
+}
+
+.datacard.burgundy {
+    background: linear-gradient(135deg, #764552 0%, #4a2b33 100%);
+}
+
+.datacard.pink {
+    background: linear-gradient(135deg, #E1719B 0%, #a45371 100%);
+}
+
+.datacard.coral {
+    background: linear-gradient(135deg, #F27778 0%, #b05656 100%);
+}
+
+.datacard-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+
+.datacard-label {
+    color: white;
+    font-size: 1rem;
+    text-transform: uppercase;
+    flex: 1;
+    text-align: right;
+    margin: 0;
+}
+
+h2,
+p,
+hr,
+ul {
+    margin: 3px 0px !important;
+}
+
+.intro-content-flex {
+    display: flex;
+    gap: 30px;
+}
+
+
+.intro-card {
+    height: 25vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+}
+
+
+.datacard-stack {
+    height: 25vh;
+    flex: 1;
+    align-items: space-between;
+}
+
+
+.chart-card {
+    height: 70vh;
+    border-radius: 8px;
+}
+
+
+.main-container {
+    padding: 10px;
+    background-color: rgb(231, 226, 219);
+    height: 100vh;
+}

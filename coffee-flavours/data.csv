@@ -1,0 +1,75 @@
+Level_1,Level_2,Level_3
+Fruity,Berry,Blackberry
+Fruity,Berry,Raspberry
+Fruity,Berry,Blueberry
+Fruity,Berry,Strawberry
+Fruity,Dried fruit,Raisin
+Fruity,Dried fruit,Prune
+Fruity,Other fruit,Coconut
+Fruity,Other fruit,Cherry
+Fruity,Other fruit,Pomegranate
+Fruity,Other fruit,Pineapple
+Fruity,Other fruit,Grape
+Fruity,Other fruit,Apple
+Fruity,Other fruit,Peach
+Fruity,Citrus fruit,Grapefruit
+Fruity,Citrus fruit,Orange
+Fruity,Citrus fruit,Lemon
+Fruity,Citrus fruit,Lime
+Fruity,Other fruit,Pear
+Floral,Black tea,
+Floral,Floral,Rose
+Floral,Floral,Jasmine
+Floral,Floral,Chamomile
+Sweet,Brown sugar,
+Sweet,Vanilla,
+Sweet,Overall sweet,
+Nutty/Cocoa, Nutty,Almond
+Nutty/Cocoa, Nutty,Peanuts
+Nutty/Cocoa, Nutty,Hazelnut
+Nutty/Cocoa, Cocoa,Chocolate
+Nutty/Cocoa, Cocoa,Dark chocolate
+Nutty/Cocoa, Cocoa,Cocoa
+Spices,Brown spice,Cinnamon
+Spices,Brown spice,Nutmeg
+Spices,Brown spice,Anise
+Spices,Brown spice,Clove
+Spices,Pepper,
+Spices,Pungent,
+Roasted,Cereal,Grain
+Roasted,Cereal,Malt
+Roasted,Burnt,Brown roast
+Roasted,Burnt,Smoky
+Roasted,Burnt,Ashy
+Roasted,Burnt,Acid
+Roasted,Tobacco,Pipe tobacco
+Other,Meaty/Brothy,Meaty
+Other,Meaty/Brothy,Brothy
+Other,Chemical,Medicinal
+Other,Chemical,Petroleum
+Other,Chemical,Skunky
+Other,Chemical,Rubber
+Other,Papery/Musty,Papery
+Other,Papery/Musty,Cardboard
+Other,Papery/Musty,Woody
+Other,Papery/Musty,Moldy/Damp
+Other,Papery/Musty,Musty/Earthy
+Other,Papery/Musty,Dusty
+Other,Papery/Musty,Stale
+Green/Vegetative,Olive oil,
+Green/Vegetative,Raw,
+Green/Vegetative,Vegetative,Dark green
+Green/Vegetative,Vegetative,Peapod
+Green/Vegetative,Vegetative,Under-ripe
+Green/Vegetative,Vegetative,Fresh
+Green/Vegetative,Vegetative,Herb-like
+Sour/Fermented,Sour,Citric acid
+Sour/Fermented,Sour,Malic acid
+Sour/Fermented,Sour,Sour aromatics
+Sour/Fermented,Sour,Acetic acid
+Sour/Fermented,Sour,Butyric acid
+Sour/Fermented,Sour,Isovaleric acid
+Sour/Fermented,Alcohol/Fermented,Fermented
+Sour/Fermented,Alcohol/Fermented,Overripe
+Sour/Fermented,Alcohol/Fermented,Whiskey
+Sour/Fermented,Alcohol/Fermented,Winey

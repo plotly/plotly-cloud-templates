@@ -1,0 +1,104 @@
+/* Montreal Events Theme - Festive & Fun */
+
+.card {
+    background-color: white;
+    border-radius: 12px;
+    margin: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    overflow: auto;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.sidebar {
+    width: 15vw;
+    height: calc(100vh - 40px);
+    border-top: 4px solid #c0d48c;
+    background: linear-gradient(180deg, #7bb36e 0%, #c0d48c 100%);
+    color: white;
+}
+
+.small-card {
+    height: calc(27vh - 30px);
+    flex: 1;
+
+}
+
+.small-card:nth-child(1) {
+    border-top: 4px solid #fade94;
+    background: linear-gradient(180deg, #fff6b5 0%, #fade94 100%);
+}
+
+.small-card:nth-child(2) {
+    border-top: 4px solid #f6c577;
+    background: linear-gradient(180deg, #fade94 0%, #f6c577 100%);
+}
+
+.small-card:nth-child(3) {
+    border-top: 4px solid #f08e4c;
+    background: linear-gradient(180deg, #f3ab5e 0%, #f08e4c 100%);
+}
+
+.small-card:nth-child(4) {
+    border-top: 4px solid #e74c3c;
+    background: linear-gradient(180deg, #ed7040 0%, #e74c3c 100%);
+}
+
+.medium-card {
+    height: calc(73vh - 30px);
+    flex: 1;
+}
+
+.medium-card:nth-child(1) {
+    border-top: 4px solid #c0d48c;
+    background: linear-gradient(180deg, #e0e59f 0%, #c0d48c 100%);
+}
+
+.medium-card:nth-child(2) {
+    border-top: 4px solid #7bb36e;
+    background: linear-gradient(180deg, #9ec37c 0%, #7bb36e 100%);
+}
+
+.main-content {
+    background: linear-gradient(135deg, #fdf8d6 0%, #f5e7c1 100%);
+    height: 100vh;
+    padding: 10px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.maplibregl-ctrl.maplibregl-ctrl-attrib.maplibregl-compact.maplibregl-compact-show,
+.maplibregl-ctrl.maplibregl-ctrl-attrib.maplibregl-compact {
+    display: none;
+}
+
+.card h1,
+.card h2,
+.card h3,
+.card strong,
+A {
+    color: #10559a;
+}
+
+p {
+    margin: 5px;
+}
+
+.event-btn {
+    display: inline-block;
+    width: 95%;
+    padding: 8px 16px;
+    background-color: #ed7040;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+}
