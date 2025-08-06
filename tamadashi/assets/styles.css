@@ -1,0 +1,291 @@
+:root{
+    --pl-purple: #AEA0C9;
+    --pl-magenta: #F63977;
+    --pl-blue: #7FE2FD;
+}
+
+body * {
+    font-family: Ubuntu, sans-serif;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1.tamadashi-title {
+    background-color: var(--pl-purple);
+    opacity: 90%;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    color: white;
+    font-size: 2rem;
+    flex: 0 0 fit-content;
+    display: flex;
+    width: fit-content;
+    > span {
+        color: var(--pl-blue);
+        &:nth-child(1) + span {
+            color: var(--pl-magenta);
+        }
+    }
+}
+
+.tamadashi-container {
+    display: flex;
+    width: 100%;
+    height: 70vh;
+    .tamadashi-box {
+        position: relative;
+        height: 256px;
+        width: 140px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        .tamadashi-body {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .tamadashi-eyes {
+            position: absolute;
+            top: 15%;
+            left: 80%;
+            transform: translate(-50%, -50%);
+            /* Animate eyes to periodically blink transparently and also shuffle left and right slightly */
+            animation: blink 6s infinite, shuffle 15s infinite;
+        }
+        .tamadashi-mouth {
+            position: absolute;
+            top: 40%;
+            left: 65%;
+            transform: translate(-50%, -50%);
+        }
+        &.sad {
+            .tamadashi-mouth {
+                transform: translate(-50%, -50%) rotate(180deg);
+            }
+            .tamadashi-eyes {
+                top: 25%;
+            }
+        }
+        &.happy {
+            .tamadashi-body {
+                animation: dance 2s infinite ease-in-out;
+            }
+        }
+        &.dead {
+            .tamadashi-body,
+            .tamadashi-eyes,
+            .tamadashi-mouth {
+                display: none;
+            }
+            &::after {
+                content: "🪦";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 8rem;
+                z-index: 10;
+            }
+        }
+    }
+}
+
+
+@keyframes blink {
+    0% {
+        visibility: visible;
+    }
+
+    95% {
+        visibility: visible;
+    }
+    96% {
+        visibility: hidden;
+    }
+    100% {
+        visibility: hidden;
+    }
+}
+
+@keyframes shuffle {
+    0% {
+        left: 80%;
+    }
+    40% {
+        left: 80%;
+    }
+    50% {
+        left: 60%;
+    }
+    90% {
+        left: 60%;
+    }
+}
+
+@keyframes dance {
+    0% {
+        left: 49%;
+        top: 51%;
+    }
+    25% {
+        top: 50%;
+    }
+    50% {
+        left: 53%;
+        top: 51%;
+    }
+    75% {
+        top: 50%;
+    }
+    100% {
+        left: 49%;
+        top: 51%;
+    }
+}
+
+/* Cute and Chunky Button Styles */
+.controls-container {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: linear-gradient(135deg, rgba(174, 160, 201, 0.1), rgba(127, 226, 253, 0.1));
+    border-radius: 1.5rem;
+}
+
+.controls-button {
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+.controls-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.controls-button:hover::before {
+    opacity: 1;
+}
+
+.controls-button:hover {
+    transform: translateY(-4px) scale(1.05);
+}
+
+.controls-button:active {
+    transform: translateY(-2px) scale(0.95);
+    transition: all 0.1s ease;
+}
+
+/* Individual button colors */
+#feed-button {
+    background: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+}
+
+#feed-button:hover {
+    background: linear-gradient(135deg, #FF5252, #FF7676);
+}
+
+#play-button {
+    background: linear-gradient(135deg, #4ECDC4, #6EE7DF);
+}
+
+#play-button:hover {
+    background: linear-gradient(135deg, #26D0CE, #4ECDC4);
+}
+
+#pat-button {
+    background: linear-gradient(135deg, #FFE66D, #FFF176);
+}
+
+#pat-button:hover {
+    background: linear-gradient(135deg, #FFD54F, #FFE082);
+}
+
+/* Disabled state */
+.controls-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: scale(0.9);
+    filter: grayscale(50%);
+}
+
+.controls-button:disabled:hover {
+    transform: scale(0.9);
+}
+
+/* Button press animation */
+@keyframes buttonPress {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.controls-button:active {
+    animation: buttonPress 0.2s ease;
+}
+
+/* Flying Text Animation */
+.flying-text {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    z-index: 1000;
+    animation: flyAndFade 1.5s ease-out forwards;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes flyAndFade {
+    0% {
+        opacity: 1;
+        transform: translateY(-10vh) scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-15vh) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40vh) scale(0.8);
+    }
+}
+
+/* Button-specific text colors */
+.flying-text.feed {
+    color: #FF6B6B;
+}
+
+.flying-text.play {
+    color: #4ECDC4;
+}
+
+.flying-text.pat {
+    color: #FF8E00;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
