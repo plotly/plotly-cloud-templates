@@ -1,4 +1,5 @@
 import math
+import os
 from datetime import datetime
 
 import dash
@@ -6,7 +7,7 @@ from dash import Input, Output, State, dcc, html
 from newsapi import NewsApiClient
 
 app = dash.Dash(__name__, external_stylesheets=["./custom.css"])
-newsapi = NewsApiClient(api_key="9902e19f61b54149854b2955e060312c")
+newsapi = NewsApiClient(api_key=os.getenv("NEWS_API_KEY"))
 
 CATEGORIES = [
     {"label": "General", "value": "general"},
