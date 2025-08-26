@@ -1,0 +1,846 @@
+/* Modern Sudoku App Styling */
+
+:root {
+  --primary-color: #6d98f3;
+  --primary-hover: #5a7fe4;
+  --secondary-color: #64748b;
+  --success-color: #10b981;
+  --error-color: #ef4444;
+  --warning-color: #f59e0b;
+  --background-color: #f8fafc;
+  --card-background: #ffffff;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --highlight-color: #dbeafe;
+  --highlight-same-number: #fef3c7;
+  --given-cell-bg: #f1f5f9;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Global Styles */
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+}
+
+/* App Container */
+.sudoku-app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header Styles */
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.app-title {
+  color: var(--text-primary);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-hover)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Control Panel */
+.control-panel {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+}
+
+.control-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.control-group {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Game Board Container */
+.game-container {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* Sudoku Grid Wrapper - Main Card */
+.sudoku-game-card {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sudoku Grid */
+.sudoku-grid {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-content: center;
+}
+
+.sudoku-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: transparent;
+}
+
+.sudoku-row {
+  display: flex;
+  align-self: center;
+  gap: 0;
+}
+
+h3 {
+  margin: 0px !important;
+}
+
+/* Grid Cells */
+.sudoku-cell {
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: var(--card-background);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sudoku-cell:hover {
+  background-color: var(--highlight-color);
+  z-index: 10;
+  box-shadow: var(--shadow-md);
+}
+
+/* Given cells (pre-filled) */
+.sudoku-cell.given {
+  background-color: var(--given-cell-bg);
+  color: var(--text-primary);
+  font-weight: 700;
+  cursor: default;
+}
+
+.sudoku-cell.given:hover {
+  background-color: var(--given-cell-bg);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Highlighted cells (same number) */
+.sudoku-cell.highlight-same {
+  background-color: var(--highlight-same-number) !important;
+  animation: pulse 0.3s ease-in-out;
+}
+
+/* Highlighted cells (completed number - brighter orange) */
+.sudoku-cell.highlight-completed {
+  background-color: #f9cc83 !important;
+  animation: pulse 0.3s ease-in-out;
+}
+
+/* Conflict cells (red/pink highlighting) */
+.sudoku-cell.conflict {
+  background-color: #fecaca !important;
+  color: #991b1b;
+  font-weight: 700;
+  border: 2px solid #f87171 !important;
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Selected cell */
+.sudoku-cell.selected {
+  background-color: var(--primary-color);
+  border: 2px solid var(--primary-hover);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  z-index: 20;
+}
+
+/* Error cells */
+.sudoku-cell.error {
+  background-color: #fef2f2;
+  color: var(--error-color);
+  border-color: var(--error-color);
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+/* Grid borders for 3x3 sections */
+.sudoku-row:nth-child(1) .sudoku-cell {
+  border-top: 3px solid var(--text-primary);
+}
+
+.sudoku-row:nth-child(3) .sudoku-cell,
+.sudoku-row:nth-child(6) .sudoku-cell {
+  border-bottom: 3px solid var(--text-primary);
+}
+
+.sudoku-row:nth-child(9) .sudoku-cell {
+  border-bottom: 3px solid var(--text-primary);
+}
+
+.sudoku-cell:nth-child(1) {
+  border-left: 3px solid var(--text-primary);
+}
+
+.sudoku-cell:nth-child(3),
+.sudoku-cell:nth-child(6) {
+  border-right: 3px solid var(--text-primary);
+}
+
+.sudoku-cell:nth-child(9) {
+  border-right: 3px solid var(--text-primary);
+}
+
+/* Side Panel */
+.side-panel {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  min-width: 280px;
+  max-width: 320px;
+}
+
+.side-panel h3 {
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Button Overrides for Mantine Components */
+.mantine-Button-root {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.mantine-Button-root:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Number Pad */
+.number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  margin-top: 5px;
+}
+
+.number-button {
+  aspect-ratio: 1;
+  border: 2px solid var(--border-color);
+  background: var(--card-background);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.number-button:hover {
+  background: var(--highlight-color);
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.number-button.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Action Buttons (X and Undo) */
+.action-button {
+  height: 35px;
+  border: 2px solid var(--border-color);
+  background: var(--card-background);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  min-width: 65px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-button:hover {
+  background: var(--highlight-color);
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.action-button.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Difficulty Selector */
+.difficulty-selector {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.difficulty-button {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--border-color);
+  background: var(--card-background);
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+}
+
+.difficulty-button:hover {
+  border-color: var(--primary-color);
+  background: var(--highlight-color);
+}
+
+.difficulty-button.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Mobile Controls (hidden on desktop) */
+.mobile-controls {
+  display: none;
+  padding: 5px;
+}
+
+/* New Game Menu Styles */
+.new-game-menu {
+  flex-shrink: 0;
+}
+
+.new-game-menu .mantine-Button-root {
+  min-width: 120px;
+}
+
+.mobile-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 15px;
+  flex-wrap: nowrap;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 868px) {
+  .sudoku-app {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main-game-area {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: flex-start;
+    margin-top: 5px;
+  }
+
+  /* Hide desktop side panel on mobile */
+  .side-panel {
+    display: none;
+  }
+
+  /* Show mobile controls on mobile */
+  .mobile-controls {
+    display: block;
+    background: var(--card-background);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    margin: 0.5rem auto 1rem auto;
+    max-width: 90%;
+    text-align: center;
+  }
+
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .sudoku-game-card {
+    margin: 0 auto;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Optimize grid for mobile */
+  .sudoku-table {
+    background: transparent;
+    border-radius: 8px;
+    padding: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+  }
+
+  .sudoku-cell {
+    width: calc((100vw - 2rem) / 9 * 0.95);
+    height: calc((100vw - 2rem) / 9 * 0.95);
+    font-size: calc((100vw - 2rem) / 9 * 0.4);
+    max-width: 50px;
+    max-height: 50px;
+  }
+
+  .control-group {
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+
+  /* Make new game menu more compact on mobile */
+  .new-game-menu .mantine-Button-root {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    min-width: 100px;
+  }
+
+  /* Mobile number pad - two row layout */
+  .mobile-controls .number-pad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 0.3rem;
+    justify-content: center;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  .mobile-controls .number-button {
+    width: 100%;
+    height: 48px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    aspect-ratio: 1;
+  }
+
+  .mobile-clear-button {
+    background: var(--error-color) !important;
+    color: white !important;
+    border: 2px solid var(--error-color) !important;
+    font-weight: bold;
+    font-size: 1.4rem;
+  }
+
+  .mobile-clear-button:hover {
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+    transform: translateY(-1px);
+  }
+
+  .mobile-number-button {
+    background: var(--card-background);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .mobile-number-button:hover {
+    background: var(--highlight-color);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .app-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sudoku-app {
+    padding: 0;
+  }
+
+  .sudoku-game-card {
+    margin: 0 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .sudoku-cell {
+    width: calc((100vw - 1rem) / 9 * 0.9);
+    height: calc((100vw - 1rem) / 9 * 0.9);
+    font-size: calc((100vw - 1rem) / 9 * 0.38);
+    max-width: 45px;
+    max-height: 45px;
+  }
+
+  .sudoku-table {
+    padding: 0.25rem;
+  }
+
+  .mobile-controls .number-button {
+    width: 100%;
+    height: 44px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    aspect-ratio: 1;
+  }
+
+  .mobile-clear-button {
+    font-size: 1.2rem !important;
+  }
+
+  .mobile-action-button {
+    min-width: 65px !important;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+
+  .control-group {
+    flex-direction: row;
+    gap: 0.4rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .mobile-controls {
+    padding: 0.75rem;
+    margin-bottom: 0px !important;
+  }
+}
+
+/* Victory Celebration Overlay */
+.victory-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.4s ease;
+}
+
+.victory-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.victory-content {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform: scale(0.8);
+  animation: victoryAppear 0.6s ease-out forwards;
+}
+
+@keyframes victoryAppear {
+  0% {
+    transform: scale(0.5) rotate(-10deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.victory-emoji {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  animation: bounce 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
+.victory-title {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  animation: slideInFromTop 0.8s ease-out 0.2s both;
+}
+
+.victory-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  animation: slideInFromTop 0.8s ease-out 0.4s both;
+}
+
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.victory-button {
+  animation: slideInFromBottom 0.8s ease-out 0.6s both;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.victory-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Confetti Animation */
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  opacity: 0.9;
+}
+
+.confetti-piece:nth-child(1) {
+  background: #ff6b6b;
+  left: 10%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 0s;
+}
+
+.confetti-piece:nth-child(2) {
+  background: #4ecdc4;
+  left: 20%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 0.3s;
+}
+
+.confetti-piece:nth-child(3) {
+  background: #45b7d1;
+  left: 30%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 0.6s;
+}
+
+.confetti-piece:nth-child(4) {
+  background: #f9ca24;
+  left: 40%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 0.9s;
+}
+
+.confetti-piece:nth-child(5) {
+  background: #f0932b;
+  left: 50%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 1.2s;
+}
+
+.confetti-piece:nth-child(6) {
+  background: #eb4d4b;
+  left: 60%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 1.5s;
+}
+
+.confetti-piece:nth-child(7) {
+  background: #6c5ce7;
+  left: 70%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 1.8s;
+}
+
+.confetti-piece:nth-child(8) {
+  background: #a29bfe;
+  left: 80%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 2.1s;
+}
+
+.confetti-piece:nth-child(9) {
+  background: #fd79a8;
+  left: 90%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 2.4s;
+}
+
+.confetti-piece:nth-child(10) {
+  background: #00b894;
+  left: 15%;
+  animation: confetti-fall 3s linear infinite;
+  animation-delay: 2.7s;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* Victory overlay responsive design */
+@media (max-width: 768px) {
+  .victory-content {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+  }
+
+  .victory-title {
+    font-size: 2rem;
+  }
+
+  .victory-emoji {
+    font-size: 3rem;
+  }
+}
