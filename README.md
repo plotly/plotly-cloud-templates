@@ -1,6 +1,6 @@
 # Plotly Cloud Templates
 
-A collection of ready-to-deploy Dash application templates built with 100% open-source software and optimized for [Plotly Cloud](https://cloud.plotly.com).
+A collection of ready-to-publish Dash application templates built with 100% open-source software and optimized for [Plotly Cloud](https://cloud.plotly.com).
 
 ## 🚀 Available Templates
 
@@ -28,16 +28,16 @@ All templates are built using 100% open-source technologies:
 - **[Dash](https://dash.plotly.com/)** - Web framework for building analytical web applications
 - **[Plotly](https://plotly.com/python/)** - Interactive plotting and visualization library
 - **[Pandas](https://pandas.pydata.org/)** - Data manipulation and analysis
-- **[Gunicorn](https://gunicorn.org/)** - Python WSGI HTTP Server for deployment
+- **[Gunicorn](https://gunicorn.org/)** - Python WSGI HTTP Server for publishing
 - **Additional libraries** as needed per template (see individual `requirements.txt` files)
 
 ## ⚡ Quick Start
 
-### Deploy to Plotly Cloud (Recommended)
+### Publish to Plotly Cloud (Recommended)
 
 1. Visit [cloud.plotly.com](https://cloud.plotly.com)
 2. Create a new app and drag and drop all the files for a given template
-3. Plotly Cloud will automatically detect the `requirements.txt` and deploy your app!
+3. Plotly Cloud will automatically detect the `requirements.txt` and publish your app!
 
 ### Run Locally
 
@@ -83,9 +83,9 @@ template-name/
 └── README.md          # Template-specific documentation
 ```
 
-## 🚀 Deploy to Plotly Cloud
+## 🚀 Publish to Plotly Cloud
 
-[Plotly Cloud](https://cloud.plotly.com) makes it incredibly easy to deploy these templates:
+[Plotly Cloud](https://cloud.plotly.com) makes it incredibly easy to publish these templates:
 
 1. **No server management** - Focus on your app, not infrastructure
 2. **Automatic scaling** - Handle traffic spikes seamlessly
@@ -105,7 +105,7 @@ We welcome contributions! Feel free to:
 
 ## 🔗 Links
 
-- [Plotly Cloud](https://cloud.plotly.com) - Deploy your Dash apps
+- [Plotly Cloud](https://cloud.plotly.com) - Publish your Dash apps
 - [Dash Documentation](https://dash.plotly.com/) - Learn more about Dash
 - [Plotly](https://plotly.com/) - Plotly graphing library docs
 - [Dash Community Forum](https://community.plotly.com/) - Get help and share ideas
