@@ -1,4 +1,5 @@
 WORD_LIST = [
+    "adieu",
     "aback",
     "abase",
     "abate",
