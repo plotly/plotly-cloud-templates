@@ -1,12 +1,49 @@
-from dash import dcc, html, Dash
-import plotly.express as px
-import plotly.graph_objects as go
-import pandas as pd
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+from dash import Dash, dcc, html
 
 app = Dash(__name__)
 server = app.server
+app.title = "Coffee Flavor Analysis Dashboard"
+app.index_string = """
+<!DOCTYPE html>
+<html>
+  <head>
+    {%metas%}
+    <title>Coffee Flavor Analysis Dashboard</title>
+    <meta name="title" content="Coffee Flavor Analysis Dashboard" />
+    <meta name="description" content="Explore the complex world of coffee flavor profiles using a hierarchical taxonomy." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://coffee-flavours.plotly.app/" />
+    <meta property="og:title" content="Coffee Flavor Analysis Dashboard" />
+    <meta property="og:description" content="Explore the complex world of coffee flavor profiles using a hierarchical taxonomy." />
+    <meta property="og:image" content="https://coffee-flavours.plotly.app/assets/thumbnail.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://coffee-flavours.plotly.app/" />
+    <meta name="twitter:title" content="Coffee Flavor Analysis Dashboard" />
+    <meta name="twitter:description" content="Explore the complex world of coffee flavor profiles using a hierarchical taxonomy." />
+    <meta name="twitter:image" content="https://coffee-flavours.plotly.app/assets/thumbnail.png" />
+
+    {%favicon%}
+    {%css%}
+  </head>
+  <body>
+    {%app_entry%}
+    <footer>
+      {%config%}
+      {%scripts%}
+      {%renderer%}
+    </footer>
+  </body>
+</html>
+"""
+
+
 df = pd.read_csv("data.csv")
 
 # Custom color mapping for each category
