@@ -220,6 +220,14 @@ app.layout = dmc.MantineProvider(
                     ),
                 ],
             ),
+            dmc.Affix(
+                dcc.Link(
+                    dmc.Button("Try Plotly Cloud", className="cloud-button"),
+                    href="https://cloud.plotly.com/",
+                    target="_blank",
+                ),
+                position={"bottom": 20, "right": 20},
+            ),
         ],
         className="main-container",
     )
