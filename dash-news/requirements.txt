@@ -4,3 +4,4 @@ plotly==6.2.0
 newsapi-python
 python-dotenv==1.0.1
 gunicorn==23.0.0
+dash-mantine-components==2.1.0

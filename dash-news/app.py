@@ -2,10 +2,48 @@ import math
 from datetime import datetime
 
 import dash
+import dash_mantine_components as dmc
 from dash import Input, Output, State, dcc, html
 from newsapi import NewsApiClient
 
 app = dash.Dash(__name__, external_stylesheets=["./custom.css"])
+app.title = "Dash News Network"
+app.index_string = """
+<!DOCTYPE html>
+<html>
+  <head>
+    {%metas%}
+    <title>Dash News Network</title>
+    <meta name="title" content="Dash News Network" />
+    <meta name="description" content="A Dash app template for displaying news articles." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://dash-news.plotly.app/" />
+    <meta property="og:title" content="Dash News Network" />
+    <meta property="og:description" content="A Dash app template for displaying news articles." />
+    <meta property="og:image" content="https://dash-news.plotly.app/assets/thumbnail.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://coffee-flavours.plotly.app/" />
+    <meta name="twitter:title" content="Dash News Network" />
+    <meta name="twitter:description" content="A Dash app template for displaying news articles." />
+    <meta name="twitter:image" content="https://dash-news.plotly.app/assets/thumbnail.png" />
+
+    {%favicon%}
+    {%css%}
+  </head>
+  <body>
+    {%app_entry%}
+    <footer>
+      {%config%}
+      {%scripts%}
+      {%renderer%}
+    </footer>
+  </body>
+</html>
+"""
+
+
 newsapi = NewsApiClient(api_key="9902e19f61b54149854b2955e060312c")
 
 CATEGORIES = [
@@ -92,55 +130,65 @@ def process_news_data(news_articles, current_page, articles_per_page=15):
 
 server = app.server
 
-app.layout = html.Div(
-    [
-        html.Div(
-            [
-                html.Div(
-                    [
-                        html.H1("Dash News Network", className="header-title"),
-                        html.Span("Source: newsapi.org", className="source-label"),
-                    ],
-                    className="title-section",
+app.layout = dmc.MantineProvider(
+    html.Div(
+        [
+            html.Div(
+                [
+                    html.Div(
+                        [
+                            html.H1("Dash News Network", className="header-title"),
+                            html.Span("Source: newsapi.org", className="source-label"),
+                        ],
+                        className="title-section",
+                    ),
+                    html.Div(
+                        [
+                            html.Label("Select Category:", className="dropdown-label"),
+                            dcc.Dropdown(
+                                id="category-dropdown",
+                                options=CATEGORIES,
+                                value="general",
+                                className="category-dropdown",
+                                clearable=False,
+                            ),
+                        ],
+                        className="dropdown-container",
+                    ),
+                ],
+                className="header",
+            ),
+            html.Div(
+                [
+                    html.Div(id="news-content", className="news-grid"),
+                    html.Div(
+                        [
+                            html.Button(
+                                "Previous", id="prev-button", className="pagination-btn"
+                            ),
+                            html.Span(id="page-info", className="page-info"),
+                            html.Button(
+                                "Next", id="next-button", className="pagination-btn"
+                            ),
+                        ],
+                        className="pagination-container",
+                    ),
+                ],
+                className="content-wrapper",
+            ),
+            dcc.Store(id="current-page", data=1),
+            dcc.Store(id="total-articles", data=0),
+            dmc.Affix(
+                dcc.Link(
+                    dmc.Button("Try Plotly Cloud", className="cloud-button"),
+                    href="https://cloud.plotly.com/",
+                    target="_blank",
                 ),
-                html.Div(
-                    [
-                        html.Label("Select Category:", className="dropdown-label"),
-                        dcc.Dropdown(
-                            id="category-dropdown",
-                            options=CATEGORIES,
-                            value="general",
-                            className="category-dropdown",
-                            clearable=False,
-                        ),
-                    ],
-                    className="dropdown-container",
-                ),
-            ],
-            className="header",
-        ),
-        html.Div(
-            [
-                html.Div(id="news-content", className="news-grid"),
-                html.Div(
-                    [
-                        html.Button(
-                            "Previous", id="prev-button", className="pagination-btn"
-                        ),
-                        html.Span(id="page-info", className="page-info"),
-                        html.Button(
-                            "Next", id="next-button", className="pagination-btn"
-                        ),
-                    ],
-                    className="pagination-container",
-                ),
-            ],
-            className="content-wrapper",
-        ),
-        dcc.Store(id="current-page", data=1),
-        dcc.Store(id="total-articles", data=0),
-    ],
-    className="app-container",
+                position={"bottom": 20, "right": 20},
+            ),
+        ],
+        className="app-container",
+    )
 )
 
 
