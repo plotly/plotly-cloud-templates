@@ -1,12 +1,49 @@
-import dash
-from dash import dcc, html, Input, State, Output, callback, no_update
 import random
+
+import dash
+import dash_mantine_components as dmc
+from dash import Input, Output, State, callback, dcc, html, no_update
 
 app = dash.Dash(
     name="Tamadashi",
     title="Tamadashi",
     update_title=None,
 )
+server = app.server
+app.index_string = """
+<!DOCTYPE html>
+<html>
+  <head>
+    {%metas%}
+    <title>Tamadashi - Virtual Pet Game</title>
+    <meta name="title" content="Tamadashi - Virtual Pet Game" />
+    <meta name="description" content="Take care of your virtual pet Tamadashi! Feed, play, and pet your digital companion." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tamadashi.plotly.app/" />
+    <meta property="og:title" content="Tamadashi - Virtual Pet Game" />
+    <meta property="og:description" content="Take care of your virtual pet Tamadashi! Feed, play, and pet your digital companion." />
+    <meta property="og:image" content="https://tamadashi.plotly.app/assets/thumbnail.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://tamadashi.plotly.app/" />
+    <meta name="twitter:title" content="Tamadashi - Virtual Pet Game" />
+    <meta name="twitter:description" content="Take care of your virtual pet Tamadashi! Feed, play, and pet your digital companion." />
+    <meta name="twitter:image" content="https://tamadashi.plotly.app/assets/thumbnail.png" />
+
+    {%favicon%}
+    {%css%}
+  </head>
+  <body>
+    {%app_entry%}
+    <footer>
+      {%config%}
+      {%scripts%}
+      {%renderer%}
+    </footer>
+  </body>
+</html>
+"""
 
 
 # Centered div + layered images with CSS classes
@@ -54,23 +91,33 @@ def make_controls():
 
 
 def layout():
-    return html.Div(
-        className="main-container",
-        children=[
-            html.H1(
-                className="tamadashi-title",
-                children=[html.Span(x) for x in ("tama", "dash", "i")],
-            ),
-            make_tamadashi_box(),
-            make_controls(),
-            dcc.Interval(id="interval", interval=6000),
-            dcc.Store(
-                id="status",
-                data={"food": 42, "happiness": 42, "energy": 42},
-                storage_type="memory",
-            ),
-            html.Div(id="flying-text-container"),
-        ],
+    return dmc.MantineProvider(
+        html.Div(
+            className="main-container",
+            children=[
+                html.H1(
+                    className="tamadashi-title",
+                    children=[html.Span(x) for x in ("tama", "dash", "i")],
+                ),
+                make_tamadashi_box(),
+                make_controls(),
+                dcc.Interval(id="interval", interval=6000),
+                dcc.Store(
+                    id="status",
+                    data={"food": 42, "happiness": 42, "energy": 42},
+                    storage_type="memory",
+                ),
+                html.Div(id="flying-text-container"),
+                dmc.Affix(
+                    dcc.Link(
+                        dmc.Button("Try Plotly Cloud", className="cloud-button"),
+                        href="https://cloud.plotly.com/",
+                        target="_blank",
+                    ),
+                    position={"bottom": 20, "right": 20},
+                ),
+            ],
+        )
     )
 
 
@@ -197,7 +244,6 @@ async def interact(status, n_clicks_feed, n_clicks_play, n_clicks_pat):
 
 
 app.layout = layout
-server = app.server
 
 
 if __name__ == "__main__":

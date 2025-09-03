@@ -5,7 +5,6 @@ import dash_mantine_components as dmc
 import numpy as np
 from dash import Input, Output, State, callback, ctx, dcc, html
 from dash_iconify import DashIconify
-
 from game_loader import game_loader
 from utils import (
     BOX_SIZE,
@@ -391,6 +390,14 @@ app.layout = dmc.MantineProvider(
                     create_mobile_controls(),
                 ],
                 className="main-game-area",
+            ),
+            dmc.Affix(
+                dcc.Link(
+                    dmc.Button("Try Plotly Cloud", className="cloud-button"),
+                    href="https://cloud.plotly.com/",
+                    target="_blank",
+                ),
+                position={"bottom": 20, "right": 20},
             ),
         ],
         className="sudoku-app",

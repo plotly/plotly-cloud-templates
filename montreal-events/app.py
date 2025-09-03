@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import dash_ag_grid as dag
 import dash_mantine_components as dmc
 import pandas as pd
@@ -7,6 +8,41 @@ from dash import Dash, Input, Output, callback, dcc, html
 
 app = Dash(__name__)
 server = app.server
+app.title = "Montreal Events"
+app.index_string = """
+<!DOCTYPE html>
+<html>
+  <head>
+    {%metas%}
+    <title>Montreal Events</title>
+    <meta name="title" content="Montreal Events" />
+    <meta name="description" content="Discover and explore public events happening in Montreal with interactive maps and filtering." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://evenements-de-montreal.plotly.app/" />
+    <meta property="og:title" content="Montreal Events" />
+    <meta property="og:description" content="Discover and explore public events happening in Montreal with interactive maps and filtering." />
+    <meta property="og:image" content="https://evenements-de-montreal.plotly.app/assets/thumbnail.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://evenements-de-montreal.plotly.app/" />
+    <meta name="twitter:title" content="Montreal Events" />
+    <meta name="twitter:description" content="Discover and explore public events happening in Montreal with interactive maps and filtering." />
+    <meta name="twitter:image" content="https://evenements-de-montreal.plotly.app/assets/thumbnail.png" />
+
+    {%favicon%}
+    {%css%}
+  </head>
+  <body>
+    {%app_entry%}
+    <footer>
+      {%config%}
+      {%scripts%}
+      {%renderer%}
+    </footer>
+  </body>
+</html>
+"""
 df = pd.read_csv("evenements.csv")
 
 
@@ -163,7 +199,15 @@ app.layout = dmc.MantineProvider(
                     ),
                 ],
                 style={"display": "flex"},
-            )
+            ),
+            dmc.Affix(
+                dcc.Link(
+                    dmc.Button("Try Plotly Cloud", className="cloud-button"),
+                    href="https://cloud.plotly.com/",
+                    target="_blank",
+                ),
+                position={"bottom": 20, "right": 20},
+            ),
         ],
         className="main-content",
     )

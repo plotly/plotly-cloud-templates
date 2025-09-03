@@ -1,2 +1,3 @@
 dash[async]>=3.0.0
+dash-mantine-components>=2.1.0
 gunicorn

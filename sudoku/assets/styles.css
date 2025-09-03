@@ -844,3 +844,14 @@ h3 {
     font-size: 3rem;
   }
 }
+
+.cloud-button {
+  background-color: #6e56cf;
+  box-shadow: #00000070 0px 10px 50px;
+  font-size: 1rem;
+  width: 170px;
+  height: 40px;
+}
+.cloud-button:hover {
+  background-color: #5a43b0;
+}

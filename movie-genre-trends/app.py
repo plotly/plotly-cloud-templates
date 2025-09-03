@@ -15,6 +15,41 @@ dash._dash_renderer._set_react_version("18.2.0")
 # Initialize the Dash app
 app = dash.Dash(__name__)
 server = app.server
+app.title = "Movie Genre Trends"
+app.index_string = """
+<!DOCTYPE html>
+<html>
+  <head>
+    {%metas%}
+    <title>Movie Genre Trends</title>
+    <meta name="title" content="Movie Genre Trends" />
+    <meta name="description" content="Explore movie revenue and budget trends across different genres with interactive visualizations." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://movie-genre-trends.plotly.app/" />
+    <meta property="og:title" content="Movie Genre Trends" />
+    <meta property="og:description" content="Explore movie revenue and budget trends across different genres with interactive visualizations." />
+    <meta property="og:image" content="https://movie-genre-trends.plotly.app/assets/thumbnail.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://movie-genre-trends.plotly.app/" />
+    <meta name="twitter:title" content="Movie Genre Trends" />
+    <meta name="twitter:description" content="Explore movie revenue and budget trends across different genres with interactive visualizations." />
+    <meta name="twitter:image" content="https://movie-genre-trends.plotly.app/assets/thumbnail.png" />
+
+    {%favicon%}
+    {%css%}
+  </head>
+  <body>
+    {%app_entry%}
+    <footer>
+      {%config%}
+      {%scripts%}
+      {%renderer%}
+    </footer>
+  </body>
+</html>
+"""
 
 # Load data once at startup
 df = pd.read_csv("data/data.csv")
@@ -283,6 +318,14 @@ app.layout = dmc.MantineProvider(
             p=10,
             gap=0,
             align="flex-start",
+        ),
+        dmc.Affix(
+            dcc.Link(
+                dmc.Button("Try Plotly Cloud", className="cloud-button"),
+                href="https://cloud.plotly.com/",
+                target="_blank",
+            ),
+            position={"bottom": 20, "right": 20},
         ),
     ],
     forceColorScheme="dark",

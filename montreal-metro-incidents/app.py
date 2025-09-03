@@ -1,4 +1,5 @@
 from datetime import datetime
+
 import dash_ag_grid as dag
 import dash_mantine_components as dmc
 import pandas as pd
@@ -7,6 +8,41 @@ from dash import Dash, Input, Output, callback, dcc, html
 
 app = Dash(__name__)
 server = app.server
+app.title = "Montreal Metro Incidents"
+app.index_string = """
+<!DOCTYPE html>
+<html>
+  <head>
+    {%metas%}
+    <title>Montreal Metro Incidents</title>
+    <meta name="title" content="Montreal Metro Incidents" />
+    <meta name="description" content="Monitoring dashboard for Montreal Metro incidents and operational status." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mtl-metro-incidents.plotly.app/" />
+    <meta property="og:title" content="Montreal Metro Incidents" />
+    <meta property="og:description" content="Monitoring dashboard for Montreal Metro incidents and operational status." />
+    <meta property="og:image" content="https://mtl-metro-incidents.plotly.app/assets/thumbnail.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://mtl-metro-incidents.plotly.app/" />
+    <meta name="twitter:title" content="Montreal Metro Incidents" />
+    <meta name="twitter:description" content="Monitoring dashboard for Montreal Metro incidents and operational status." />
+    <meta name="twitter:image" content="https://mtl-metro-incidents.plotly.app/assets/thumbnail.png" />
+
+    {%favicon%}
+    {%css%}
+  </head>
+  <body>
+    {%app_entry%}
+    <footer>
+      {%config%}
+      {%scripts%}
+      {%renderer%}
+    </footer>
+  </body>
+</html>
+"""
 symptomes_list = [
     "Clientèle",
     "Matériel roulant",
@@ -161,6 +197,14 @@ app.layout = dmc.MantineProvider(
                     ),
                 ],
                 className="flex-container",
+            ),
+            dmc.Affix(
+                dcc.Link(
+                    dmc.Button("Try Plotly Cloud", className="cloud-button"),
+                    href="https://cloud.plotly.com/",
+                    target="_blank",
+                ),
+                position={"bottom": 20, "right": 20},
             ),
         ],
         className="main-content",
