@@ -1,21 +1,24 @@
+import random
+import string
+
 import dash
+import dash_mantine_components as dmc
 from dash import (
-    dcc,
-    html,
+    ALL,
+    ClientsideFunction,
     Input,
     Output,
     State,
     callback_context,
-    ALL,
     clientside_callback,
-    ClientsideFunction,
+    dcc,
+    html,
 )
-import random
-import string
 from word_list import WORD_LIST
 
 # Convert word list to uppercase for consistent comparisons
 WORD_LIST_UPPER = [word.upper() for word in WORD_LIST]
+
 
 class WordleGame:
     def __init__(self):
@@ -118,64 +121,74 @@ KEYBOARD_LAYOUT = [
 ]
 
 # Define the app layout
-app.layout = html.Div(
-    [
-        html.Div(
-            [
-                html.H1("WORDLE", className="title"),
-                html.P("Guess the 5-letter word in 6 tries!", className="subtitle"),
-            ],
-            className="header",
-        ),
-        # Game board
-        html.Div(id="game-board", className="game-board"),
-        # Action buttons
-        html.Div(
-            [html.Button("NEW GAME", id="new-game-btn", className="new-game-btn")],
-            className="action-section",
-        ),
-        # Virtual keyboard
-        html.Div(
-            id="keyboard",
-            children=[
-                html.Div(
-                    [
-                        html.Button(
-                            key,
-                            id={"type": "key", "key": key},
-                            className=f"key {'key-wide' if key in ['ENTER', 'DELETE'] else 'key-letter'}",
-                            n_clicks=0,
-                        )
-                        for key in row
-                    ],
-                    className="keyboard-row",
-                )
-                for row in KEYBOARD_LAYOUT
-            ],
-            className="keyboard",
-        ),
-        # Message area
-        html.Div(id="message", className="message"),
-        # Hidden components for keyboard handling
-        dcc.Input(
-            id="keyboard-listener",
-            style={"opacity": 0, "position": "absolute", "left": "-9999px"},
-            autoFocus=True,
-        ),
-        html.Div(id="keyboard-trigger", style={"display": "none"}),
-        # Hidden div to store game state
-        dcc.Store(
-            id="game-state",
-            data={
-                "target_word": game.target_word,
-                "guesses": game.guesses,
-                "current_guess": game.current_guess,
-                "game_over": game.game_over,
-                "won": game.won,
-            },
-        ),
-    ],
-    className="container",
+app.layout = dmc.MantineProvider(
+    html.Div(
+        [
+            html.Div(
+                [
+                    html.H1("WORDLE", className="title"),
+                    html.P("Guess the 5-letter word in 6 tries!", className="subtitle"),
+                ],
+                className="header",
+            ),
+            # Game board
+            html.Div(id="game-board", className="game-board"),
+            # Action buttons
+            html.Div(
+                [html.Button("NEW GAME", id="new-game-btn", className="new-game-btn")],
+                className="action-section",
+            ),
+            # Virtual keyboard
+            html.Div(
+                id="keyboard",
+                children=[
+                    html.Div(
+                        [
+                            html.Button(
+                                key,
+                                id={"type": "key", "key": key},
+                                className=f"key {'key-wide' if key in ['ENTER', 'DELETE'] else 'key-letter'}",
+                                n_clicks=0,
+                            )
+                            for key in row
+                        ],
+                        className="keyboard-row",
+                    )
+                    for row in KEYBOARD_LAYOUT
+                ],
+                className="keyboard",
+            ),
+            # Message area
+            html.Div(id="message", className="message"),
+            # Hidden components for keyboard handling
+            dcc.Input(
+                id="keyboard-listener",
+                style={"opacity": 0, "position": "absolute", "left": "-9999px"},
+                autoFocus=True,
+            ),
+            html.Div(id="keyboard-trigger", style={"display": "none"}),
+            # Hidden div to store game state
+            dcc.Store(
+                id="game-state",
+                data={
+                    "target_word": game.target_word,
+                    "guesses": game.guesses,
+                    "current_guess": game.current_guess,
+                    "game_over": game.game_over,
+                    "won": game.won,
+                },
+            ),
+            dmc.Affix(
+                dcc.Link(
+                    dmc.Button("Try Plotly Cloud", className="cloud-button"),
+                    href="https://cloud.plotly.com/",
+                    target="_blank",
+                ),
+                position={"bottom": 20, "right": 20},
+            ),
+        ],
+        className="container",
+    )
 )
 
 # Clientside callback to handle keyboard events
@@ -615,6 +628,17 @@ app.index_string = """
                     gap: 6px;
                 }
             }
+
+            .cloud-button {
+                background-color: #6e56cf;
+                box-shadow: #00000070 0px 10px 50px;
+                font-size: 1rem;
+                width: 170px;
+                height: 40px;
+            }
+            .cloud-button:hover {
+                background-color: #5a43b0;
+            }
         </style>
     </head>
     <body>
@@ -629,4 +653,4 @@ app.index_string = """
 """
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)

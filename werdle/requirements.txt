@@ -1,3 +1,4 @@
 dash>=2.14.1
+dash-mantine-components>=2.1.0
 plotly>=5.17.0 
 gunicorn==23.0.0
