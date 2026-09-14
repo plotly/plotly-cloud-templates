@@ -1,0 +1,10 @@
+dash_mantine_components==2.8.0
+dash==4.4.1
+gunicorn==26.2.0
+pandas==1.4.0
+werkzeug==3.1.8
+psycopg2-binary==2.9.12
+pytest==7.2.2
+dash_iconify==0.1.2
+dash-ag-grid==35.3.0
+numpy<2.0.0
