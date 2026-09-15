@@ -1,0 +1,6 @@
+dash>=2.17
+dash-cytoscape>=1.0.2
+dash-leaflet>=1.0.15
+dash-mantine-components>=2.0.0
+pandas
+numpy
