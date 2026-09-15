@@ -188,5 +188,5 @@ def get_default_nodes():
     State({"type": "global-filters", "index": ALL}, "value"),
     prevent_initial_call=True,
 )
-def clear_node_and_filter_selctions(n_clicks_filter, filters):
+def clear_node_and_filter_selections(n_clicks_filter, filters):
     return [[]] * len(ctx.args_grouping[1])
