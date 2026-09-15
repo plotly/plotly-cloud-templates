@@ -166,7 +166,7 @@ def generate_sankey_data(
     year: int,
     spot_df: pd.DataFrame,
     view_top,
-) -> Tuple[list, list, list, list, list]:
+) -> Tuple[list, list, list, list, list, list]:
     """
     This function creates the data required to generate the sankey diragram.
     Params:
