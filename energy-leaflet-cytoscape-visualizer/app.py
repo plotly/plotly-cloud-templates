@@ -71,7 +71,7 @@ CONVERSION_FACTOR = 20037508.34
 
 def xy_to_lonlat(x, y):
     lon = x * 180.0 / CONVERSION_FACTOR
-    lat = math.atan(math.exp(-y * math.pi / CONVERSION_FACTOR)) * 360.0 / math.pi - 90.0
+    lat = 90.0 - math.atan(math.exp(-y * math.pi / CONVERSION_FACTOR)) * 360.0 / math.pi
     return lon, lat
 
 
