@@ -1,0 +1,280 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+/* One-screen shell: header, control bar, then the dashboard fills the rest */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-shell,
+.app-shell > * {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+}
+
+.app-shell {
+  height: 100vh;
+  display: flex !important;
+  flex-direction: column;
+}
+
+/* Only the dashboard grows; DDK's header would otherwise stretch too */
+.app-shell > * {
+  flex: 0 0 auto !important;
+}
+
+.app-shell > .dashboard {
+  flex: 1 1 0 !important;
+}
+
+.dashboard {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 59fr) minmax(0, 41fr);
+}
+
+.side-column {
+  display: grid;
+  grid-template-rows: minmax(0, 56fr) minmax(0, 44fr);
+  min-height: 0;
+}
+
+/* Cards stretch to their grid cell; their graph or grid takes the leftover */
+.fill-card {
+  display: flex !important;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* DDK wraps card children in .card--content; make that the flex column */
+.fill-card > .card--content {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fill-loading,
+.fill-graph,
+.stats-grid {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+}
+
+.fill-loading {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.fill-graph .js-plotly-plot,
+.fill-graph .plot-container {
+  height: 100% !important;
+}
+
+/* dash-ag-grid sets an inline 400px height; let the flex layout size it */
+.stats-grid {
+  height: auto !important;
+}
+
+/* Header wordmark */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* A 2x2 quilt of tiles as the logo mark */
+.brand-mark {
+  display: grid;
+  grid-template-columns: repeat(2, 10px);
+  grid-template-rows: repeat(2, 10px);
+  gap: 3px;
+}
+
+.brand-mark span {
+  display: block;
+  border-radius: 2px;
+}
+
+.brand-mark span:nth-child(1) {
+  background: #2dd4bf;
+}
+
+.brand-mark span:nth-child(2),
+.brand-mark span:nth-child(3) {
+  background: #ffffff;
+}
+
+.brand-mark span:nth-child(4) {
+  background: #0d9488;
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.brand-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.brand-product {
+  font-size: 16px;
+  font-weight: 400;
+  color: #99f6e4;
+}
+
+.data-source-note {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+/* Control bar: one row of filters above the charts */
+.control-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 8px 16px 4px !important;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.filter {
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.filter-label {
+  text-align: left !important;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.filter-assets {
+  flex: 0 1 auto;
+}
+
+.filter-years {
+  flex: 1 1 220px;
+  min-width: 200px;
+}
+
+.filter-mix {
+  flex: 0 1 180px;
+  min-width: 150px;
+}
+
+.filter-highlight {
+  flex: 0 1 200px;
+  min-width: 170px;
+}
+
+.filter .rc-slider,
+.filter .dash-slider {
+  margin-top: 2px;
+}
+
+.filter .rc-slider-track {
+  background-color: #0d9488;
+}
+
+.filter .rc-slider-handle {
+  border-color: #0d9488;
+}
+
+.asset-checklist input,
+.ytd-toggle input {
+  accent-color: #0d9488;
+}
+
+.asset-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.asset-checklist label {
+  margin: 0 !important;
+}
+
+.asset-checklist label,
+.ytd-toggle label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #1e293b;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.asset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+}
+
+/* Small screens: fall back to a normal scrolling page */
+@media (max-width: 1000px) {
+  html,
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .app-shell {
+    height: auto;
+  }
+
+  .control-bar {
+    flex-wrap: wrap;
+  }
+
+  .dashboard,
+  .side-column {
+    display: block;
+  }
+
+  .quilt-card {
+    height: 560px;
+  }
+
+  .side-column .fill-card {
+    height: 380px;
+  }
+
+  .data-source-note,
+  .brand-divider,
+  .brand-product {
+    display: none;
+  }
+}

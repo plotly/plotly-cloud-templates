@@ -1,0 +1,13 @@
+
+dash==4.4.1
+dash-ag-grid>=35.3
+dash-design-kit==3.0.0
+plotly>=6.0
+pandas>=2.2
+numpy>=1.26
+yfinance>=1.7
+flask-caching>=2.3
+gunicorn>=23.0
+tzdata  # time zones for yfinance on servers without a system tz database
+dash_ai_analyst-0.1.8a9-py3-none-any.whl
+dotenv
