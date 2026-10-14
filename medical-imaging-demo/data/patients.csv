@@ -1,0 +1,61 @@
+patient_id,name,age,gender,diagnosis,ward,department,admitted_date,los_days,risk_score,sepsis_risk,fall_risk,readmit_risk,deterioration_risk,is_icu
+PT1001,Mark White,82,M,Trauma,ICU,Pulmonology,2026-06-03,7,41.6,7.3,47.3,11.1,36.9,True
+PT1002,Robert Jones,72,M,Acute MI,MICU,Cardiology,2026-06-07,2,12.5,4.9,17.3,52.1,13.3,True
+PT1003,Matthew Nelson,61,M,Cellulitis,CCU,Pulmonology,2026-06-15,5,32.5,6.9,8.2,33.6,21.8,True
+PT1004,Daniel Allen,83,F,Acute MI,ICU,Neurology,2026-06-12,8,55.2,15.0,28.8,73.9,14.1,True
+PT1005,Charles Hall,49,F,Pulmonary Embolism,MICU,Surgery,2026-06-14,9,34.7,7.7,16.5,14.2,43.2,True
+PT1006,Nancy Wilson,73,M,Atrial Fibrillation,MICU,Cardiology,2026-06-10,4,51.9,11.3,33.3,44.5,29.2,True
+PT1007,Jessica Harris,80,F,Cellulitis,Step-Down,Neurology,2026-06-04,12,6.9,3.2,14.6,54.3,2.0,False
+PT1008,Anthony Allen,30,M,COPD Exacerbation,ED Obs,Neurology,2026-06-03,4,26.9,20.5,44.1,9.6,24.6,False
+PT1009,Charles Hall,43,F,Atrial Fibrillation,ICU,Nephrology,2026-06-06,13,40.6,22.7,60.2,24.5,24.2,True
+PT1010,Robert Thompson,46,F,Respiratory Failure,Step-Down,Nephrology,2026-06-10,3,17.8,4.3,32.0,43.7,11.7,False
+PT1011,Jessica Jackson,36,F,Sepsis,General Med,Pulmonology,2026-06-07,6,25.1,13.2,2.4,31.6,30.6,False
+PT1012,Betty Walker,83,M,Respiratory Failure,Step-Down,Cardiology,2026-06-12,5,4.1,21.5,66.6,23.8,25.6,False
+PT1013,Karen Moore,40,F,Pneumonia,ED Obs,Surgery,2026-06-13,4,25.4,32.5,18.1,43.5,14.1,False
+PT1014,Barbara Scott,55,M,GI Bleed,Step-Down,Oncology,2026-06-04,10,34.1,21.5,15.7,23.4,9.6,False
+PT1015,Sandra Lewis,34,M,COPD Exacerbation,ED Obs,Cardiology,2026-06-04,12,43.5,36.4,22.3,19.5,11.5,False
+PT1016,Betty Anderson,38,M,Stroke,General Med,Oncology,2026-06-14,13,32.2,1.9,15.9,58.2,4.0,False
+PT1017,Sarah Baker,79,F,Diabetic Ketoacidosis,Step-Down,Surgery,2026-06-15,9,28.4,5.9,3.0,21.6,12.0,False
+PT1018,Robert Harris,78,M,Diabetic Ketoacidosis,General Med,Pulmonology,2026-06-08,6,67.1,0.8,15.8,11.5,1.9,False
+PT1019,Daniel King,54,F,Pneumonia,ICU,Pulmonology,2026-06-15,1,55.3,6.6,15.7,43.5,9.5,True
+PT1020,James Martin,53,F,Diabetic Ketoacidosis,CCU,Oncology,2026-06-08,7,15.8,10.7,11.7,39.3,1.0,True
+PT1021,Jennifer Smith,51,M,Pulmonary Embolism,Step-Down,Neurology,2026-06-01,5,14.4,1.5,53.8,60.3,30.0,False
+PT1022,Charles Young,42,M,Sepsis,General Med,General Medicine,2026-06-10,13,32.0,5.5,13.4,37.5,14.2,False
+PT1023,Betty Jackson,80,F,COPD Exacerbation,General Med,Oncology,2026-06-03,7,56.2,1.8,21.8,41.9,21.1,False
+PT1024,Charles Moore,62,M,Stroke,General Med,General Medicine,2026-06-10,2,45.9,24.6,32.7,53.7,0.7,False
+PT1025,Patricia Young,41,M,Diabetic Ketoacidosis,ED Obs,Oncology,2026-06-01,10,22.0,38.2,32.9,67.0,16.9,False
+PT1026,Mary Anderson,56,M,UTI,ED Obs,Nephrology,2026-06-12,13,35.8,20.1,38.3,5.9,9.0,False
+PT1027,Susan Walker,72,M,COPD Exacerbation,Step-Down,Nephrology,2026-06-06,3,4.9,11.2,22.8,32.2,33.1,False
+PT1028,Nancy White,50,F,Acute MI,MICU,Surgery,2026-06-15,4,31.4,1.7,19.4,12.8,34.3,True
+PT1029,Margaret Scott,30,F,COPD Exacerbation,MICU,Surgery,2026-06-14,8,25.5,6.4,3.4,22.5,8.6,True
+PT1030,Anthony Young,75,F,GI Bleed,ICU,Oncology,2026-06-04,6,11.5,18.2,17.1,28.2,22.7,True
+PT1031,Charles Thompson,22,F,COPD Exacerbation,General Med,Oncology,2026-06-02,2,2.6,13.0,32.7,15.8,24.7,False
+PT1032,Charles Smith,29,F,COPD Exacerbation,General Med,Nephrology,2026-06-08,14,14.0,22.0,40.0,12.8,1.9,False
+PT1033,Mary Walker,65,M,Heart Failure,General Med,Pulmonology,2026-06-06,12,41.5,35.7,7.7,5.2,8.2,False
+PT1034,Jennifer Green,61,F,Diabetic Ketoacidosis,ED Obs,Surgery,2026-06-09,5,9.1,23.8,25.3,8.7,20.0,False
+PT1035,Karen Young,83,M,Cellulitis,ICU,Neurology,2026-06-02,9,19.4,39.2,25.4,3.4,3.8,True
+PT1036,Christopher Martin,46,F,GI Bleed,General Med,General Medicine,2026-06-15,11,37.4,19.5,39.6,6.9,3.3,False
+PT1037,Thomas Brown,46,M,Sepsis,Step-Down,Cardiology,2026-06-13,10,16.4,21.8,26.9,16.3,20.7,False
+PT1038,Joseph Martin,89,F,Hypertensive Crisis,ICU,Pulmonology,2026-06-05,13,33.2,14.2,19.3,22.3,11.6,True
+PT1039,Karen Scott,82,M,Pulmonary Embolism,General Med,Neurology,2026-06-02,2,40.7,4.7,39.7,29.9,47.3,False
+PT1040,Betty Thompson,58,F,Cellulitis,General Med,General Medicine,2026-06-05,13,52.6,3.7,8.6,27.2,18.1,False
+PT1041,William Thomas,79,M,COPD Exacerbation,MICU,Oncology,2026-06-07,10,36.8,5.9,39.0,21.8,42.5,True
+PT1042,Margaret White,58,M,Stroke,Step-Down,General Medicine,2026-06-04,4,38.6,3.1,7.7,19.8,23.4,False
+PT1043,Mark Taylor,53,F,Respiratory Failure,General Med,Nephrology,2026-06-04,6,7.3,10.3,44.2,63.9,5.5,False
+PT1044,Karen Jackson,36,M,Atrial Fibrillation,ED Obs,Nephrology,2026-06-07,1,36.7,3.3,23.7,15.0,30.0,False
+PT1045,Elizabeth Wright,67,F,Respiratory Failure,MICU,Nephrology,2026-06-06,12,35.8,14.6,20.6,27.3,14.8,True
+PT1046,Michael Wilson,29,F,Sepsis,ED Obs,General Medicine,2026-06-14,4,39.2,22.2,64.2,6.9,20.4,False
+PT1047,Joseph Smith,28,F,Pneumonia,ICU,Nephrology,2026-06-05,10,59.8,9.7,69.1,14.8,3.3,True
+PT1048,Elizabeth Jackson,23,M,Acute MI,MICU,Surgery,2026-06-06,13,17.9,7.4,19.3,40.0,37.4,True
+PT1049,Elizabeth Nelson,22,M,Heart Failure,General Med,Neurology,2026-06-12,1,58.1,1.4,23.8,58.7,21.7,False
+PT1050,Sarah King,64,F,Sepsis,Step-Down,Cardiology,2026-06-02,13,9.6,35.5,7.8,34.5,10.0,False
+PT1051,Christopher Harris,90,M,Pulmonary Embolism,General Med,Nephrology,2026-06-12,2,44.6,17.8,32.4,48.9,7.4,False
+PT1052,Thomas Martin,56,F,Stroke,General Med,Pulmonology,2026-06-11,3,45.8,20.2,35.1,71.2,32.0,False
+PT1053,Joseph Wright,57,M,COPD Exacerbation,ICU,Oncology,2026-06-04,5,8.9,21.1,35.0,33.2,6.6,True
+PT1054,Elizabeth King,66,F,Respiratory Failure,General Med,Neurology,2026-06-13,7,18.8,20.6,19.2,27.9,28.6,False
+PT1055,Elizabeth Johnson,54,M,Acute MI,CCU,Cardiology,2026-06-06,5,7.7,42.8,66.1,44.4,42.9,True
+PT1056,Patricia Thomas,70,F,Sepsis,Step-Down,General Medicine,2026-06-05,12,8.4,21.0,19.0,34.9,4.4,False
+PT1057,Jessica Anderson,38,F,Diabetic Ketoacidosis,General Med,General Medicine,2026-06-03,14,18.1,27.8,22.1,48.3,6.1,False
+PT1058,Daniel Scott,89,F,Trauma,Step-Down,Nephrology,2026-06-03,6,36.3,11.2,28.7,15.5,14.9,False
+PT1059,Mark Lewis,24,M,GI Bleed,General Med,Nephrology,2026-06-09,13,33.6,36.6,22.7,13.0,17.2,False
+PT1060,Charles Miller,37,F,Pneumonia,Step-Down,General Medicine,2026-06-04,7,26.8,5.8,47.1,51.5,4.8,False

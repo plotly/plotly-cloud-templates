@@ -1,0 +1,211 @@
+date,department,admissions
+2026-05-17,Cardiology,6
+2026-05-17,Pulmonology,5
+2026-05-17,Neurology,6
+2026-05-17,General Medicine,16
+2026-05-17,Surgery,8
+2026-05-17,Nephrology,4
+2026-05-17,Oncology,2
+2026-05-18,Cardiology,11
+2026-05-18,Pulmonology,6
+2026-05-18,Neurology,7
+2026-05-18,General Medicine,20
+2026-05-18,Surgery,11
+2026-05-18,Nephrology,3
+2026-05-18,Oncology,2
+2026-05-19,Cardiology,12
+2026-05-19,Pulmonology,3
+2026-05-19,Neurology,0
+2026-05-19,General Medicine,22
+2026-05-19,Surgery,8
+2026-05-19,Nephrology,5
+2026-05-19,Oncology,4
+2026-05-20,Cardiology,14
+2026-05-20,Pulmonology,7
+2026-05-20,Neurology,5
+2026-05-20,General Medicine,18
+2026-05-20,Surgery,11
+2026-05-20,Nephrology,6
+2026-05-20,Oncology,6
+2026-05-21,Cardiology,9
+2026-05-21,Pulmonology,12
+2026-05-21,Neurology,5
+2026-05-21,General Medicine,19
+2026-05-21,Surgery,10
+2026-05-21,Nephrology,3
+2026-05-21,Oncology,3
+2026-05-22,Cardiology,14
+2026-05-22,Pulmonology,10
+2026-05-22,Neurology,6
+2026-05-22,General Medicine,22
+2026-05-22,Surgery,10
+2026-05-22,Nephrology,4
+2026-05-22,Oncology,2
+2026-05-23,Cardiology,7
+2026-05-23,Pulmonology,4
+2026-05-23,Neurology,7
+2026-05-23,General Medicine,16
+2026-05-23,Surgery,10
+2026-05-23,Nephrology,4
+2026-05-23,Oncology,1
+2026-05-24,Cardiology,10
+2026-05-24,Pulmonology,8
+2026-05-24,Neurology,5
+2026-05-24,General Medicine,12
+2026-05-24,Surgery,4
+2026-05-24,Nephrology,5
+2026-05-24,Oncology,2
+2026-05-25,Cardiology,12
+2026-05-25,Pulmonology,6
+2026-05-25,Neurology,6
+2026-05-25,General Medicine,17
+2026-05-25,Surgery,10
+2026-05-25,Nephrology,6
+2026-05-25,Oncology,5
+2026-05-26,Cardiology,9
+2026-05-26,Pulmonology,8
+2026-05-26,Neurology,4
+2026-05-26,General Medicine,23
+2026-05-26,Surgery,11
+2026-05-26,Nephrology,5
+2026-05-26,Oncology,8
+2026-05-27,Cardiology,10
+2026-05-27,Pulmonology,7
+2026-05-27,Neurology,7
+2026-05-27,General Medicine,24
+2026-05-27,Surgery,12
+2026-05-27,Nephrology,6
+2026-05-27,Oncology,2
+2026-05-28,Cardiology,10
+2026-05-28,Pulmonology,9
+2026-05-28,Neurology,3
+2026-05-28,General Medicine,20
+2026-05-28,Surgery,11
+2026-05-28,Nephrology,2
+2026-05-28,Oncology,5
+2026-05-29,Cardiology,13
+2026-05-29,Pulmonology,7
+2026-05-29,Neurology,5
+2026-05-29,General Medicine,16
+2026-05-29,Surgery,9
+2026-05-29,Nephrology,1
+2026-05-29,Oncology,2
+2026-05-30,Cardiology,8
+2026-05-30,Pulmonology,3
+2026-05-30,Neurology,2
+2026-05-30,General Medicine,12
+2026-05-30,Surgery,9
+2026-05-30,Nephrology,3
+2026-05-30,Oncology,5
+2026-05-31,Cardiology,8
+2026-05-31,Pulmonology,5
+2026-05-31,Neurology,3
+2026-05-31,General Medicine,9
+2026-05-31,Surgery,8
+2026-05-31,Nephrology,3
+2026-05-31,Oncology,3
+2026-06-01,Cardiology,7
+2026-06-01,Pulmonology,7
+2026-06-01,Neurology,5
+2026-06-01,General Medicine,20
+2026-06-01,Surgery,9
+2026-06-01,Nephrology,4
+2026-06-01,Oncology,5
+2026-06-02,Cardiology,14
+2026-06-02,Pulmonology,7
+2026-06-02,Neurology,3
+2026-06-02,General Medicine,17
+2026-06-02,Surgery,10
+2026-06-02,Nephrology,7
+2026-06-02,Oncology,0
+2026-06-03,Cardiology,9
+2026-06-03,Pulmonology,7
+2026-06-03,Neurology,1
+2026-06-03,General Medicine,19
+2026-06-03,Surgery,10
+2026-06-03,Nephrology,5
+2026-06-03,Oncology,3
+2026-06-04,Cardiology,11
+2026-06-04,Pulmonology,5
+2026-06-04,Neurology,2
+2026-06-04,General Medicine,19
+2026-06-04,Surgery,10
+2026-06-04,Nephrology,5
+2026-06-04,Oncology,6
+2026-06-05,Cardiology,12
+2026-06-05,Pulmonology,9
+2026-06-05,Neurology,6
+2026-06-05,General Medicine,23
+2026-06-05,Surgery,9
+2026-06-05,Nephrology,6
+2026-06-05,Oncology,4
+2026-06-06,Cardiology,10
+2026-06-06,Pulmonology,6
+2026-06-06,Neurology,4
+2026-06-06,General Medicine,15
+2026-06-06,Surgery,8
+2026-06-06,Nephrology,5
+2026-06-06,Oncology,5
+2026-06-07,Cardiology,9
+2026-06-07,Pulmonology,3
+2026-06-07,Neurology,4
+2026-06-07,General Medicine,14
+2026-06-07,Surgery,6
+2026-06-07,Nephrology,3
+2026-06-07,Oncology,1
+2026-06-08,Cardiology,7
+2026-06-08,Pulmonology,10
+2026-06-08,Neurology,5
+2026-06-08,General Medicine,16
+2026-06-08,Surgery,10
+2026-06-08,Nephrology,6
+2026-06-08,Oncology,3
+2026-06-09,Cardiology,9
+2026-06-09,Pulmonology,5
+2026-06-09,Neurology,10
+2026-06-09,General Medicine,17
+2026-06-09,Surgery,6
+2026-06-09,Nephrology,4
+2026-06-09,Oncology,5
+2026-06-10,Cardiology,15
+2026-06-10,Pulmonology,7
+2026-06-10,Neurology,5
+2026-06-10,General Medicine,17
+2026-06-10,Surgery,12
+2026-06-10,Nephrology,4
+2026-06-10,Oncology,3
+2026-06-11,Cardiology,12
+2026-06-11,Pulmonology,8
+2026-06-11,Neurology,5
+2026-06-11,General Medicine,22
+2026-06-11,Surgery,6
+2026-06-11,Nephrology,5
+2026-06-11,Oncology,4
+2026-06-12,Cardiology,11
+2026-06-12,Pulmonology,9
+2026-06-12,Neurology,7
+2026-06-12,General Medicine,22
+2026-06-12,Surgery,9
+2026-06-12,Nephrology,4
+2026-06-12,Oncology,5
+2026-06-13,Cardiology,8
+2026-06-13,Pulmonology,2
+2026-06-13,Neurology,6
+2026-06-13,General Medicine,11
+2026-06-13,Surgery,8
+2026-06-13,Nephrology,8
+2026-06-13,Oncology,4
+2026-06-14,Cardiology,7
+2026-06-14,Pulmonology,5
+2026-06-14,Neurology,5
+2026-06-14,General Medicine,14
+2026-06-14,Surgery,9
+2026-06-14,Nephrology,6
+2026-06-14,Oncology,5
+2026-06-15,Cardiology,9
+2026-06-15,Pulmonology,8
+2026-06-15,Neurology,6
+2026-06-15,General Medicine,23
+2026-06-15,Surgery,10
+2026-06-15,Nephrology,3
+2026-06-15,Oncology,4

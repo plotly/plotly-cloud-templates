@@ -1,0 +1,390 @@
+/* ===== Base ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background-color: #f8f9fa;
+  color: #495057;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* ===== Scrollbars ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== AppShell header ===== */
+.app-header {
+  background: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.brand-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #212529;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.brand-subtitle {
+  font-size: 0.78rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* ===== Collapsible Nav Sidebar ===== */
+.filter-sidebar {
+  width: 220px;
+  min-width: 220px;
+  flex-shrink: 0;
+  transition: width 0.2s ease;
+  display: flex !important;
+  flex-direction: column !important;
+  background-color: #ffffff !important;
+  border-right: 1px solid #dee2e6 !important;
+}
+
+.filter-sidebar.collapsed {
+  width: 50px !important;
+  min-width: 50px !important;
+}
+
+.sidebar-outer {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 0;
+}
+
+.sidebar-inner {
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+.sidebar-collapsed-title {
+  width: 150px;
+  color: #adb5bd;
+  font-size: 12px;
+  white-space: pre;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-btn {
+  border-radius: 4px !important;
+}
+
+.title-pad {
+  padding: 22px 12px 10px 12px !important;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+/* Layout helpers */
+.flex-column    { flex-direction: column; }
+.justify-center { justify-content: center; }
+.space-between  { justify-content: space-between; }
+.pad-0          { padding: 0 !important; }
+
+/* Main content flex wrapper */
+.main-layout {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+}
+
+/* Sidebar NavLink styling */
+.filter-sidebar .mantine-NavLink-root {
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin: 1px 6px;
+  padding: 8px 10px;
+}
+
+.filter-sidebar .mantine-NavLink-root:hover {
+  background-color: #f1f3f5;
+  color: #343a40;
+}
+
+.filter-sidebar .mantine-NavLink-root[data-active="true"] {
+  background-color: #fff7e6;
+  color: #d48806;
+  font-weight: 600;
+  border-left: 3px solid #e8a020;
+  border-radius: 0 6px 6px 0;
+  padding-left: 7px;
+}
+
+/* ===== Paper hover elevation ===== */
+.mantine-Paper-root {
+  transition: box-shadow 0.2s ease;
+}
+
+.mantine-Paper-root:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== KPI cards ===== */
+.kpi-card {
+  background: #ffffff !important;
+  border: 1px solid #dee2e6 !important;
+  border-top: 3px solid #e8a020 !important;
+}
+
+/* ===== Chart containers ===== */
+.chart-paper {
+  background: #ffffff !important;
+  border: 1px solid #dee2e6 !important;
+}
+
+/* ===== Strip log panels ===== */
+.strip-log-panel {
+  border-right: 1px solid #dee2e6;
+}
+
+/* ===== Measurement readout ===== */
+.measure-readout {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  color: #d48806;
+  background: #fff7e6;
+  border: 1px solid #ffd666;
+  border-radius: 6px;
+  padding: 8px 12px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+
+/* ===== Table ===== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.data-table th {
+  background: #f1f3f5;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.data-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #e9ecef;
+  color: #495057;
+}
+
+.data-table tr:hover td {
+  background: #f8f9fa;
+}
+
+/* ===== Scrollable table wrapper ===== */
+.table-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.table-scroll::-webkit-scrollbar { width: 5px; }
+.table-scroll::-webkit-scrollbar-track { background: #f1f3f5; }
+.table-scroll::-webkit-scrollbar-thumb { background: #ced4da; border-radius: 3px; }
+
+/* ===== Section titles ===== */
+.section-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #212529;
+  margin: 0 0 4px;
+}
+
+.section-description {
+  font-size: 0.75rem;
+  color: #6c757d;
+  margin: 0 0 12px;
+}
+
+/* ===== Legend swatch ===== */
+.lith-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Depth cursor line — targeted via JS class injection ===== */
+.depth-cursor-line {
+  stroke: #e8a020 !important;
+  stroke-width: 1.5px !important;
+  stroke-dasharray: 5, 3 !important;
+  opacity: 0.85 !important;
+}
+
+/* ===== Mantine overrides ===== */
+.mantine-Badge-root {
+  text-transform: none;
+}
+
+.mantine-NavLink-root[data-active="true"] {
+  font-weight: 600;
+}
+
+/* ===== Plotly modebar ===== */
+.js-plotly-plot .plotly .modebar {
+  top: 5px !important;
+  right: 5px !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn {
+  font-size: 14px !important;
+}
+
+/* ===== Tip paper (accent left border) ===== */
+.tip-paper {
+  display: none !important;
+  border-left: 3px solid #e8a020 !important;
+}
+
+/* ===== Y-axis interaction hint overlay ===== */
+.y-axis-hint {
+  position: absolute;
+  left: 62px;
+  top: 54px;
+  font-size: 9px;
+  color: #adb5bd;
+  background: rgba(255, 255, 255, 0.93);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid #dee2e6;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-family: Inter, sans-serif;
+  animation: hint-fade-in 0.9s ease-out;
+}
+
+@keyframes hint-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Feature chip badges ===== */
+.feature-chips .mantine-Badge-root {
+  cursor: help;
+}
+
+/* ===== DashTour overrides ===== */
+[data-tour-elem="helper"] {
+  font-family: Inter, -apple-system, sans-serif !important;
+  font-size: 0.875rem !important;
+  color: #212529 !important;
+  line-height: 1.5 !important;
+  max-width: 320px !important;
+}
+
+[data-tour-elem="badge"] {
+  background: #e8a020 !important;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .brand-title { font-size: 0.95rem; }
+  .brand-subtitle { display: none; }
+  .horizontal-nav .mantine-NavLink-root { padding: 6px 10px; font-size: 0.8rem; }
+  .horizontal-nav .mantine-NavLink-label { font-size: 0.8rem; }
+}
+
+@media print {
+  .mantine-AppShell-header,
+  .mantine-Button-root,
+  .mantine-Select-root,
+  .mantine-MultiSelect-root {
+    display: none !important;
+  }
+
+  .mantine-Paper-root {
+    break-inside: avoid;
+    box-shadow: none !important;
+    border: 1px solid #dee2e6 !important;
+  }
+}
+
+/* ===== Explorer page sidebar (CodePen port) ===== */
+.explorer-info-panel {
+  background: #f8f9fb !important;
+}
+
+.explorer-panel-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #8b8fa3;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.explorer-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 12px;
+  border-bottom: 1px solid #ecedf0;
+}
+
+.explorer-info-row:last-child {
+  border-bottom: none;
+}
+
+.explorer-info-label {
+  color: #8b8fa3;
+}
+
+.explorer-info-value {
+  color: #1e2028;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.explorer-distance-result {
+  background: #eef4ff;
+  border: 1px solid #b6d0f7;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #2563eb;
+  display: none;
+}
