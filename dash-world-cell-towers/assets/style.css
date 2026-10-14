@@ -1,0 +1,38 @@
+body {
+  background: var(--mantine-color-gray-0);
+}
+
+.hero-number {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.help-text p {
+  margin: 0 0 8px;
+  font-size: var(--mantine-font-size-sm);
+  line-height: 1.5;
+}
+
+.help-text p:last-child,
+.acknowledgements p {
+  margin: 0;
+}
+
+.acknowledgements a {
+  color: inherit;
+}
+
+@media (max-width: 600px) {
+  .dash-logo {
+    display: none;
+  }
+}
