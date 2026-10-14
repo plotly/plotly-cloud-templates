@@ -14,8 +14,18 @@ body {
   max-width: none !important;
 }
 
-.app-shell {
+/* The unlicensed-DDK banner is injected as a sibling above the shell, so the
+   shell's parent owns the viewport and the shell takes what's left */
+:has(> .app-shell) {
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell {
+  flex: 1 1 0;
+  /* DDK gives .ddk-container min-height: 100vh, which ignores the banner */
+  min-height: 0 !important;
   display: flex !important;
   flex-direction: column;
 }
@@ -25,11 +35,18 @@ body {
   flex: 0 0 auto !important;
 }
 
-.app-shell > .dashboard {
+.app-shell > .dashboard-loading {
   flex: 1 1 0 !important;
 }
 
+.dashboard-loading,
+.dashboard-loading > .dashboard-loading {
+  min-height: 0;
+  height: 100%;
+}
+
 .dashboard {
+  height: 100%;
   min-height: 0;
   display: grid;
   grid-template-rows: minmax(0, 36fr) minmax(0, 64fr);
@@ -330,8 +347,13 @@ body {
     overflow: auto;
   }
 
+  :has(> .app-shell),
   .app-shell {
     height: auto;
+  }
+
+  .app-shell {
+    flex: 0 0 auto;
   }
 
   .dashboard {

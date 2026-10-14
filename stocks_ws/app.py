@@ -279,43 +279,53 @@ app.layout = ddk.App(
                 ),
             ],
         ),
-        html.Div(
-            [
-                html.Div(
-                    [
-                        ticker_card(i, symbol)
-                        for i, symbol in enumerate(DEFAULT_SYMBOLS)
-                    ],
-                    className="watchlist-row",
-                ),
-                html.Div(
-                    [
-                        ddk.Card(
-                            className="fill-card",
-                            children=[
-                                ddk.CardHeader(
-                                    title="Intraday performance · % vs previous close"
-                                ),
-                                ddk.Graph(
-                                    id="performance-chart",
-                                    figure=make_performance_chart(),
-                                    config=GRAPH_CONFIG,
-                                    className="fill-graph",
-                                ),
-                            ],
-                        ),
-                        ddk.Card(
-                            className="fill-card",
-                            children=[
-                                ddk.CardHeader(title="Recent trades"),
-                                trades_grid,
-                            ],
-                        ),
-                    ],
-                    className="detail-row",
-                ),
-            ],
-            className="dashboard",
+        # The watchlist loads inside the persistent stream callback, which Dash
+        # leaves out of loading state, so the stream flips `display` itself.
+        dcc.Loading(
+            id="dashboard-loading",
+            parent_className="dashboard-loading",
+            color=BRAND_EVERGREEN,
+            type="circle",
+            display="auto",
+            overlay_style={"visibility": "visible", "filter": "blur(2px)"},
+            children=html.Div(
+                [
+                    html.Div(
+                        [
+                            ticker_card(i, symbol)
+                            for i, symbol in enumerate(DEFAULT_SYMBOLS)
+                        ],
+                        className="watchlist-row",
+                    ),
+                    html.Div(
+                        [
+                            ddk.Card(
+                                className="fill-card",
+                                children=[
+                                    ddk.CardHeader(
+                                        title="Intraday performance · % vs previous close"
+                                    ),
+                                    ddk.Graph(
+                                        id="performance-chart",
+                                        figure=make_performance_chart(),
+                                        config=GRAPH_CONFIG,
+                                        className="fill-graph",
+                                    ),
+                                ],
+                            ),
+                            ddk.Card(
+                                className="fill-card",
+                                children=[
+                                    ddk.CardHeader(title="Recent trades"),
+                                    trades_grid,
+                                ],
+                            ),
+                        ],
+                        className="detail-row",
+                    ),
+                ],
+                className="dashboard",
+            ),
         ),
     ],
 )
@@ -704,14 +714,18 @@ async def read_watchlist(ws) -> dict | None:
 async def show_watchlist(symbols: list[str]) -> tuple[list[dict], list[dict]]:
     """Load today's bars for the watchlist and draw every card, chart and grid."""
     set_props("stream-status", {"children": "Loading watchlist…"})
+    set_props("dashboard-loading", {"display": "show"})
     await flush_props()
-    slots = await load_watchlist(symbols)
-    for index, slot in enumerate(slots):
-        render_slot(index, slot)
-    set_props("performance-chart", {"figure": make_performance_chart(slots)})
-    rows = history_rows(slots)
-    set_props("trades-grid", {"rowData": rows})
-    await flush_props()
+    try:
+        slots = await load_watchlist(symbols)
+        for index, slot in enumerate(slots):
+            render_slot(index, slot)
+        set_props("performance-chart", {"figure": make_performance_chart(slots)})
+        rows = history_rows(slots)
+        set_props("trades-grid", {"rowData": rows})
+    finally:
+        set_props("dashboard-loading", {"display": "auto"})
+        await flush_props()
     return slots, rows
 
 
