@@ -1,0 +1,359 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Serif:wght@400;600&display=swap");
+
+/* One-screen shell: header on top, dashboard fills the rest, no page scroll */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-shell,
+.app-shell > * {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+}
+
+.app-shell {
+  height: 100vh;
+  display: flex !important;
+  flex-direction: column;
+}
+
+/* Only the dashboard grows; DDK's header would otherwise stretch too */
+.app-shell > * {
+  flex: 0 0 auto !important;
+}
+
+.app-shell > .dashboard {
+  flex: 1 1 0 !important;
+}
+
+.dashboard {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 36fr) minmax(0, 64fr);
+}
+
+.watchlist-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  min-height: 0;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  min-height: 0;
+}
+
+/* Cards stretch to their grid cell; their graph or grid takes the leftover */
+.fill-card {
+  display: flex !important;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* DDK wraps card children in .card--content; make that the flex column */
+.fill-card > .card--content {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fill-graph,
+.trades-grid {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+}
+
+/* dash-ag-grid sets an inline 400px height; let the flex layout size it */
+.trades-grid {
+  height: auto !important;
+}
+
+.fill-graph .js-plotly-plot,
+.fill-graph .plot-container {
+  height: 100% !important;
+}
+
+/* Header wordmark */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 22px;
+}
+
+.brand-mark span {
+  display: block;
+  width: 4px;
+  border-radius: 1px;
+  background: #ffffff;
+}
+
+/* Rising bars, the last one picked out in the accent */
+.brand-mark span:nth-child(1) { height: 30%; }
+.brand-mark span:nth-child(2) { height: 50%; }
+.brand-mark span:nth-child(3) { height: 40%; }
+.brand-mark span:nth-child(4) { height: 70%; }
+.brand-mark span:nth-child(5) { height: 100%; background: #c8702e; }
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.brand-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.brand-product {
+  font-size: 17px;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.data-source-note {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Connection status pill in the header */
+.stream-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+
+.stream-status::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c8702e;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* "How it works" code panel, opened by hovering the header icon */
+.code-peek {
+  position: relative;
+  outline: none;
+}
+
+.code-peek-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: help;
+  transition: background 0.15s ease;
+}
+
+.code-peek:hover .code-peek-trigger,
+.code-peek:focus-within .code-peek-trigger {
+  background: #c8702e;
+}
+
+.code-peek-icon,
+.code-peek-icon * {
+  color: #ffffff !important;
+  font-size: 14px;
+}
+
+.code-peek-panel {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 2000;
+  /* Transparent gap so the pointer can move from icon to panel */
+  padding-top: 10px;
+  width: min(780px, calc(100vw - 32px));
+}
+
+.code-peek:hover .code-peek-panel,
+.code-peek:focus-within .code-peek-panel {
+  display: block;
+}
+
+.code-peek-body {
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  background: #ffffff;
+  color: #1e2b2b;
+  border-top: 4px solid #c8702e;
+  box-shadow: 0 12px 32px rgba(15, 61, 62, 0.25);
+  padding: 16px 20px 8px;
+  text-align: left;
+}
+
+.code-peek-header {
+  border-bottom: 1px solid #ece8e1;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+}
+
+.code-peek-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f3d3e;
+}
+
+.code-peek-subtitle {
+  font-size: 12px;
+  color: #8a8577;
+}
+
+.code-peek-heading {
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f3d3e;
+}
+
+.code-peek-caption {
+  margin: 2px 0 6px;
+  font-size: 13px;
+  color: #4f5b57;
+}
+
+.code-peek-code pre code,
+.code-peek-code .hljs {
+  font-size: 12px !important;
+  line-height: 1.45;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.code-peek-code pre {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: #f7f5f1;
+  border-left: 3px solid #0f3d3e;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-x: auto;
+}
+
+/* Watchlist cards */
+.ticker-card {
+  border-top-width: 4px !important;
+  border-top-style: solid !important;
+}
+
+.ticker-select .Select-control,
+.ticker-select .Select-value-label {
+  font-weight: 700;
+  color: #0f3d3e !important;
+}
+
+.ticker-quote {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 10px;
+  margin: 6px 0 2px;
+}
+
+.ticker-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f3d3e;
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker-change {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker-change.up {
+  color: #1f8a5b;
+}
+
+.ticker-change.down {
+  color: #c2412d;
+}
+
+.ticker-change.flat {
+  color: #8a8577;
+}
+
+/* Small screens: fall back to a normal scrolling page */
+@media (max-width: 900px) {
+  html,
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .app-shell {
+    height: auto;
+  }
+
+  .dashboard {
+    display: block;
+  }
+
+  .watchlist-row,
+  .detail-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ticker-card {
+    height: 260px;
+  }
+
+  .detail-row .fill-card {
+    height: 420px;
+  }
+
+  .data-source-note,
+  .brand-divider,
+  .brand-product {
+    display: none;
+  }
+}
