@@ -1,0 +1,673 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Serif:wght@400;600&display=swap");
+
+/* One-screen shell: header, then a sidebar + results workspace */
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-shell,
+.app-shell > * {
+  padding: 0 !important;
+  margin: 0 !important;
+  max-width: none !important;
+}
+
+.app-shell {
+  height: 100vh;
+  display: flex !important;
+  flex-direction: column;
+}
+
+/* Only the workspace grows; DDK's header would otherwise stretch too */
+.app-shell > * {
+  flex: 0 0 auto !important;
+}
+
+/* The routed page fills the shell; within it only the workspace grows */
+.app-shell > .page-content {
+  flex: 1 1 0 !important;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content > * {
+  flex: 0 0 auto !important;
+}
+
+.page-content > .workspace {
+  flex: 1 1 0 !important;
+  min-height: 0;
+}
+
+.workspace {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+}
+
+.results-loading,
+.results-loading > div {
+  min-height: 0;
+  height: 100%;
+}
+
+.results {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: minmax(0, 58fr) minmax(0, 42fr);
+  min-height: 0;
+}
+
+/* Cards stretch to their grid cell; their graph or grid takes the leftover */
+.fill-card {
+  display: flex !important;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* DDK wraps card children in .card--content; make that the flex column */
+.fill-card > .card--content {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fill-graph {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+}
+
+.fill-graph .js-plotly-plot,
+.fill-graph .plot-container {
+  height: 100% !important;
+}
+
+.comparison-grid {
+  width: 100%;
+}
+
+.card-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #4a5a5c;
+}
+
+/* Header */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-flag {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 2px;
+  width: 26px;
+  height: 22px;
+}
+
+.brand-flag span {
+  display: block;
+  flex: 1 1 0;
+  border-radius: 1px 1px 0 0;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.brand-flag span:nth-child(1) { height: 30%; }
+.brand-flag span:nth-child(2) { height: 50%; }
+.brand-flag span:nth-child(3) { height: 42%; }
+.brand-flag span:nth-child(4) { height: 72%; }
+
+.brand-flag span:nth-child(5) {
+  height: 100%;
+  background: #d97b29;
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.brand-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.brand-product {
+  font-size: 17px;
+  font-weight: 400;
+  color: #ffffff;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.data-source-note {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Control sidebar */
+/* Sidebar: inputs (scroll if needed) / action buttons (always visible) /
+   recent reports (fills the rest, scrolls vertically). Never scrolls
+   sideways. */
+.control-panel {
+  background: #ffffff;
+  border-right: 1px solid #e2e8e7;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.control-scroll {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 8px 14px 0;
+}
+
+.control-actions {
+  flex: 0 0 auto;
+  padding: 0 14px 8px;
+}
+
+.report-box {
+  flex: 1 1 0;
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #e2e8e7;
+  background: #f6f8f7;
+  padding: 8px 14px 6px;
+}
+
+.report-box .report-list {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0 -4px;
+  padding: 0 4px;
+}
+
+/* Keep every control inside the sidebar's width (the dropdowns' hidden
+   focus inputs would otherwise poke out and cause a sideways scroll). */
+.control-panel .form-field,
+.control-panel .form-pair > *,
+.control-panel .form-trio > * {
+  min-width: 0;
+}
+
+.control-panel .dash-dropdown,
+.control-panel .select {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.control-panel .dash-dropdown-focus-target {
+  max-width: 100%;
+}
+
+/* DDK forces dropdown menus to position: absolute, which leaves them
+   clipped by the sidebar's overflow. Fixed positioning lets them overlay
+   the workspace; Radix still places them under the trigger. (.app-shell
+   outranks DDK's rule, which is injected after this stylesheet.) */
+.app-shell .control-panel div[data-radix-popper-content-wrapper]:has(.dash-dropdown-content) {
+  position: fixed !important;
+}
+
+/* Slightly shorter dropdowns to match the number inputs */
+.control-panel .select .dash-dropdown-trigger,
+.control-panel .select button {
+  min-height: 30px;
+  height: 30px;
+  font-size: 14px;
+}
+
+.panel-section {
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #eef2f1;
+}
+
+.panel-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0e3b43;
+  margin-bottom: 4px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 5px;
+  min-width: 0;
+}
+
+.form-field.hidden,
+.form-trio.hidden {
+  display: none;
+}
+
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7b7d;
+}
+
+.form-hint {
+  font-size: 11px;
+  color: #8e9b9c;
+}
+
+.form-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.form-trio {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+/* Paths needs room for "100,000" plus the dropdown caret */
+.sim-trio {
+  grid-template-columns: 1.4fr 0.95fr 1fr;
+}
+
+.number-input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 30px;
+  padding: 2px 8px;
+  border: 1px solid #c7d1d0;
+  border-radius: 4px;
+  font:
+    14px "IBM Plex Sans",
+    sans-serif;
+  color: #1c2b2d;
+  font-variant-numeric: tabular-nums;
+}
+
+.number-input:focus {
+  outline: 2px solid #2a9d8f;
+  outline-offset: -1px;
+}
+
+.radio label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 12px;
+  font-size: 13px;
+  color: #1c2b2d;
+}
+
+.run-button {
+  width: 100%;
+  height: 36px;
+  margin-top: 2px;
+  border: 0;
+  border-radius: 4px;
+  background: #d97b29;
+  color: #ffffff;
+  font:
+    600 15px "IBM Plex Sans",
+    sans-serif;
+  cursor: pointer;
+}
+
+.run-button:hover {
+  background: #b8621c;
+}
+
+.run-message {
+  margin: 3px 0 6px;
+  font-size: 12px;
+  color: #6b7b7d;
+}
+
+.run-message:empty {
+  display: none;
+}
+
+.run-error {
+  color: #b42318;
+  font-weight: 600;
+}
+
+/* Reports section in the sidebar */
+.report-section {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #eef2f1;
+  border-bottom: 0;
+}
+
+/* Secondary action: teal outline (!important beats DDK's button theme,
+   which would otherwise paint it copper like the primary Run button). */
+.report-button {
+  width: 100%;
+  height: 32px;
+  margin-top: 4px;
+  border: 1px solid #0e3b43 !important;
+  border-radius: 4px;
+  background: #ffffff !important;
+  color: #0e3b43 !important;
+  font: 600 14px "IBM Plex Sans", sans-serif;
+  text-transform: none !important;
+  cursor: pointer;
+}
+
+.report-button:hover {
+  background: #e3eeec !important;
+}
+
+.report-ready {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2f855a;
+  font-weight: 600;
+}
+
+.report-list {
+  margin-top: 2px;
+}
+
+.report-list:empty::after {
+  content: "No reports yet";
+  font-size: 12px;
+  color: #8e9b9c;
+}
+
+.report-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-top: 1px solid #eef2f1;
+}
+
+.report-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1c2b2d;
+}
+
+.report-time {
+  font-size: 11px;
+  color: #8e9b9c;
+}
+
+.report-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.report-link {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2a9d8f;
+  text-decoration: none;
+}
+
+.report-link:hover {
+  text-decoration: underline;
+}
+
+/* KPI strip: pricing tiles, then Greeks */
+.kpi-strip {
+  display: flex;
+  gap: 0;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8e7;
+  min-height: 74px;
+}
+
+.kpi-group {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.kpi-greeks {
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid #e2e8e7;
+  flex: 0 1 40%;
+  min-width: 0;
+}
+
+.kpi-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7b7d;
+  padding: 6px 12px 0;
+}
+
+.kpi {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 8px 12px;
+  text-align: left;
+  border-right: 1px solid #eef2f1;
+}
+
+.kpi-greeks .kpi {
+  padding-top: 2px;
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7b7d;
+  white-space: nowrap;
+}
+
+.kpi-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1c2b2d;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.kpi-primary .kpi-value {
+  color: #0e3b43;
+}
+
+.kpi-greek .kpi-value {
+  font-size: 17px;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: #6b7b7d;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.kpi-warn .kpi-value,
+.kpi-warn .kpi-sub {
+  color: #b42318;
+}
+
+/* "How it works" code panel, opened by hovering the header icon */
+.code-peek {
+  position: relative;
+  outline: none;
+}
+
+.code-peek-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: help;
+  transition: background 0.15s ease;
+}
+
+.code-peek:hover .code-peek-trigger,
+.code-peek:focus-within .code-peek-trigger {
+  background: #d97b29;
+}
+
+.code-peek-icon,
+.code-peek-icon * {
+  color: #ffffff !important;
+  font-size: 14px;
+}
+
+.code-peek-panel {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 2000;
+  /* Transparent gap so the pointer can move from icon to panel */
+  padding-top: 10px;
+  width: min(780px, calc(100vw - 32px));
+}
+
+.code-peek:hover .code-peek-panel,
+.code-peek:focus-within .code-peek-panel {
+  display: block;
+}
+
+.code-peek-body {
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  background: #ffffff;
+  color: #1c2b2d;
+  border-top: 4px solid #d97b29;
+  box-shadow: 0 12px 32px rgba(14, 59, 67, 0.25);
+  padding: 16px 20px 8px;
+  text-align: left;
+}
+
+.code-peek-header {
+  border-bottom: 1px solid #e2e8e7;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+}
+
+.code-peek-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0e3b43;
+}
+
+.code-peek-subtitle {
+  font-size: 12px;
+  color: #6b7b7d;
+}
+
+.code-peek-heading {
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0e3b43;
+}
+
+.code-peek-caption {
+  margin: 2px 0 6px;
+  font-size: 13px;
+  color: #4a5a5c;
+}
+
+.code-peek-code pre code,
+.code-peek-code .hljs {
+  font-size: 12px !important;
+  line-height: 1.45;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.code-peek-code pre {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  background: #f3f6f5;
+  border-left: 3px solid #0e3b43;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-x: auto;
+}
+
+/* Small screens: fall back to a normal scrolling page */
+@media (max-width: 1100px) {
+  html,
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
+  .app-shell {
+    height: auto;
+  }
+
+  .workspace,
+  .chart-row {
+    display: block;
+  }
+
+  .kpi-strip {
+    flex-wrap: wrap;
+  }
+
+  .kpi-greeks {
+    flex-basis: 100%;
+    border-left: 0;
+  }
+
+  .chart-row .fill-card {
+    height: 360px;
+  }
+
+  .data-source-note,
+  .brand-divider,
+  .brand-product {
+    display: none;
+  }
+}

@@ -1,0 +1,10 @@
+--extra-index-url=https://tam6.plotly.host/packages
+dash==4.2.0
+dash-ag-grid>=35.3
+dash-design-kit==3.0.0
+plotly>=6.0
+numpy>=1.26
+scipy>=1.13
+flask-caching>=2.3
+gunicorn>=23.0
+reportlab>=4.2
