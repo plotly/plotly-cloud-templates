@@ -84,11 +84,17 @@ body {
   height: auto !important;
 }
 
-/* Header wordmark */
+/* Header wordmark, pinned to the left edge of the header */
+.app-header {
+  justify-content: flex-start !important;
+}
+
 .brand {
   display: flex;
   align-items: center;
   gap: 12px;
+  order: -1;
+  margin-right: auto;
 }
 
 /* A 2x2 quilt of tiles as the logo mark */

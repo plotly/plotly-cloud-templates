@@ -120,11 +120,13 @@ def update_plots(
 
     bounds_4326, view = _map_view(relayout_data)
     if (
-        ctx.triggered_id == "map-graph"
+        set(ctx.triggered_prop_ids) == {"map-graph.relayoutData"}
         and relayout_data is not None
         and bounds_4326 is None
     ):
-        # A map event that doesn't move the view (e.g. a resize)
+        # A map event that doesn't move the view (e.g. a resize). Only skip it when it
+        # is the sole trigger: on page load it can arrive together with data-ready, and
+        # skipping then would leave the charts empty.
         raise PreventUpdate
 
     df = get_dataset("cell_towers_df")

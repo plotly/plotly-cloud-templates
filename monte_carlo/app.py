@@ -6,7 +6,8 @@ from urllib.parse import urlencode
 import dash_ag_grid as dag
 import dash_design_kit as ddk
 from dash import Dash, Input, Output, State, callback, dcc, html, no_update
-from flask import Response, abort, request
+import flask
+from flask import Response, abort
 from flask_caching import Cache
 
 import engine
@@ -593,7 +594,7 @@ def report_filename(spec: dict) -> str:
 def report_pdf():
     """Rebuild a saved report from its inputs, for the Recent reports links."""
     try:
-        spec = json.loads(request.args["spec"])
+        spec = json.loads(flask.request.args["spec"])
         if set(spec["params"]) != PARAM_FIELDS:
             raise ValueError("unexpected parameters")
         params = engine.Params(**spec["params"])
