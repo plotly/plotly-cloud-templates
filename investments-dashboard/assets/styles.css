@@ -1,0 +1,137 @@
+/* Financial Dashboard V2 - Custom Styles */
+
+/* Global */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.mantine-AppShell-header .mantine-Title-root {
+    white-space: nowrap;
+}
+
+.mantine-AppShell-header img {
+    flex-shrink: 0;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Chart containers */
+.js-plotly-plot .plotly .modebar {
+    top: 5px !important;
+    right: 5px !important;
+}
+
+.js-plotly-plot .plotly .modebar-btn {
+    font-size: 14px !important;
+}
+
+/* Table styling */
+.mantine-Table-table {
+    font-size: 0.875rem;
+}
+
+.mantine-Table-th {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Dark mode table adjustments */
+[data-mantine-color-scheme="dark"] .mantine-Table-th {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* NavLink active state */
+.mantine-NavLink-root[data-active="true"] {
+    font-weight: 600;
+}
+
+/* Paper hover effect */
+.mantine-Paper-root {
+    transition: box-shadow 0.2s ease;
+}
+
+.mantine-Paper-root:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* KPI card animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Progress bars */
+.mantine-Progress-root {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Badge styling */
+.mantine-Badge-root {
+    text-transform: none;
+}
+
+/* Date picker */
+.mantine-DatePickerInput-input {
+    min-height: 36px;
+}
+
+/* Multi-select */
+.mantine-MultiSelect-input {
+    min-height: 36px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mantine-AppShell-navbar {
+        display: none;
+    }
+    
+    .mantine-Container-root {
+        padding: 0.5rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .mantine-AppShell-header,
+    .mantine-AppShell-navbar,
+    .mantine-Button-root,
+    .mantine-Select-root,
+    .mantine-MultiSelect-root {
+        display: none !important;
+    }
+    
+    .mantine-Paper-root {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
+}

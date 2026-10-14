@@ -1,0 +1,275 @@
+HOLEID,FROM,TO,LITHOLOGY
+DH001,0.0,26.7,Alluvium
+DH001,26.7,50.1,Weathered Granite
+DH001,50.1,133.1,Granite
+DH001,133.1,170.6,Quartz Diorite
+DH001,170.6,268.2,Mineralized Porphyry
+DH001,268.2,398.0,Fresh Granite
+DH002,0.0,20.6,Alluvium
+DH002,20.6,60.2,Weathered Granite
+DH002,60.2,118.1,Granite
+DH002,118.1,194.8,Quartz Diorite
+DH002,194.8,279.6,Mineralized Porphyry
+DH002,279.6,419.0,Fresh Granite
+DH003,0.0,17.7,Alluvium
+DH003,17.7,47.0,Weathered Granite
+DH003,47.0,122.8,Granite
+DH003,122.8,171.8,Quartz Diorite
+DH003,171.8,192.0,Mineralized Porphyry
+DH004,0.0,6.5,Alluvium
+DH004,6.5,74.4,Weathered Granite
+DH004,74.4,119.1,Granite
+DH004,119.1,191.9,Quartz Diorite
+DH004,191.9,279.3,Mineralized Porphyry
+DH004,279.3,316.0,Fresh Granite
+DH005,0.0,29.7,Alluvium
+DH005,29.7,64.4,Weathered Granite
+DH005,64.4,128.5,Granite
+DH005,128.5,177.8,Quartz Diorite
+DH005,177.8,183.0,Mineralized Porphyry
+DH006,0.0,30.7,Alluvium
+DH006,30.7,63.9,Weathered Granite
+DH006,63.9,115.4,Granite
+DH006,115.4,184.9,Quartz Diorite
+DH006,184.9,285.2,Mineralized Porphyry
+DH006,285.2,352.0,Fresh Granite
+DH007,0.0,16.1,Alluvium
+DH007,16.1,57.8,Weathered Granite
+DH007,57.8,129.4,Granite
+DH007,129.4,180.2,Quartz Diorite
+DH007,180.2,234.0,Mineralized Porphyry
+DH008,0.0,18.8,Alluvium
+DH008,18.8,51.5,Weathered Granite
+DH008,51.5,127.4,Granite
+DH008,127.4,168.9,Quartz Diorite
+DH008,168.9,271.0,Mineralized Porphyry
+DH008,271.0,348.0,Fresh Granite
+DH009,0.0,27.4,Alluvium
+DH009,27.4,71.8,Weathered Granite
+DH009,71.8,113.2,Granite
+DH009,113.2,168.3,Quartz Diorite
+DH009,168.3,293.7,Mineralized Porphyry
+DH009,293.7,368.0,Fresh Granite
+DH010,0.0,10.9,Alluvium
+DH010,10.9,53.7,Weathered Granite
+DH010,53.7,120.9,Granite
+DH010,120.9,191.5,Quartz Diorite
+DH010,191.5,287.8,Mineralized Porphyry
+DH010,287.8,381.0,Fresh Granite
+DH011,0.0,10.3,Alluvium
+DH011,10.3,55.7,Weathered Granite
+DH011,55.7,119.4,Granite
+DH011,119.4,169.4,Quartz Diorite
+DH011,169.4,182.0,Mineralized Porphyry
+DH012,0.0,14.2,Alluvium
+DH012,14.2,48.8,Weathered Granite
+DH012,48.8,121.5,Granite
+DH012,121.5,186.2,Quartz Diorite
+DH012,186.2,267.1,Mineralized Porphyry
+DH012,267.1,425.0,Fresh Granite
+DH013,0.0,28.5,Alluvium
+DH013,28.5,67.4,Weathered Granite
+DH013,67.4,129.5,Granite
+DH013,129.5,178.4,Quartz Diorite
+DH013,178.4,219.0,Mineralized Porphyry
+DH014,0.0,12.2,Alluvium
+DH014,12.2,55.8,Weathered Granite
+DH014,55.8,110.3,Granite
+DH014,110.3,161.0,Quartz Diorite
+DH015,0.0,16.8,Alluvium
+DH015,16.8,52.2,Weathered Granite
+DH015,52.2,127.6,Granite
+DH015,127.6,174.4,Quartz Diorite
+DH015,174.4,273.2,Mineralized Porphyry
+DH015,273.2,316.0,Fresh Granite
+DH016,0.0,18.2,Alluvium
+DH016,18.2,54.1,Weathered Granite
+DH016,54.1,116.1,Granite
+DH016,116.1,172.1,Quartz Diorite
+DH016,172.1,261.0,Mineralized Porphyry
+DH017,0.0,32.9,Alluvium
+DH017,32.9,59.9,Weathered Granite
+DH017,59.9,124.3,Granite
+DH017,124.3,191.0,Quartz Diorite
+DH017,191.0,295.0,Mineralized Porphyry
+DH017,295.0,399.0,Fresh Granite
+DH018,0.0,31.7,Alluvium
+DH018,31.7,72.3,Weathered Granite
+DH018,72.3,128.7,Granite
+DH018,128.7,178.8,Quartz Diorite
+DH018,178.8,267.4,Mineralized Porphyry
+DH018,267.4,392.0,Fresh Granite
+DH019,0.0,19.3,Alluvium
+DH019,19.3,59.8,Weathered Granite
+DH019,59.8,117.2,Granite
+DH019,117.2,182.0,Quartz Diorite
+DH019,182.0,245.0,Mineralized Porphyry
+DH020,0.0,30.1,Alluvium
+DH020,30.1,48.3,Weathered Granite
+DH020,48.3,111.8,Granite
+DH020,111.8,188.8,Quartz Diorite
+DH020,188.8,290.4,Mineralized Porphyry
+DH020,290.4,436.0,Fresh Granite
+DH021,0.0,31.2,Alluvium
+DH021,31.2,71.7,Weathered Granite
+DH021,71.7,114.4,Granite
+DH021,114.4,177.0,Quartz Diorite
+DH021,177.0,237.0,Mineralized Porphyry
+DH022,0.0,23.2,Alluvium
+DH022,23.2,73.2,Weathered Granite
+DH022,73.2,115.3,Granite
+DH022,115.3,181.7,Quartz Diorite
+DH022,181.7,273.9,Mineralized Porphyry
+DH022,273.9,305.0,Fresh Granite
+DH023,0.0,10.9,Alluvium
+DH023,10.9,46.7,Weathered Granite
+DH023,46.7,133.5,Granite
+DH023,133.5,177.1,Quartz Diorite
+DH023,177.1,227.0,Mineralized Porphyry
+DH024,0.0,25.4,Alluvium
+DH024,25.4,50.8,Weathered Granite
+DH024,50.8,110.3,Granite
+DH024,110.3,189.4,Quartz Diorite
+DH024,189.4,272.9,Mineralized Porphyry
+DH024,272.9,431.0,Fresh Granite
+DH025,0.0,9.2,Alluvium
+DH025,9.2,65.3,Weathered Granite
+DH025,65.3,129.4,Granite
+DH025,129.4,172.1,Quartz Diorite
+DH025,172.1,199.0,Mineralized Porphyry
+DH026,0.0,33.9,Alluvium
+DH026,33.9,52.9,Weathered Granite
+DH026,52.9,117.9,Granite
+DH026,117.9,163.0,Quartz Diorite
+DH027,0.0,12.6,Alluvium
+DH027,12.6,68.3,Weathered Granite
+DH027,68.3,128.2,Granite
+DH027,128.2,176.3,Quartz Diorite
+DH027,176.3,281.0,Mineralized Porphyry
+DH028,0.0,11.4,Alluvium
+DH028,11.4,45.1,Weathered Granite
+DH028,45.1,122.1,Granite
+DH028,122.1,194.8,Quartz Diorite
+DH028,194.8,266.2,Mineralized Porphyry
+DH028,266.2,448.0,Fresh Granite
+DH029,0.0,20.6,Alluvium
+DH029,20.6,69.3,Weathered Granite
+DH029,69.3,107.7,Granite
+DH029,107.7,176.9,Quartz Diorite
+DH029,176.9,287.4,Mineralized Porphyry
+DH029,287.4,418.0,Fresh Granite
+DH030,0.0,10.7,Alluvium
+DH030,10.7,50.9,Weathered Granite
+DH030,50.9,117.3,Granite
+DH030,117.3,179.4,Quartz Diorite
+DH030,179.4,290.9,Mineralized Porphyry
+DH030,290.9,375.0,Fresh Granite
+DH031,0.0,25.7,Alluvium
+DH031,25.7,74.5,Weathered Granite
+DH031,74.5,117.4,Granite
+DH031,117.4,177.1,Quartz Diorite
+DH031,177.1,292.7,Mineralized Porphyry
+DH031,292.7,417.0,Fresh Granite
+DH032,0.0,26.9,Alluvium
+DH032,26.9,67.6,Weathered Granite
+DH032,67.6,107.9,Granite
+DH032,107.9,179.0,Quartz Diorite
+DH032,179.0,271.0,Mineralized Porphyry
+DH032,271.0,418.0,Fresh Granite
+DH033,0.0,18.9,Alluvium
+DH033,18.9,53.7,Weathered Granite
+DH033,53.7,128.9,Granite
+DH033,128.9,192.2,Quartz Diorite
+DH033,192.2,289.1,Mineralized Porphyry
+DH033,289.1,306.0,Fresh Granite
+DH034,0.0,13.2,Alluvium
+DH034,13.2,52.6,Weathered Granite
+DH034,52.6,109.1,Granite
+DH034,109.1,193.3,Quartz Diorite
+DH034,193.3,245.0,Mineralized Porphyry
+DH035,0.0,11.7,Alluvium
+DH035,11.7,70.4,Weathered Granite
+DH035,70.4,117.0,Granite
+DH035,117.0,166.1,Quartz Diorite
+DH035,166.1,269.9,Mineralized Porphyry
+DH035,269.9,382.0,Fresh Granite
+DH036,0.0,28.5,Alluvium
+DH036,28.5,51.3,Weathered Granite
+DH036,51.3,132.5,Granite
+DH036,132.5,190.5,Quartz Diorite
+DH036,190.5,290.5,Mineralized Porphyry
+DH036,290.5,348.0,Fresh Granite
+DH037,0.0,6.5,Alluvium
+DH037,6.5,71.0,Weathered Granite
+DH037,71.0,114.2,Granite
+DH037,114.2,183.6,Quartz Diorite
+DH037,183.6,262.0,Mineralized Porphyry
+DH038,0.0,8.8,Alluvium
+DH038,8.8,68.4,Weathered Granite
+DH038,68.4,133.2,Granite
+DH038,133.2,178.0,Quartz Diorite
+DH039,0.0,18.2,Alluvium
+DH039,18.2,71.3,Weathered Granite
+DH039,71.3,120.8,Granite
+DH039,120.8,187.3,Quartz Diorite
+DH039,187.3,289.6,Mineralized Porphyry
+DH039,289.6,374.0,Fresh Granite
+DH040,0.0,13.6,Alluvium
+DH040,13.6,48.5,Weathered Granite
+DH040,48.5,112.2,Granite
+DH040,112.2,180.1,Quartz Diorite
+DH040,180.1,229.0,Mineralized Porphyry
+DH041,0.0,22.5,Alluvium
+DH041,22.5,56.9,Weathered Granite
+DH041,56.9,128.6,Granite
+DH041,128.6,192.4,Quartz Diorite
+DH041,192.4,272.4,Mineralized Porphyry
+DH041,272.4,431.0,Fresh Granite
+DH042,0.0,25.3,Alluvium
+DH042,25.3,60.7,Weathered Granite
+DH042,60.7,110.7,Granite
+DH042,110.7,188.9,Quartz Diorite
+DH042,188.9,222.0,Mineralized Porphyry
+DH043,0.0,26.7,Alluvium
+DH043,26.7,72.5,Weathered Granite
+DH043,72.5,134.5,Granite
+DH043,134.5,175.6,Quartz Diorite
+DH043,175.6,187.0,Mineralized Porphyry
+DH044,0.0,19.2,Alluvium
+DH044,19.2,74.6,Weathered Granite
+DH044,74.6,107.8,Granite
+DH044,107.8,177.4,Quartz Diorite
+DH044,177.4,291.3,Mineralized Porphyry
+DH044,291.3,399.0,Fresh Granite
+DH045,0.0,28.6,Alluvium
+DH045,28.6,56.5,Weathered Granite
+DH045,56.5,134.4,Granite
+DH045,134.4,191.5,Quartz Diorite
+DH045,191.5,196.0,Mineralized Porphyry
+DH046,0.0,28.1,Alluvium
+DH046,28.1,55.1,Weathered Granite
+DH046,55.1,123.2,Granite
+DH046,123.2,184.8,Quartz Diorite
+DH046,184.8,204.0,Mineralized Porphyry
+DH047,0.0,5.7,Alluvium
+DH047,5.7,51.6,Weathered Granite
+DH047,51.6,126.4,Granite
+DH047,126.4,181.9,Quartz Diorite
+DH047,181.9,279.9,Mineralized Porphyry
+DH047,279.9,330.0,Fresh Granite
+DH048,0.0,15.4,Alluvium
+DH048,15.4,71.0,Weathered Granite
+DH048,71.0,105.9,Granite
+DH048,105.9,176.9,Quartz Diorite
+DH048,176.9,293.4,Mineralized Porphyry
+DH048,293.4,412.0,Fresh Granite
+DH049,0.0,27.5,Alluvium
+DH049,27.5,52.7,Weathered Granite
+DH049,52.7,131.0,Granite
+DH049,131.0,187.4,Quartz Diorite
+DH049,187.4,209.0,Mineralized Porphyry
+DH050,0.0,11.5,Alluvium
+DH050,11.5,60.9,Weathered Granite
+DH050,60.9,128.4,Granite
+DH050,128.4,172.4,Quartz Diorite
+DH050,172.4,243.0,Mineralized Porphyry

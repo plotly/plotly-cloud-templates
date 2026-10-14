@@ -1,0 +1,10 @@
+dash[fastapi]==4.2.0
+dash-mantine-components>=0.14.0
+dash-iconify>=0.1.2
+pandas>=2.0.0
+plotly>=5.18.0
+uvicorn[standard]
+reportlab>=4.0.0
+kaleido==0.2.1
+PyPDF2>=3.0.0
+Pillow>=10.0.0

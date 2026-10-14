@@ -147,3 +147,5 @@ cython_debug/
 
 # Pycache
 *.pyc
+# AgentOps session artifacts
+.agents/
