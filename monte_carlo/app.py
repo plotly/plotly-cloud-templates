@@ -14,7 +14,6 @@ import engine
 from code_panel import code_panel
 from figures import convergence_chart, distribution_chart, empty_figure, fan_chart
 from report import build_report, report_title
-from theme import BRAND_PRIMARY
 
 app = Dash(
     __name__,
@@ -253,7 +252,13 @@ comparison_grid = dag.AgGrid(
     columnSize="responsiveSizeToFit",
     defaultColDef={"filter": True, "sortable": True},
     dashGridOptions={
-        "theme": "themeBalham",
+        "theme": {
+            "function": "themeBalham.withPart(colorSchemeDark).withParams({"
+            "backgroundColor: '#132326', foregroundColor: '#E3ECEB', "
+            "headerBackgroundColor: '#0F1C1E', borderColor: '#24383B', "
+            "oddRowBackgroundColor: '#0F1C1E', accentColor: '#3DB8A8', "
+            "fontFamily: 'IBM Plex Sans'})"
+        },
         "animateRows": True,
         "pagination": True,
         "paginationPageSize": 10,
@@ -306,53 +311,47 @@ def dashboard_layout():
         html.Div(
             [
                 controls,
-                dcc.Loading(
-                    html.Div(
-                        [
-                            dcc.Store(id="result-store"),
-                            html.Div(id="kpi-strip", className="kpi-strip"),
-                            html.Div(
-                                [
-                                    chart_card(
-                                        "Simulated paths · percentile fan",
-                                        "fan-chart",
-                                    ),
-                                    chart_card(
-                                        "Terminal distribution · by outcome",
-                                        "distribution-chart",
-                                    ),
-                                ],
-                                className="chart-row",
-                            ),
-                            html.Div(
-                                [
-                                    chart_card(
-                                        "Convergence · running estimate with 95% band",
-                                        "convergence-chart",
-                                    ),
-                                    ddk.Card(
-                                        className="fill-card",
-                                        children=[
-                                            ddk.CardHeader(
-                                                title="Variance reduction · same path count"
-                                            ),
-                                            comparison_grid,
-                                            html.Div(
-                                                id="comparison-note",
-                                                className="card-note",
-                                            ),
-                                        ],
-                                    ),
-                                ],
-                                className="chart-row",
-                            ),
-                        ],
-                        className="results",
-                    ),
-                    parent_className="results-loading",
-                    color=BRAND_PRIMARY,
-                    delay_show=250,
-                    overlay_style={"visibility": "visible", "opacity": 0.55},
+                html.Div(
+                    [
+                        dcc.Store(id="result-store"),
+                        html.Div(id="kpi-strip", className="kpi-strip"),
+                        html.Div(
+                            [
+                                chart_card(
+                                    "Simulated paths · percentile fan",
+                                    "fan-chart",
+                                ),
+                                chart_card(
+                                    "Terminal distribution · by outcome",
+                                    "distribution-chart",
+                                ),
+                            ],
+                            className="chart-row",
+                        ),
+                        html.Div(
+                            [
+                                chart_card(
+                                    "Convergence · running estimate with 95% band",
+                                    "convergence-chart",
+                                ),
+                                ddk.Card(
+                                    className="fill-card",
+                                    children=[
+                                        ddk.CardHeader(
+                                            title="Variance reduction · same path count"
+                                        ),
+                                        comparison_grid,
+                                        html.Div(
+                                            id="comparison-note",
+                                            className="card-note",
+                                        ),
+                                    ],
+                                ),
+                            ],
+                            className="chart-row",
+                        ),
+                    ],
+                    className="results",
                 ),
             ],
             className="workspace",

@@ -2,20 +2,20 @@
 
 import plotly.graph_objects as go
 
-from theme import (
-    BAND_INNER,
-    BAND_OUTER,
-    BASELINE,
-    BRAND_PRIMARY,
-    GRID_LINE,
-    INK,
-    KNOCKED,
-    MUTED,
-    REFERENCE,
-    SAMPLE_PATH,
-    SELECTED,
-    SURFACE,
-)
+from theme import DARK
+
+BAND_INNER = DARK["BAND_INNER"]
+BAND_OUTER = DARK["BAND_OUTER"]
+BASELINE = DARK["BASELINE"]
+BRAND_PRIMARY = DARK["PRIMARY"]
+GRID_LINE = DARK["GRID_LINE"]
+INK = DARK["INK"]
+KNOCKED = DARK["KNOCKED"]
+MUTED = DARK["MUTED"]
+REFERENCE = DARK["REFERENCE"]
+SAMPLE_PATH = DARK["SAMPLE_PATH"]
+SELECTED = DARK["SELECTED"]
+SURFACE = DARK["SURFACE"]
 
 AXIS = {"gridcolor": GRID_LINE, "tickfont": {"color": MUTED}, "zeroline": False}
 LEGEND = {
@@ -34,7 +34,7 @@ def _base_layout(fig: go.Figure, **layout):
         margin={"l": 8, "r": 8, "t": 8, "b": 8},
         plot_bgcolor=SURFACE,
         paper_bgcolor=SURFACE,
-        hoverlabel={"bgcolor": SURFACE, "bordercolor": GRID_LINE},
+        hoverlabel={"bgcolor": SURFACE, "bordercolor": GRID_LINE, "font": {"color": INK}},
         legend=LEGEND,
         **layout,
     )
@@ -176,8 +176,8 @@ def convergence_chart(result: dict, estimator_label: str) -> go.Figure:
     conv = result["convergence"]
     fig = go.Figure()
     for key, name, color, fill in [
-        ("plain", "Plain", BASELINE, "rgba(169, 184, 182, 0.25)"),
-        ("selected", estimator_label, SELECTED, "rgba(42, 157, 143, 0.20)"),
+        ("plain", "Plain", BASELINE, DARK["BASELINE_FILL"]),
+        ("selected", estimator_label, SELECTED, DARK["SELECTED_FILL"]),
     ]:
         if key == "plain" and result["estimator"] == "plain":
             continue

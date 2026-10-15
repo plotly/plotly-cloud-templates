@@ -72,7 +72,7 @@ def code_panel(source_file: str) -> html.Div:
             dcc.Markdown(
                 f"```python\n{sources[name]}\n```",
                 className="code-peek-code",
-                highlight_config={"theme": "light"},
+                highlight_config={"theme": "dark"},
             ),
         ]
 
