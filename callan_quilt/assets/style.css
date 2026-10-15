@@ -1,11 +1,46 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
 
-/* One-screen shell: header, control bar, then the dashboard fills the rest */
+/* Editorial "almanac" palette. Keep in sync with theme.py and theme.js. */
+:root {
+  --paper: #f3ede2;
+  --surface: #fbf8f2;
+  --ink: #1c1917;
+  --muted: #78716c;
+  --rule: #cfc6b6;
+  --rule-soft: #e4ddd0;
+  --accent: #1f5f6b;
+  --accent-soft: #e3ecec;
+  --negative: #b3261e;
+
+  --serif: "Fraunces", Georgia, serif;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Dash 4 core components */
+  --Dash-Fill-Interactive-Strong: var(--accent);
+  --Dash-Fill-Interactive-Weak: var(--accent-soft);
+  --Dash-Fill-Primary-Hover: var(--accent-soft);
+  --Dash-Fill-Primary-Active: var(--accent-soft);
+  --Dash-Fill-Inverse-Strong: var(--surface);
+  --Dash-Text-Primary: var(--ink);
+  --Dash-Text-Strong: var(--ink);
+  --Dash-Text-Weak: var(--muted);
+  --Dash-Stroke-Strong: var(--rule);
+  --Dash-Stroke-Weak: var(--rule-soft);
+  --Dash-Tooltip-Background-Color: var(--ink);
+  --Dash-Tooltip-Border-Color: var(--ink);
+}
+
 html,
 body {
   height: 100%;
   overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
 }
+
+/* ---------- One-screen shell: masthead, then sidebar + dashboard ---------- */
 
 .app-shell,
 .app-shell > * {
@@ -18,30 +53,44 @@ body {
   height: 100vh;
   display: flex !important;
   flex-direction: column;
+  background: var(--paper) !important;
 }
 
-/* Only the dashboard grows; DDK's header would otherwise stretch too */
 .app-shell > * {
   flex: 0 0 auto !important;
 }
 
-.app-shell > .dashboard {
+.app-shell > .workspace {
   flex: 1 1 0 !important;
 }
 
-.dashboard {
+.workspace {
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 59fr) minmax(0, 41fr);
+  grid-template-columns: 272px minmax(0, 1fr);
+  /* A definite row height, so the dashboard's fr rows have space to share */
+  grid-template-rows: minmax(0, 1fr);
 }
 
-.side-column {
+.app-shell .workspace > .dashboard {
+  height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
   display: grid;
-  grid-template-rows: minmax(0, 56fr) minmax(0, 44fr);
+  grid-template-rows: minmax(0, 60fr) minmax(0, 40fr);
+  gap: 14px;
+  padding: 14px 18px 18px 14px !important;
+}
+
+.lower-row {
+  display: grid;
+  grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
+  gap: 14px;
   min-height: 0;
 }
 
-/* Cards stretch to their grid cell; their graph or grid takes the leftover */
+/* ---------- Cards: rounded surfaces with a soft shadow ---------- */
+
 .fill-card {
   display: flex !important;
   flex-direction: column;
@@ -50,9 +99,12 @@ body {
   height: 100%;
   box-sizing: border-box;
   overflow: hidden;
+  border: 1px solid var(--rule-soft) !important;
+  border-radius: 14px !important;
+  background: var(--surface) !important;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04), 0 4px 16px rgba(28, 25, 23, 0.05) !important;
 }
 
-/* DDK wraps card children in .card--content; make that the flex column */
 .fill-card > .card--content {
   flex: 1 1 0;
   min-height: 0;
@@ -60,18 +112,21 @@ body {
   flex-direction: column;
 }
 
-.fill-loading,
+.fill-card .card-header,
+.fill-card .card-header * {
+  font-family: var(--sans) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.005em;
+  color: var(--ink) !important;
+  border: none !important;
+}
+
 .fill-graph,
 .stats-grid {
   flex: 1 1 0;
   min-height: 0;
   width: 100%;
-}
-
-.fill-loading {
-  position: relative;
-  display: flex;
-  flex-direction: column;
 }
 
 .fill-graph .js-plotly-plot,
@@ -82,174 +137,222 @@ body {
 /* dash-ag-grid sets an inline 400px height; let the flex layout size it */
 .stats-grid {
   height: auto !important;
+  --ag-font-family: var(--sans);
+  --ag-font-size: 12px;
+  --ag-spacing: 4px;
+  --ag-cell-horizontal-padding: 10px;
+  --ag-background-color: var(--surface);
+  --ag-foreground-color: var(--ink);
+  --ag-header-background-color: var(--surface);
+  --ag-header-text-color: var(--muted);
+  --ag-header-font-weight: 600;
+  --ag-border-color: var(--rule-soft);
+  --ag-row-border: 1px solid var(--rule-soft);
+  --ag-wrapper-border: none;
+  --ag-wrapper-border-radius: 0;
+  --ag-row-hover-color: var(--accent-soft);
+  --ag-selected-row-background-color: var(--accent-soft);
+  --ag-accent-color: var(--accent);
+  --ag-odd-row-background-color: var(--surface);
 }
 
-/* Header wordmark, pinned to the left edge of the header */
+.stats-grid .ag-header {
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.stats-grid .ag-header-cell-text {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 10.5px;
+}
+
+.stats-grid .ag-cell {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-grid .ag-cell[col-id="Asset"] {
+  font-family: var(--sans);
+  font-weight: 600;
+}
+
+/* ---------- Masthead ---------- */
+
 .app-header {
+  padding: 14px 24px 12px !important;
   justify-content: flex-start !important;
+  align-items: flex-end !important;
+  background: var(--paper) !important;
+  border-bottom: 1px solid var(--rule) !important;
+  box-shadow: none !important;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   order: -1;
   margin-right: auto;
 }
 
-/* A 2x2 quilt of tiles as the logo mark */
+/* A 3x3 quilt of the asset colors as the logo mark */
 .brand-mark {
   display: grid;
-  grid-template-columns: repeat(2, 10px);
-  grid-template-rows: repeat(2, 10px);
-  gap: 3px;
+  grid-template-columns: repeat(3, 9px);
+  grid-template-rows: repeat(3, 9px);
+  gap: 2px;
 }
 
 .brand-mark span {
-  display: block;
-  border-radius: 2px;
+  border-radius: 2.5px;
 }
 
-.brand-mark span:nth-child(1) {
-  background: #2dd4bf;
-}
+.brand-mark span:nth-child(1) { background: #332288; }
+.brand-mark span:nth-child(2) { background: #88ccee; }
+.brand-mark span:nth-child(3) { background: #44aa99; }
+.brand-mark span:nth-child(4) { background: #aa4499; }
+.brand-mark span:nth-child(5) { background: var(--ink); }
+.brand-mark span:nth-child(6) { background: #117733; }
+.brand-mark span:nth-child(7) { background: #cc6677; }
+.brand-mark span:nth-child(8) { background: #ddcc77; }
+.brand-mark span:nth-child(9) { background: #332288; }
 
-.brand-mark span:nth-child(2),
-.brand-mark span:nth-child(3) {
-  background: #ffffff;
-}
-
-.brand-mark span:nth-child(4) {
-  background: #0d9488;
+.brand-kicker {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 2px;
 }
 
 .brand-name {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: #ffffff;
-  line-height: 1.1;
-}
-
-.brand-divider {
-  width: 1px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.brand-product {
-  font-size: 16px;
-  font-weight: 400;
-  color: #99f6e4;
+  margin: 0 !important;
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
 }
 
 .data-source-note {
-  font-size: 12px;
-  color: rgba(226, 232, 240, 0.7);
+  display: flex;
+  flex: none;
+  white-space: nowrap;
+  gap: 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  padding-bottom: 2px;
 }
 
-/* Control bar: one row of filters above the charts */
-.control-bar {
+.data-source-note span + span::before {
+  content: "/";
+  margin: 0 10px;
+  color: var(--rule);
+}
+
+/* ---------- Sidebar controls ---------- */
+
+.app-shell .workspace > .sidebar {
+  box-sizing: border-box;
   display: flex;
-  align-items: flex-start;
-  gap: 24px;
-  padding: 8px 16px 4px !important;
-  background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
+  flex-direction: column;
+  gap: 22px;
+  padding: 20px 18px 20px 24px !important;
+  border-right: 1px solid var(--rule-soft);
+  background: rgba(251, 248, 242, 0.55);
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .filter {
-  text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   min-width: 0;
+  text-align: left;
 }
 
 .filter-label {
   text-align: left !important;
-  font-size: 11px;
+  font-family: var(--mono);
+  font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #64748b;
-}
-
-.filter-assets {
-  flex: 0 1 auto;
-}
-
-.filter-years {
-  flex: 1 1 220px;
-  min-width: 200px;
-}
-
-.filter-mix {
-  flex: 0 1 180px;
-  min-width: 150px;
-}
-
-.filter-highlight {
-  flex: 0 1 200px;
-  min-width: 170px;
-}
-
-.filter .rc-slider,
-.filter .dash-slider {
-  margin-top: 2px;
-}
-
-.filter .rc-slider-track {
-  background-color: #0d9488;
-}
-
-.filter .rc-slider-handle {
-  border-color: #0d9488;
-}
-
-.asset-checklist input,
-.ytd-toggle input {
-  accent-color: #0d9488;
+  color: var(--muted);
 }
 
 .asset-checklist {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-}
-
-.asset-checklist label {
-  margin: 0 !important;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .asset-checklist label,
 .ytd-toggle label {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+  margin: 0 !important;
+  padding: 4px 8px;
+  border-radius: 8px;
   font-size: 13px;
-  color: #1e293b;
+  color: var(--ink);
   cursor: pointer;
   white-space: nowrap;
 }
 
+.asset-checklist input,
+.ytd-toggle input {
+  accent-color: var(--accent);
+}
+
 .asset-chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
+  min-width: 0;
+}
+
+.chip-ticker {
+  font-family: var(--mono);
   font-weight: 600;
+  min-width: 64px;
+}
+
+.chip-name {
+  color: var(--muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .swatch {
   display: inline-block;
+  flex: none;
   width: 12px;
   height: 12px;
-  border-radius: 3px;
   border: 2px solid transparent;
+  border-radius: 4px;
   box-sizing: border-box;
 }
 
-/* Small screens: fall back to a normal scrolling page */
+.asset-checklist label:hover,
+.ytd-toggle label:hover {
+  background: var(--accent-soft);
+}
+
+.asset-checklist label,
+.ytd-toggle label {
+  transition: background-color 120ms ease;
+}
+
+/* ---------- Small screens: a normal scrolling page ---------- */
+
 @media (max-width: 1000px) {
   html,
   body {
@@ -261,26 +364,36 @@ body {
     height: auto;
   }
 
-  .control-bar {
-    flex-wrap: wrap;
+  .workspace,
+  .app-shell .workspace > .dashboard,
+  .lower-row {
+    display: block;
+    height: auto;
   }
 
-  .dashboard,
-  .side-column {
-    display: block;
+  .app-shell .workspace > .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .dashboard > * + *,
+  .lower-row > * + * {
+    margin-top: 14px !important;
   }
 
   .quilt-card {
     height: 560px;
   }
 
-  .side-column .fill-card {
+  .lower-row .fill-card {
     height: 380px;
   }
 
-  .data-source-note,
-  .brand-divider,
-  .brand-product {
+  .data-source-note {
     display: none;
+  }
+
+  .brand-name {
+    font-size: 22px;
   }
 }

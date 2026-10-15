@@ -110,7 +110,11 @@ def asset_option(asset: str) -> dict:
         "label": html.Span(
             [
                 html.Span(className="swatch", style=swatch_style),
-                "Balanced" if is_portfolio else asset,
+                html.Span("Balanced" if is_portfolio else asset, className="chip-ticker"),
+                html.Span(
+                    "Stock/bond blend" if is_portfolio else LABELS[asset],
+                    className="chip-name",
+                ),
             ],
             className="asset-chip",
             title="Stock/bond blend of SPY and AGG" if is_portfolio else LABELS[asset],
@@ -134,7 +138,6 @@ controls = html.Div(
                 id="asset-checklist",
                 options=[asset_option(a) for a in ALL_ASSETS],
                 value=ALL_ASSETS,
-                inline=True,
                 className="asset-checklist",
             ),
             "filter-assets",
@@ -161,13 +164,13 @@ controls = html.Div(
             "Year to date",
             dcc.Checklist(
                 id="ytd-toggle",
-                options=[{"label": " Include", "value": "ytd"}],
+                options=[{"label": "Include current year", "value": "ytd"}],
                 value=["ytd"],
                 className="ytd-toggle",
             ),
         ),
         filter_control(
-            "Balanced mix · % stocks",
+            "Balanced mix — % stocks",
             dcc.Slider(
                 id="equity-slider",
                 min=0,
@@ -190,13 +193,13 @@ controls = html.Div(
                     }
                     for a in ALL_ASSETS
                 ],
-                placeholder="Click a cell…",
+                placeholder="Click any cell…",
                 clearable=True,
             ),
             "filter-highlight",
         ),
     ],
-    className="control-bar",
+    className="sidebar",
 )
 
 stats_grid = dag.AgGrid(
@@ -242,14 +245,12 @@ stats_grid = dag.AgGrid(
     rowData=[],
     getRowId="params.data.asset",
     columnSize="responsiveSizeToFit",
-    defaultColDef={"filter": True, "sortable": True, "minWidth": 78},
+    defaultColDef={"sortable": True, "minWidth": 64},
     dashGridOptions={
-        "theme": "themeBalham",
+        "theme": "themeQuartz",
         "animateRows": True,
-        "pagination": True,
-        "paginationPageSize": 10,
-        "paginationAutoPageSize": True,
-        "paginationPageSizeSelector": False,
+        "rowHeight": 28,
+        "headerHeight": 30,
         "rowSelection": {"mode": "singleRow", "checkboxes": False},
         "tooltipShowDelay": 300,
     },
@@ -270,73 +271,81 @@ app.layout = ddk.App(
                         password=os.environ.get("DE_PASSWORD"),
                         de_url=os.environ.get("DE_URL"),
                     ),
-                #     system_prompt_appendix
+                #     system_prompt_appendix
                 ),
                 html.Div(
                     [
                         html.Div(
-                            [html.Span() for _ in range(4)], className="brand-mark"
+                            [html.Span() for _ in range(9)], className="brand-mark"
                         ),
-                        html.Div("MARKET QUILT", className="brand-name"),
-                        html.Div(className="brand-divider"),
-                        html.Div("Asset Class Quilt", className="brand-product"),
+                        html.Div(
+                            [
+                                html.Div("Market Almanac", className="brand-kicker"),
+                                html.Div("The Asset Class Quilt", className="brand-name"),
+                            ]
+                        ),
                     ],
                     className="brand",
                 ),
                 html.Div(
-                    "Calendar-year total returns · ETF proxies · Source: Yahoo Finance",
+                    [
+                        html.Span("Calendar-year total returns"),
+                        html.Span("ETF proxies"),
+                        html.Span("Source: Yahoo Finance"),
+                    ],
                     className="data-source-note",
                 ),
             ],
         ),
-        controls,
         html.Div(
             [
-                ddk.Card(
-                    className="fill-card quilt-card",
-                    children=[
-                        ddk.CardHeader(
-                            title="Periodic table of returns · ranked best to worst each year"
-                        ),
-                        dcc.Loading(
-                            ddk.Graph(
-                                id="quilt-chart",
-                                config=GRAPH_CONFIG,
-                                className="fill-graph",
-                            ),
-                            parent_className="fill-loading",
-                            color=PORTFOLIO_LINE,
-                        ),
-                    ],
-                ),
-                html.Div(
+                controls,
+                html.Main(
                     [
                         ddk.Card(
-                            className="fill-card",
+                            className="fill-card quilt-card",
                             children=[
                                 ddk.CardHeader(
-                                    title="Risk & return · full calendar years",
-                                    id="stats-title",
+                                    title="Periodic table of returns · ranked best to worst each year"
                                 ),
-                                stats_grid,
-                            ],
-                        ),
-                        ddk.Card(
-                            className="fill-card",
-                            children=[
-                                ddk.CardHeader(title="Growth of $10,000"),
                                 ddk.Graph(
-                                    id="growth-chart",
+                                    id="quilt-chart",
                                     config=GRAPH_CONFIG,
                                     className="fill-graph",
                                 ),
                             ],
                         ),
+                        html.Div(
+                            [
+                                ddk.Card(
+                                    className="fill-card",
+                                    children=[
+                                        ddk.CardHeader(
+                                            title="Risk & return",
+                                            id="stats-title",
+                                        ),
+                                        stats_grid,
+                                    ],
+                                ),
+                                ddk.Card(
+                                    className="fill-card",
+                                    children=[
+                                        ddk.CardHeader(title="Growth of $10,000"),
+                                        ddk.Graph(
+                                            id="growth-chart",
+                                            config=GRAPH_CONFIG,
+                                            className="fill-graph",
+                                        ),
+                                    ],
+                                ),
+                            ],
+                            className="lower-row",
+                        ),
                     ],
-                    className="side-column",
+                    className="dashboard",
                 ),
             ],
-            className="dashboard",
+            className="workspace",
         ),
     ],
 )

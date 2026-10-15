@@ -7,6 +7,8 @@ from data import PORTFOLIO, label_for, year_labels
 from theme import (
     ASSET_COLORS,
     BRAND_DARK,
+    FONT_BODY,
+    FONT_MONO,
     GRID_LINE,
     INK,
     MUTED,
@@ -15,7 +17,7 @@ from theme import (
     SURFACE,
 )
 
-DIM_MIX = 0.78  # how far non-highlighted cells fade toward white
+DIM_MIX = 0.8  # how far non-highlighted cells fade toward the paper surface
 
 
 def asset_color(asset: str) -> str:
@@ -28,8 +30,21 @@ def _rgb(hex_color: str) -> tuple[int, int, int]:
 
 
 def _tint(hex_color: str, mix: float) -> str:
-    r, g, b = (round(c + (255 - c) * mix) for c in _rgb(hex_color))
+    r, g, b = (
+        round(c + (p - c) * mix) for c, p in zip(_rgb(hex_color), _rgb(SURFACE))
+    )
     return f"#{r:02X}{g:02X}{b:02X}"
+
+
+def _rounded_rect(x0: float, x1: float, y0: float, y1: float) -> str:
+    """SVG path for a rectangle with softly rounded corners (data units)."""
+    rx, ry = 0.08, 0.1
+    return (
+        f"M{x0 + rx},{y0} L{x1 - rx},{y0} Q{x1},{y0} {x1},{y0 + ry} "
+        f"L{x1},{y1 - ry} Q{x1},{y1} {x1 - rx},{y1} "
+        f"L{x0 + rx},{y1} Q{x0},{y1} {x0},{y1 - ry} "
+        f"L{x0},{y0 + ry} Q{x0},{y0} {x0 + rx},{y0} Z"
+    )
 
 
 def _luminance(hex_color: str) -> float:
@@ -49,9 +64,17 @@ def label_ink(fill: str) -> str:
 
 def empty_figure(message: str) -> go.Figure:
     fig = go.Figure()
-    fig.add_annotation(text=message, showarrow=False, font={"color": MUTED, "size": 14})
+    fig.add_annotation(
+        text=message,
+        showarrow=False,
+        font={"color": MUTED, "size": 14, "family": FONT_BODY},
+    )
     fig.update_layout(
-        xaxis={"visible": False}, yaxis={"visible": False}, margin={"t": 10}
+        xaxis={"visible": False},
+        yaxis={"visible": False},
+        margin={"t": 10},
+        plot_bgcolor=SURFACE,
+        paper_bgcolor=SURFACE,
     )
     return fig
 
@@ -80,27 +103,21 @@ def build_quilt(
             fill = asset_color(asset)
             if dimmed:
                 fill = _tint(fill, DIM_MIX)
-            line_color = PORTFOLIO_LINE if is_portfolio else SURFACE
-            if dimmed and is_portfolio:
-                line_color = _tint(PORTFOLIO_LINE, DIM_MIX)
 
-            # Cells stop short of each other so a 2px surface gap separates
-            # them; the portfolio's dark outline sits inside its own cell.
+            # Rounded tiles that stop short of each other, so a strip of
+            # surface separates them.
             shapes.append(
                 {
-                    "type": "rect",
-                    "x0": col - 0.48,
-                    "x1": col + 0.48,
-                    "y0": rank - 0.46,
-                    "y1": rank + 0.46,
+                    "type": "path",
+                    "path": _rounded_rect(
+                        col - 0.46, col + 0.46, rank - 0.42, rank + 0.42
+                    ),
                     "fillcolor": fill,
-                    "line": {"color": line_color, "width": 2 if is_portfolio else 0},
+                    "line": {"width": 0},
                     "layer": "below",
                 }
             )
             ink = MUTED if dimmed else label_ink(fill)
-            if is_portfolio and not dimmed:
-                ink = BRAND_DARK
             short = "BAL" if is_portfolio else asset
             annotations.append(
                 {
@@ -108,7 +125,7 @@ def build_quilt(
                     "y": rank,
                     "text": f"<b>{short}</b><br>{ret:+.1%}",
                     "showarrow": False,
-                    "font": {"size": 11, "color": ink},
+                    "font": {"size": 11, "color": ink, "family": FONT_MONO},
                 }
             )
             hover_x.append(col)
@@ -128,9 +145,10 @@ def build_quilt(
             go.Scatter(
                 x=path_x,
                 y=path_y,
-                mode="lines",
-                line={"color": BRAND_DARK, "width": 2},
-                opacity=0.55,
+                mode="lines+markers",
+                line={"color": BRAND_DARK, "width": 1.5, "dash": "dot"},
+                marker={"size": 5, "color": BRAND_DARK},
+                opacity=0.7,
                 hoverinfo="skip",
                 showlegend=False,
             )
@@ -175,10 +193,15 @@ def build_quilt(
         shapes=shapes,
         annotations=annotations,
         autosize=True,
-        margin={"l": 44, "r": 8, "t": 28, "b": 8},
+        margin={"l": 40, "r": 4, "t": 28, "b": 8},
+        font={"family": FONT_BODY, "color": INK},
         plot_bgcolor=SURFACE,
         paper_bgcolor=SURFACE,
-        hoverlabel={"bgcolor": SURFACE, "bordercolor": GRID_LINE},
+        hoverlabel={
+            "bgcolor": INK,
+            "bordercolor": INK,
+            "font": {"color": SURFACE, "family": FONT_BODY},
+        },
         legend={
             "orientation": "h",
             "x": 0,
@@ -197,16 +220,16 @@ def build_quilt(
             "showgrid": False,
             "zeroline": False,
             "fixedrange": True,
-            "tickfont": {"color": INK},
+            "tickfont": {"color": INK, "family": FONT_MONO, "size": 11},
         },
         yaxis={
             "tickvals": list(range(n_rows)),
-            "ticktext": [f"#{i + 1}" for i in range(n_rows)],
+            "ticktext": [f"{i + 1:02d}" for i in range(n_rows)],
             "range": [n_rows - 0.5, -0.5],
             "showgrid": False,
             "zeroline": False,
             "fixedrange": True,
-            "tickfont": {"color": MUTED},
+            "tickfont": {"color": MUTED, "family": FONT_MONO, "size": 10},
         },
     )
     return fig
@@ -242,8 +265,10 @@ def build_growth(
         autosize=True,
         margin={"l": 8, "r": 8, "t": 8, "b": 8},
         hovermode="x unified",
+        font={"family": FONT_BODY, "color": INK},
         plot_bgcolor=SURFACE,
         paper_bgcolor=SURFACE,
+        hoverlabel={"bgcolor": SURFACE, "bordercolor": INK},
         legend={
             "orientation": "h",
             "x": 0,
@@ -252,13 +277,19 @@ def build_growth(
             "yanchor": "bottom",
             "font": {"color": INK, "size": 11},
         },
-        xaxis={"showgrid": False, "tickfont": {"color": MUTED}},
+        xaxis={
+            "showgrid": False,
+            "showline": True,
+            "linecolor": GRID_LINE,
+            "tickfont": {"color": MUTED, "family": FONT_MONO, "size": 10},
+        },
         yaxis={
             "side": "right",
             "tickprefix": "$",
             "tickformat": "~s",
             "gridcolor": GRID_LINE,
-            "tickfont": {"color": MUTED},
+            "zeroline": False,
+            "tickfont": {"color": MUTED, "family": FONT_MONO, "size": 10},
         },
     )
     return fig
