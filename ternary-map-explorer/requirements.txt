@@ -1,0 +1,7 @@
+dash==4.4.1
+dash-design-kit==3.0.0
+dash-ag-grid>=35.3
+plotly>=6.0
+pandas>=2.2
+numpy>=1.26
+gunicorn>=23.0

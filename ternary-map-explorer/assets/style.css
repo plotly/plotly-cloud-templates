@@ -1,0 +1,254 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --surface: #ffffff;
+  --page: #f6f5f2;
+  --text: #1f2328;
+  --muted: #6b6f76;
+  --border: #e7e5e0;
+  --control-border: #d6d3cc;
+  --accent: #2a78d6;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--page);
+  color: var(--text);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* DDK pads the app root; the page sets its own gutters */
+.app-shell {
+  padding: 0 !important;
+  max-width: none !important;
+}
+
+/* DDK's default title is spaced out for all-caps headers */
+/* DDK indents the title; line it up with the subtitle */
+.layout-title,
+.layout-title .title {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+.layout-title .title {
+  letter-spacing: -0.01em !important;
+  font-weight: 600 !important;
+  font-size: 18px !important;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.explorer-page {
+  box-sizing: border-box;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 12px 20px 20px;
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px !important;
+}
+
+/* Filters live in one row above the charts */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 20px;
+}
+
+.toolbar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toolbar-item label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.toolbar-item.operators {
+  flex: 1 1 280px;
+  min-width: 0;
+  max-width: 640px;
+}
+
+.pill-checklist {
+  display: flex;
+  gap: 8px;
+}
+
+.pill-checklist label {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  margin: 0 !important;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+}
+
+.pill-checklist input {
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+.selection-status {
+  margin-left: auto;
+  align-self: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.selection-status b {
+  color: var(--text);
+}
+
+.clear-button {
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: 500 13px Inter, system-ui, sans-serif;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  cursor: pointer;
+}
+
+.clear-button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.clear-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* KPI tiles */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  margin: 2px 0 0;
+}
+
+.stat-sub {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 2 x 2 chart grid */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.chart-card {
+  margin: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-width: 0;
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  margin-bottom: 4px;
+}
+
+.card-head .card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.card-head span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.footer {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.footer a {
+  color: var(--muted);
+}
+
+/* Legend clicks would hide formations without updating the selection */
+#well-map .legendtoggle,
+#production-fig .legendtoggle {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .chart-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stat-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .dash-logo {
+    display: none;
+  }
+
+  .explorer-page {
+    padding: 16px;
+  }
+
+  .selection-status {
+    margin-left: 0;
+  }
+}
