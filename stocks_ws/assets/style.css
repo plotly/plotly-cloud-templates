@@ -1,10 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Serif:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;600&display=swap");
 
 /* One-screen shell: header on top, dashboard fills the rest, no page scroll */
 html,
 body {
   height: 100%;
   overflow: hidden;
+  background:
+    radial-gradient(1200px 600px at 0% 0%, rgba(124, 58, 237, 0.07), transparent 60%),
+    radial-gradient(900px 500px at 100% 100%, rgba(6, 182, 212, 0.07), transparent 60%),
+    #f6f7fb !important;
+}
+
+.app-shell {
+  background: transparent !important;
 }
 
 .app-shell,
@@ -50,17 +58,22 @@ body {
   min-height: 0;
   display: grid;
   grid-template-rows: minmax(0, 36fr) minmax(0, 64fr);
+  gap: 12px;
+  padding: 12px;
+  box-sizing: border-box;
 }
 
 .watchlist-row {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
   min-height: 0;
 }
 
 .detail-row {
   display: grid;
   grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 12px;
   min-height: 0;
 }
 
@@ -73,6 +86,13 @@ body {
   height: 100%;
   box-sizing: border-box;
   overflow: hidden;
+  background: #ffffff !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fill-card:hover {
+  border-color: rgba(29, 78, 216, 0.45) !important;
+  box-shadow: 0 12px 32px rgba(29, 78, 216, 0.16) !important;
 }
 
 /* DDK wraps card children in .card--content; make that the flex column */
@@ -100,6 +120,22 @@ body {
   height: 100% !important;
 }
 
+/* Header: deep blue gradient with a bright underline */
+.app-header {
+  background: linear-gradient(100deg, #0b2a6f 0%, #1d4ed8 50%, #3b82f6 100%) !important;
+  position: relative;
+}
+
+.app-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #06b6d4, #3b82f6 55%, #93c5fd);
+}
+
 /* Header wordmark */
 .brand {
   display: flex;
@@ -117,8 +153,8 @@ body {
 .brand-mark span {
   display: block;
   width: 4px;
-  border-radius: 1px;
-  background: #ffffff;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.85);
 }
 
 /* Rising bars, the last one picked out in the accent */
@@ -126,13 +162,17 @@ body {
 .brand-mark span:nth-child(2) { height: 50%; }
 .brand-mark span:nth-child(3) { height: 40%; }
 .brand-mark span:nth-child(4) { height: 70%; }
-.brand-mark span:nth-child(5) { height: 100%; background: #c8702e; }
+.brand-mark span:nth-child(5) { height: 100%; background: #fbbf24; box-shadow: 0 0 10px rgba(251, 191, 36, 0.8); }
 
 .brand-name {
+  font-family: "Space Grotesk", sans-serif;
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #ffffff;
+  letter-spacing: 0.08em;
+  background: linear-gradient(90deg, #ffffff, #dbeafe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
   line-height: 1.1;
 }
 
@@ -143,8 +183,9 @@ body {
 }
 
 .brand-product {
+  font-family: "Space Grotesk", sans-serif;
   font-size: 17px;
-  font-weight: 400;
+  font-weight: 500;
   color: #ffffff;
 }
 
@@ -156,7 +197,7 @@ body {
 
 .data-source-note {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 /* Connection status pill in the header */
@@ -165,8 +206,10 @@ body {
   align-items: center;
   gap: 8px;
   font-size: 13px;
+  font-weight: 500;
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 999px;
   padding: 4px 12px;
 }
@@ -176,7 +219,8 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #c8702e;
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
   animation: pulse 1.6s ease-in-out infinite;
 }
 
@@ -202,20 +246,24 @@ body {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   cursor: help;
   transition: background 0.15s ease;
 }
 
 .code-peek:hover .code-peek-trigger,
 .code-peek:focus-within .code-peek-trigger {
-  background: #c8702e;
+  --icon-color: #1d4ed8;
+  background: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.5);
 }
 
 .code-peek-icon,
 .code-peek-icon * {
-  color: #ffffff !important;
+  color: var(--icon-color, #ffffff) !important;
   font-size: 14px;
 }
 
@@ -239,41 +287,44 @@ body {
   max-height: calc(100vh - 90px);
   overflow-y: auto;
   background: #ffffff;
-  color: #1e2b2b;
-  border-top: 4px solid #c8702e;
-  box-shadow: 0 12px 32px rgba(15, 61, 62, 0.25);
+  color: #1e1b2e;
+  border: 1px solid #eceef5;
+  border-top: 4px solid #7c3aed;
+  border-radius: 14px;
+  box-shadow: 0 20px 48px rgba(76, 29, 149, 0.18);
   padding: 16px 20px 8px;
   text-align: left;
 }
 
 .code-peek-header {
-  border-bottom: 1px solid #ece8e1;
+  border-bottom: 1px solid #eceef5;
   padding-bottom: 10px;
   margin-bottom: 4px;
 }
 
 .code-peek-title {
   font-size: 16px;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
-  color: #0f3d3e;
+  color: #1e1b2e;
 }
 
 .code-peek-subtitle {
   font-size: 12px;
-  color: #8a8577;
+  color: #94a3b8;
 }
 
 .code-peek-heading {
   margin-top: 14px;
   font-size: 14px;
   font-weight: 700;
-  color: #0f3d3e;
+  color: #6d28d9;
 }
 
 .code-peek-caption {
   margin: 2px 0 6px;
   font-size: 13px;
-  color: #4f5b57;
+  color: #64748b;
 }
 
 .code-peek-code pre code,
@@ -287,8 +338,10 @@ body {
 .code-peek-code pre {
   margin: 0 0 8px;
   padding: 10px 12px;
-  background: #f7f5f1;
-  border-left: 3px solid #0f3d3e;
+  background: #f8f7ff;
+  border: 1px solid #eee9fe;
+  border-left: 3px solid #7c3aed;
+  border-radius: 8px;
   font-size: 12px;
   line-height: 1.45;
   overflow-x: auto;
@@ -296,14 +349,28 @@ body {
 
 /* Watchlist cards */
 .ticker-card {
-  border-top-width: 4px !important;
-  border-top-style: solid !important;
+  position: relative;
+  border-top-width: 1px !important;
+}
+
+/* Per-slot neon bar along the top edge; color comes from --slot-color */
+.ticker-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--slot-color);
+  box-shadow: 0 2px 10px var(--slot-color);
 }
 
 .ticker-select .Select-control,
 .ticker-select .Select-value-label {
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
-  color: #0f3d3e !important;
+  color: #1e1b2e !important;
 }
 
 .ticker-quote {
@@ -315,28 +382,35 @@ body {
 }
 
 .ticker-price {
+  font-family: "JetBrains Mono", monospace;
   font-size: 24px;
-  font-weight: 700;
-  color: #0f3d3e;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #1e1b2e;
   font-variant-numeric: tabular-nums;
 }
 
 .ticker-change {
   font-size: 13px;
+  font-family: "JetBrains Mono", monospace;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  padding: 1px 8px;
+  border-radius: 999px;
 }
 
 .ticker-change.up {
-  color: #1f8a5b;
+  color: #059669;
+  background: rgba(16, 185, 129, 0.12);
 }
 
 .ticker-change.down {
-  color: #c2412d;
+  color: #e11d48;
+  background: rgba(244, 63, 94, 0.1);
 }
 
 .ticker-change.flat {
-  color: #8a8577;
+  color: #94a3b8;
 }
 
 /* Small screens: fall back to a normal scrolling page */
@@ -357,7 +431,8 @@ body {
   }
 
   .dashboard {
-    display: block;
+    display: flex;
+    flex-direction: column;
   }
 
   .watchlist-row,
@@ -378,4 +453,30 @@ body {
   .brand-product {
     display: none;
   }
+}
+
+/* Market-closed banner under the header */
+.market-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* !important: .app-shell > * zeroes padding on shell children */
+  padding: 8px 18px !important;
+  font-size: 13px;
+  color: #92400e;
+  background: linear-gradient(90deg, #fef3c7, #fde68a 50%, #fef3c7);
+  border-bottom: 1px solid #fcd34d;
+}
+
+.market-banner[hidden] {
+  display: none;
+}
+
+.market-banner-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
 }

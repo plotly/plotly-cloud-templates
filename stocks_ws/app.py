@@ -39,12 +39,12 @@ from constants import (
     SYMBOL_OPTIONS,
 )
 from feed import feed
-from theme import BRAND_EVERGREEN, GRID_LINE, NEGATIVE, NEUTRAL, POSITIVE, SLOT_COLORS
+from theme import BRAND_VIOLET, GRID_LINE, NEGATIVE, NEUTRAL, POSITIVE, SLOT_COLORS
 
 # Debug-only drawer in Dash Dev Tools; inactive unless app.run(debug=True).
 # Must be configured before the Dash instance is created.
 configure_devtools_plus(
-    accent_color=BRAND_EVERGREEN,
+    accent_color=BRAND_VIOLET,
     editor="vscode",
     project_root=Path(__file__).resolve().parent,
 )
@@ -167,7 +167,7 @@ def ticker_card(index: int, symbol: str) -> ddk.Card:
     return ddk.Card(
         className="ticker-card fill-card",
         # Per-slot accent color, so it is computed rather than in style.css
-        style={"borderTopColor": color},
+        style={"--slot-color": color},
         children=[
             dcc.Dropdown(
                 id={"type": "stock-select", "index": index},
@@ -234,7 +234,17 @@ trades_grid = dag.AgGrid(
     columnSize="responsiveSizeToFit",
     defaultColDef={"filter": True, "sortable": True},
     dashGridOptions={
-        "theme": "themeBalham",
+        "theme": {
+            "function": (
+                "themeQuartz.withParams({"
+                "foregroundColor: '#1E1B2E', headerBackgroundColor: '#F5F3FF',"
+                "headerTextColor: '#5B21B6', accentColor: '#7C3AED',"
+                "borderColor: '#ECEEF5', rowHoverColor: 'rgba(124, 58, 237, 0.06)',"
+                "oddRowBackgroundColor: '#FAFAFE', wrapperBorderRadius: 10,"
+                "fontFamily: 'Inter', fontSize: 12, spacing: 4,"
+                "rowHeight: 26, headerHeight: 30, cellHorizontalPadding: 10})"
+            )
+        },
         "animateRows": True,
         "pagination": True,
         "paginationPageSize": 10,
@@ -279,12 +289,26 @@ app.layout = ddk.App(
                 ),
             ],
         ),
+        # Shown by the stream while the market is closed.
+        html.Div(
+            [
+                html.Span(className="market-banner-dot"),
+                html.Strong("Markets are closed."),
+                html.Span(
+                    " Showing the latest session. Live trades resume at the "
+                    "next open, 9:30 AM ET."
+                ),
+            ],
+            id="market-banner",
+            className="market-banner",
+            hidden=True,
+        ),
         # The watchlist loads inside the persistent stream callback, which Dash
         # leaves out of loading state, so the stream flips `display` itself.
         dcc.Loading(
             id="dashboard-loading",
             parent_className="dashboard-loading",
-            color=BRAND_EVERGREEN,
+            color=BRAND_VIOLET,
             type="circle",
             display="auto",
             overlay_style={"visibility": "visible", "filter": "blur(2px)"},
@@ -797,6 +821,8 @@ async def stream_watchlist():
                 # Re-checked every minute so the page follows the open/close.
                 market_open = await asyncio.to_thread(is_market_open)
                 next_market_check = now + MARKET_CHECK_SECONDS
+                # None means Finnhub was unreachable, not that the market closed.
+                set_props("market-banner", {"hidden": market_open is not False})
                 if market_open and sub is None:
                     sub = feed.subscribe({s["symbol"] for s in slots})
                 elif not market_open and sub is not None:
