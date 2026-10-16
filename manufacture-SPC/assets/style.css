@@ -1,0 +1,223 @@
+body {
+  background: var(--mantine-color-gray-0);
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The whole dashboard fits in one viewport on desktop: stat row on top, the
+   metrics table and live chart share the remaining height */
+.page {
+  box-sizing: border-box;
+  height: calc(100dvh - var(--app-shell-header-height));
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 12px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 84px;
+  box-sizing: border-box;
+}
+
+.stat-card.controls {
+  justify-content: center;
+}
+
+.hero-number {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.main-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(380px, 5fr) minmax(0, 8fr);
+  gap: 12px;
+}
+
+.card {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+/* Metrics table: rows stretch to share the card's height */
+.metric-rows {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 110px minmax(60px, 1fr) 52px 72px 64px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+  border-radius: var(--mantine-radius-sm);
+  border-top: 1px solid var(--mantine-color-gray-2);
+}
+
+.metric-rows .metric-row {
+  flex: 1;
+  min-height: 36px;
+}
+
+.metric-rows .metric-row:hover {
+  background: var(--mantine-color-gray-0);
+}
+
+.metric-row.selected {
+  background: var(--mantine-color-blue-0) !important;
+  box-shadow: inset 3px 0 0 var(--mantine-color-blue-6);
+}
+
+.metric-header {
+  border-top: none;
+  padding-bottom: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mantine-color-dimmed);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.metric-header span:nth-child(3) {
+  text-align: right;
+}
+
+/* The parameter name is the row's button; stretch its hit area over the whole row */
+.metric-name {
+  all: unset;
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric-name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.metric-name:focus-visible {
+  outline: none;
+}
+
+.metric-row:has(.metric-name:focus-visible) {
+  outline: 2px solid var(--mantine-color-blue-6);
+  outline-offset: -2px;
+}
+
+.sparkline {
+  height: 28px;
+}
+
+.status-badge {
+  justify-self: start;
+}
+
+.control-chart {
+  flex: 1;
+  min-height: 0;
+}
+
+.about-text p {
+  margin: 0 0 10px;
+  font-size: var(--mantine-font-size-sm);
+  line-height: 1.55;
+}
+
+.about-text a {
+  color: var(--mantine-color-blue-7);
+}
+
+/* Narrow screens: stack the sections and let the page scroll normally */
+@media (max-width: 1000px) {
+  .page {
+    height: auto;
+    padding: 12px 16px 16px;
+  }
+
+  .stat-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .main-grid {
+    flex: none;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* dcc.Graph sets an inline height: 100% when responsive */
+  .control-chart {
+    height: 380px !important;
+    flex: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .dash-logo {
+    display: none;
+  }
+
+  .app-title {
+    font-size: 16px !important;
+  }
+
+  .hero-number {
+    font-size: 22px;
+  }
+
+  /* Run controls take a full row, buttons side by side */
+  .stat-card.controls {
+    grid-column: 1 / -1;
+    min-height: 0;
+  }
+
+  .stat-card.controls > div {
+    flex-direction: row;
+  }
+
+  .metric-row {
+    grid-template-columns: 96px minmax(40px, 1fr) 48px 64px;
+  }
+
+  .metric-row > :nth-child(4) {
+    display: none;
+  }
+}
