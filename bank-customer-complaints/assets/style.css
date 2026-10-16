@@ -1,0 +1,99 @@
+/* Keep colors in sync with theme.py */
+
+body {
+  background: var(--mantine-color-gray-0);
+}
+
+/* Each view fills the window below the header, so the page never scrolls on desktop */
+.dashboard {
+  display: grid;
+  gap: var(--mantine-spacing-md);
+  height: calc(100dvh - var(--app-shell-header-height, 60px) - 2 * var(--mantine-spacing-md));
+  min-height: 600px;
+}
+
+.explorer-grid {
+  grid-template-columns: 4fr 3fr 5fr;
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1.2fr);
+  grid-template-areas:
+    "banks words cloud"
+    "topics topics detail";
+}
+
+.bigram-grid {
+  grid-template-columns: 7fr 5fr;
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.viz-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.viz-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.complaint-detail {
+  display: flex;
+  flex-direction: column;
+}
+
+.complaint-text {
+  white-space: pre-line;
+  line-height: 1.55;
+}
+
+.hero-number {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.source a {
+  color: inherit;
+}
+
+/* Stack the cards on narrow screens and let the page scroll instead */
+@media (max-width: 1100px) {
+  .dashboard {
+    height: auto;
+    min-height: 0;
+  }
+
+  .explorer-grid,
+  .bigram-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas: none;
+  }
+
+  .explorer-grid > .viz-card,
+  .bigram-grid > .viz-card {
+    grid-area: auto !important;
+    height: 420px;
+  }
+}
+
+@media (max-width: 600px) {
+  .dash-logo {
+    display: none;
+  }
+
+  .title-group,
+  .title-group > div {
+    min-width: 0;
+  }
+
+  .app-title {
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
