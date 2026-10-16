@@ -184,6 +184,10 @@ body {
   color: var(--down);
 }
 
+.delta-flat {
+  color: var(--ink-2);
+}
+
 /* Scenario */
 
 .week-chip .mantine-Chip-label {

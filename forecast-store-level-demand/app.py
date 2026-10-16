@@ -12,6 +12,7 @@ The sales history is synthetic, see demand.py.
 """
 
 import datetime as dt
+from functools import lru_cache
 
 import dash
 import dash_mantine_components as dmc
@@ -44,6 +45,7 @@ FONT = "Figtree, system-ui, sans-serif"
 THEME = {"fontFamily": FONT, "headings": {"fontFamily": FONT}, "primaryColor": "indigo", "defaultRadius": "md"}
 
 ALL = "all"
+CHIP_HELP_ALL = "Pick a department to move its circular promotions."
 TEMP_OUTLOOK = {"cold": -3.0, "normal": 0.0, "warm": 3.0}
 
 app = dash.Dash(
@@ -83,6 +85,8 @@ def fmt_units(x):
 
 
 def fmt_pct(x, digits=1):
+    if round(x * 100, digits) == 0:
+        return f"{0:.{digits}f}%"  # no sign on a change that rounds to zero
     return f"{x * 100:+.{digits}f}%".replace("-", "−")
 
 
@@ -116,6 +120,20 @@ def style_axes(fig, height):
                 "bgcolor": "rgba(0,0,0,0)"},
     )
     return fig
+
+
+# Simulations are the slow part, so keep recent ones. The service level and the
+# weekly/daily view only change how the same paths are summarised.
+
+@lru_cache(maxsize=64)
+def forecast_paths(store, dept, temp, weeks):
+    models = [dm.MODELS[k] for k in keys_for(store, dept)]
+    return dm.simulate(models, promo_override(dept, weeks), TEMP_OUTLOOK[temp])
+
+
+@lru_cache(maxsize=64)
+def backtest_paths(store, dept):
+    return dm.simulate([dm.BACKTEST[k] for k in keys_for(store, dept)])
 
 
 # ---------- figures ----------
@@ -266,12 +284,32 @@ def heatmap_figure(g, cols, store, dept):
     return fig
 
 
+def fit_map(width=480, height=560, pad=0.1):
+    """Center and zoom that fit every store in a map of about width x height pixels."""
+    lats = np.array([s.lat for s in dm.STORES])
+    lons = np.array([s.lon for s in dm.STORES])
+    y = np.log(np.tan(np.pi / 4 + np.radians(lats) / 2))  # Web Mercator
+    x_span = (lons.max() - lons.min()) / 360
+    y_span = (y.max() - y.min()) / (2 * np.pi)
+    zoom = np.log2(min(width / x_span, height / y_span) * (1 - 2 * pad) / 512)
+    center_lat = np.degrees(2 * np.arctan(np.exp((y.max() + y.min()) / 2)) - np.pi / 2)
+    return {"center": {"lat": float(center_lat), "lon": float((lons.max() + lons.min()) / 2)}, "zoom": float(zoom)}
+
+
+MAP_VIEW = fit_map()
+
+
 def map_figure(g, vol, store, dept):
     j = -1 if dept == ALL else dm.DEPARTMENTS.index(dept)
     growth = g[:, j]
     ids = [s.id for s in dm.STORES]
     size = 12 + 22 * np.sqrt(vol / vol.max())
     fig = go.Figure()
+    # Scattermap markers have no outline, so a slightly larger gray marker underneath
+    # keeps near-zero (near-white) stores visible on the light basemap
+    fig.add_trace(go.Scattermap(lat=[s.lat for s in dm.STORES], lon=[s.lon for s in dm.STORES], mode="markers",
+                                marker={"size": size + 3, "color": MUTED, "opacity": 0.55},
+                                hoverinfo="skip", showlegend=False))
     if store != ALL:
         i = ids.index(store)
         fig.add_trace(go.Scattermap(lat=[dm.STORES[i].lat], lon=[dm.STORES[i].lon], mode="markers",
@@ -287,7 +325,7 @@ def map_figure(g, vol, store, dept):
                       "Next 12 weeks: %{customdata[4]} units<br>%{customdata[3]} vs last year<extra></extra>",
         showlegend=False))
     fig.update_layout(
-        map={"style": "carto-positron", "center": {"lat": 45.9, "lon": -120.6}, "zoom": 4.6},
+        map={"style": "carto-positron", **MAP_VIEW},
         margin={"l": 0, "r": 0, "t": 0, "b": 0}, height=560, paper_bgcolor=SURFACE,
         hoverlabel={"bgcolor": "#ffffff", "bordercolor": AXIS, "font": {"color": INK, "size": 12, "family": FONT}},
         clickmode="event",
@@ -315,8 +353,11 @@ def kpi(label, value, sub, icon):
 
 def delta(x, good_when_up=True, suffix=" vs last year"):
     up = x >= 0
-    cls = "delta-up" if up == good_when_up else "delta-down"
-    icon = "tabler:arrow-up-right" if up else "tabler:arrow-down-right"
+    if round(x * 100, 1) == 0:
+        cls, icon = "delta-flat", "tabler:minus"
+    else:
+        cls = "delta-up" if up == good_when_up else "delta-down"
+        icon = "tabler:arrow-up-right" if up else "tabler:arrow-down-right"
     return html.Span([DashIconify(icon=icon, width=14), fmt_pct(x), html.Span(suffix, className="kpi-sub")],
                      className=f"delta {cls}")
 
@@ -375,11 +416,11 @@ scenario = card(
         dmc.Stack([
             dmc.Text("Circular weeks", className="field-label"),
             dmc.ChipGroup(dmc.Group(week_chips(ALL), gap=6, id="chip-row"), id="weeks", multiple=True, value=[]),
-            dmc.Text(id="chip-help", className="field-help"),
+            dmc.Text(CHIP_HELP_ALL, id="chip-help", className="field-help"),
         ], gap=6),
         dmc.Stack([
             dmc.Group([dmc.Text("Service level", className="field-label"),
-                       dmc.Text(id="service-label", className="field-value")], justify="space-between"),
+                       dmc.Text("95%", id="service-label", className="field-value")], justify="space-between"),
             dmc.Slider(id="service", min=80, max=99, step=1, value=95, label=None, color="indigo",
                        marks=[{"value": v, "label": f"{v}%"} for v in (80, 90, 99)]),
             dmc.Text("Share of weeks the order should cover demand. Sets the order plan below.",
@@ -393,48 +434,52 @@ scenario = card(
 
 graph_config = {"displayModeBar": False}
 
-app.layout = dmc.MantineProvider(
-    theme=THEME, forceColorScheme="light",
-    children=html.Div([
-        header,
-        html.Main([
-            filters,
-            html.Div(id="kpis", className="kpi-row"),
-            dmc.Grid([
-                dmc.GridCol(card("Demand forecast", dcc.Loading(dcc.Graph(id="forecast", config=graph_config),
-                                                                 type="dot", color=FORECAST, delay_show=300),
-                                 hint=None, extra=dmc.Text(id="forecast-sub", className="card-hint")),
-                            span={"base": 12, "lg": 8}),
-                dmc.GridCol(scenario, span={"base": 12, "lg": 4}),
-                dmc.GridCol(card("What changed since last year",
-                                 dcc.Graph(id="bridge", config=graph_config),
-                                 hint="Expected units in the next 12 weeks vs the same weeks last year, "
-                                      "one driver at a time."),
-                            span={"base": 12, "md": 6}),
-                dmc.GridCol(card("How the last forecast did",
-                                 html.Div([html.Div(id="backtest-stats", className="stat-row"),
-                                           dcc.Graph(id="backtest", config=graph_config)]),
-                                 hint=f"Forecast made {short(dm.DATES[dm.N_HIST - dm.HORIZON])} for the 12 weeks "
-                                      f"that have since closed. Hollow dots fell inside the 80% range."),
-                            span={"base": 12, "md": 6}),
-                dmc.GridCol(card("Store network", dcc.Graph(id="map", config={**graph_config, "scrollZoom": False}),
-                                 hint="Growth vs last year over the next 12 weeks. Size shows volume. "
-                                      "Click a store to open it."),
-                            span={"base": 12, "md": 5}),
-                dmc.GridCol(card("Growth by store and department", dcc.Graph(id="grid", config=graph_config),
-                                 hint="Next 12 weeks vs the same weeks last year. Click a cell to open it.",
-                                 extra=html.Div([html.Span(fmt_pct(-GROWTH_CAP, 0)), html.Div(className="scale-bar"),
-                                                 html.Span(fmt_pct(GROWTH_CAP, 0))], className="scale")),
-                            span={"base": 12, "md": 7}),
-                dmc.GridCol(card("Weekly order plan", html.Div(id="orders", className="table-wrap"),
-                                 hint="Units to have on hand each week. The buffer covers forecast uncertainty "
-                                      "at the chosen service level."),
-                            span=12),
-            ], gutter="md"),
-            html.Footer("Synthetic data. Cascade Market and its stores are made up.", className="footer"),
-        ], className="main"),
-    ]),
-)
+def build_layout():
+    """The layout with the default view already drawn, so the charts arrive with the page."""
+    (kpis, forecast_fig, forecast_sub, bridge_fig, backtest_fig, backtest_stats, orders,
+     service_label) = update_forecast(ALL, ALL, "week", "normal", [], 95)
+    map_fig, grid_fig = update_network(ALL, ALL, "normal", [])
+    return dmc.MantineProvider(
+        theme=THEME, forceColorScheme="light",
+        children=html.Div([
+            header,
+            html.Main([
+                filters,
+                html.Div(kpis, id="kpis", className="kpi-row"),
+                dmc.Grid([
+                    dmc.GridCol(card("Demand forecast", dcc.Graph(id="forecast", figure=forecast_fig, config=graph_config),
+                                     hint=None, extra=dmc.Text(forecast_sub, id="forecast-sub", className="card-hint")),
+                                span={"base": 12, "lg": 8}),
+                    dmc.GridCol(scenario, span={"base": 12, "lg": 4}),
+                    dmc.GridCol(card("What changed since last year",
+                                     dcc.Graph(id="bridge", figure=bridge_fig, config=graph_config),
+                                     hint="Expected units in the next 12 weeks vs the same weeks last year, "
+                                          "one driver at a time."),
+                                span={"base": 12, "md": 6}),
+                    dmc.GridCol(card("How the last forecast did",
+                                     html.Div([html.Div(backtest_stats, id="backtest-stats", className="stat-row"),
+                                               dcc.Graph(id="backtest", figure=backtest_fig, config=graph_config)]),
+                                     hint=f"Forecast made {short(dm.DATES[dm.N_HIST - dm.HORIZON])} for the 12 weeks "
+                                          f"that have since closed. Hollow dots fell inside the 80% range."),
+                                span={"base": 12, "md": 6}),
+                    dmc.GridCol(card("Store network", dcc.Graph(id="map", figure=map_fig, config={**graph_config, "scrollZoom": False}),
+                                     hint="Growth vs last year over the next 12 weeks. Size shows volume. "
+                                          "Click a store to open it."),
+                                span={"base": 12, "md": 5}),
+                    dmc.GridCol(card("Growth by store and department", dcc.Graph(id="grid", figure=grid_fig, config=graph_config),
+                                     hint="Next 12 weeks vs the same weeks last year. Click a cell to open it.",
+                                     extra=html.Div([html.Span(fmt_pct(-GROWTH_CAP, 0)), html.Div(className="scale-bar"),
+                                                     html.Span(fmt_pct(GROWTH_CAP, 0))], className="scale")),
+                                span={"base": 12, "md": 7}),
+                    dmc.GridCol(card("Weekly order plan", html.Div(orders, id="orders", className="table-wrap"),
+                                     hint="Units to have on hand each week. The buffer covers forecast uncertainty "
+                                          "at the chosen service level."),
+                                span=12),
+                ], gutter="md"),
+                html.Footer("Synthetic data. Cascade Market and its stores are made up.", className="footer"),
+            ], className="main"),
+        ]),
+    )
 
 
 # ---------- callbacks ----------
@@ -470,12 +515,13 @@ def open_from_charts(map_click, grid_click, dept):
     Input("reset", "n_clicks"),
     State("temp", "value"),
     State("service", "value"),
+    prevent_initial_call=True,
 )
 def reset_scenario(dept, _, temp, service):
     if ctx.triggered_id == "reset":
         temp, service = "normal", 95
     if dept == ALL:
-        return [], week_chips(ALL), "Pick a department to move its circular promotions.", temp, service
+        return [], week_chips(ALL), CHIP_HELP_ALL, temp, service
     help_text = f"Checked weeks put {dept} on the chain-wide circular. Outlined weeks are the current plan."
     return [str(w) for w in planned_weeks(dept)], week_chips(dept), help_text, temp, service
 
@@ -495,13 +541,14 @@ def reset_scenario(dept, _, temp, service):
     Input("temp", "value"),
     Input("weeks", "value"),
     Input("service", "value"),
+    prevent_initial_call=True,
 )
 def update_forecast(store, dept, view, temp, weeks, service):
     keys = keys_for(store, dept)
     promo_weeks = promo_override(dept, weeks)
     shift = TEMP_OUTLOOK[temp]
     models = [dm.MODELS[k] for k in keys]
-    sims = dm.simulate(models, promo_weeks, shift)
+    sims = forecast_paths(store, dept, temp, tuple(sorted(weeks or [])))
     weekly_paths = weekly(sims)
     totals = weekly_paths.sum(axis=1)
     ly_daily = dm.actuals(keys, dm.N_HIST - 364, dm.N_HIST - 364 + dm.HORIZON)
@@ -511,7 +558,7 @@ def update_forecast(store, dept, view, temp, weeks, service):
     wq = np.percentile(weekly_paths, [10, 50, 90, service], axis=0)
     peak = int(np.argmax(wq[1]))
 
-    bt_fig, bt = backtest_figure(keys, dm.simulate([dm.BACKTEST[k] for k in keys]))
+    bt_fig, bt = backtest_figure(keys, backtest_paths(store, dept))
 
     kpis = [
         kpi("Next 12 weeks", fmt_units(p50) + " units", f"80% range {fmt_units(p10)} – {fmt_units(p90)}",
@@ -579,11 +626,14 @@ def update_forecast(store, dept, view, temp, weeks, service):
     Input("dept", "value"),
     Input("temp", "value"),
     Input("weeks", "value"),
+    prevent_initial_call=True,
 )
 def update_network(store, dept, temp, weeks):
     g, cols, vol = growth_table(dept, promo_override(dept, weeks), TEMP_OUTLOOK[temp])
     return map_figure(g, vol, store, dept), heatmap_figure(g, cols, store, dept)
 
+
+app.layout = build_layout()
 
 if __name__ == "__main__":
     app.run(debug=True, port=8082)
