@@ -27,11 +27,16 @@ from dash_iconify import DashIconify
 IMAGE_BUCKET = "https://images.plot.ly/udacity-self-driving-cars/"
 WEIGHTS_URL = IMAGE_BUCKET + "yolov3.weights"
 CONFIG_PATH = "yolov3.cfg"
-# The weights (~250 MB) are downloaded at startup into a cache folder outside
-# the project, so they never end up in an upload
-CACHE_DIR = os.path.join(
-    os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache")), "dash-self-driving"
-)
+# The weights (~250 MB) are downloaded once into Plotly Cloud's persistent /data
+# volume, so restarts reuse them. Locally, where there is no /data, they go to a
+# cache folder outside the project so they never end up in an upload
+PERSISTENT_DIR = "/data"
+if os.path.isdir(PERSISTENT_DIR) and os.access(PERSISTENT_DIR, os.W_OK):
+    CACHE_DIR = PERSISTENT_DIR
+else:
+    CACHE_DIR = os.path.join(
+        os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache")), "dash-self-driving"
+    )
 WEIGHTS_PATH = os.path.join(CACHE_DIR, "yolov3.weights")
 IMG_WIDTH, IMG_HEIGHT = 512, 320
 

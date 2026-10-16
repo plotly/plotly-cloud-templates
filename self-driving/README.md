@@ -27,10 +27,11 @@ python app.py
 Then open http://127.0.0.1:8050.
 
 On first start the app downloads the YOLO v3 weights (~250 MB) in the
-background to `~/.cache/dash-self-driving/`, outside the project folder so they
-are never uploaded. Until then the YOLO panel shows the frame with the download
-progress, and the predictions appear by themselves once the model is loaded.
-Frames are fetched from `images.plot.ly` as they're viewed.
+background. On Plotly Cloud they are saved to the persistent `/data` volume, so
+later restarts reuse them; locally they go to `~/.cache/dash-self-driving/`,
+outside the project folder so they are never uploaded. Until the model is
+loaded the YOLO panel shows the frame with the download progress, and the
+predictions appear by themselves once it's ready.
 
 ## Deploying to Plotly Cloud
 
