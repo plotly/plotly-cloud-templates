@@ -1,0 +1,150 @@
+/* Keep colors in sync with theme.py */
+
+body {
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255, 46, 151, 0.12), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(0, 229, 255, 0.10), transparent 45%),
+    #0A0C18;
+  background-attachment: fixed;
+}
+
+.mantine-AppShell-header,
+.mantine-AppShell-navbar {
+  background: rgba(15, 18, 34, 0.85);
+  backdrop-filter: blur(8px);
+  border-color: rgba(255, 46, 151, 0.25);
+}
+
+.app-title {
+  background: linear-gradient(90deg, #FF2E97, #00E5FF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Each view fills the window below the header, so the page never scrolls on desktop */
+.dashboard {
+  display: grid;
+  gap: var(--mantine-spacing-md);
+  height: calc(100dvh - var(--app-shell-header-height, 60px) - 2 * var(--mantine-spacing-md));
+  min-height: 620px;
+}
+
+.team-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "wl wl titles"
+    "bat fld pitch";
+}
+
+.batting-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-areas:
+    "obp slg ops"
+    "table table table";
+}
+
+.pitching-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "whip kbb wpct"
+    "table table fld";
+}
+
+.viz-card {
+  border-color: rgba(0, 229, 255, 0.18) !important;
+  box-shadow: 0 0 0 1px rgba(255, 46, 151, 0.06), 0 8px 30px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.viz-card:hover {
+  border-color: rgba(255, 46, 151, 0.5) !important;
+  box-shadow: 0 0 18px rgba(255, 46, 151, 0.25), 0 8px 30px rgba(0, 0, 0, 0.45);
+}
+
+.viz-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.hero-number {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: #00E5FF;
+  text-shadow: 0 0 12px rgba(0, 229, 255, 0.55);
+}
+
+.source a,
+.about a {
+  color: #00E5FF;
+}
+
+.about p,
+.about ul {
+  font-size: var(--mantine-font-size-sm);
+  line-height: 1.55;
+}
+
+/* Stack the cards on narrow screens and let the page scroll instead */
+@media (max-width: 1100px) {
+  .dashboard {
+    height: auto;
+    min-height: 0;
+  }
+
+  .team-grid,
+  .batting-grid,
+  .pitching-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas: none;
+  }
+
+  .dashboard > .viz-card {
+    grid-area: auto !important;
+    height: 380px;
+  }
+}
+
+@media (max-width: 900px) {
+  .dash-logo {
+    display: none;
+  }
+}
+
+@media (max-width: 1000px) {
+  .title-group,
+  .title-group > div {
+    min-width: 0;
+  }
+
+  .app-title {
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* The view switcher needs the whole header on phones */
+@media (max-width: 600px) {
+  .app-title {
+    display: none;
+  }
+
+  .view-control .mantine-SegmentedControl-label {
+    padding-inline: 6px;
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,8 @@
+dash==4.4.1
+dash-mantine-components==2.8.0
+dash-iconify==0.1.2
+dash-ag-grid==35.3.0
+plotly==7.1.0
+pandas==3.0.6
+numpy==2.5.4
+gunicorn==26.2.0
