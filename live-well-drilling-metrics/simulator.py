@@ -25,11 +25,19 @@ DRILLING, CONNECTION, CIRCULATING = range(3)
 # name, top (ft below the well's start depth), ROP factor, background gas (%), hardness
 FORMATIONS = [
     ("Upper Shale", 0, 1.00, 0.6, 0.2),
-    ("Sandstone A", 260, 1.45, 1.8, 0.1),
-    ("Limestone", 520, 0.55, 0.4, 0.9),
-    ("Lower Shale", 780, 0.85, 0.9, 0.4),
-    ("Pay Sand", 1020, 1.30, 2.6, 0.2),
-    ("Dolomite", 1300, 0.45, 0.3, 1.0),
+    ("Sandstone A", 170, 1.45, 1.8, 0.1),
+    ("Limestone", 330, 0.55, 0.4, 0.9),
+    ("Marl", 470, 0.80, 0.7, 0.5),
+    ("Lower Shale", 640, 0.85, 0.9, 0.4),
+    ("Sandstone B", 820, 1.35, 2.0, 0.1),
+    ("Dolomite", 960, 0.45, 0.3, 1.0),
+    ("Siltstone", 1110, 0.95, 1.1, 0.3),
+    ("Pay Sand", 1290, 1.30, 2.6, 0.2),
+    ("Basal Shale", 1500, 0.90, 1.0, 0.4),
+    ("Granite Wash", 1720, 0.60, 1.4, 0.8),
+    ("Sandstone C", 1880, 1.40, 2.2, 0.1),
+    ("Deep Shale", 2050, 0.90, 1.0, 0.4),
+    ("Limestone B", 2200, 0.55, 0.4, 0.9),
 ]
 
 
@@ -78,6 +86,7 @@ def simulate(well):
     since_connection = rng.uniform(0, STAND_FT)
     state, state_left = DRILLING, 0
     rop_noise = wob_noise = tq_noise = gas_noise = 0.0
+    hl_noise = spp_noise = rpm_noise = 0.0
     pit = 520.0
     kick_left = packoff_left = 0
     conn_gas = 0.0
@@ -107,17 +116,20 @@ def simulate(well):
         _, _, rop_factor, gas_base, hardness = FORMATIONS[f_idx]
 
         # Slowly varying AR(1) noise so curves look like real sensors, not white noise
-        rop_noise = 0.97 * rop_noise + rng.normal(0, 2.0)
-        wob_noise = 0.95 * wob_noise + rng.normal(0, 0.4)
-        tq_noise = 0.90 * tq_noise + rng.normal(0, 0.25)
-        gas_noise = 0.98 * gas_noise + rng.normal(0, 0.04)
+        rop_noise = 0.995 * rop_noise + rng.normal(0, 0.9)
+        wob_noise = 0.99 * wob_noise + rng.normal(0, 0.15)
+        tq_noise = 0.98 * tq_noise + rng.normal(0, 0.1)
+        gas_noise = 0.99 * gas_noise + rng.normal(0, 0.02)
+        hl_noise = 0.98 * hl_noise + rng.normal(0, 0.15)
+        spp_noise = 0.98 * spp_noise + rng.normal(0, 5)
+        rpm_noise = 0.97 * rpm_noise + rng.normal(0, 0.4)
 
         on_bottom = state == DRILLING
         pump_target = 0.0 if state == CONNECTION and state_left > 60 else 1.0
         pump += (pump_target - pump) * 0.08
 
         wob = max(0.0, 26 + 4 * hardness + wob_noise) if on_bottom else 0.0
-        rpm = (120 - 15 * hardness + rng.normal(0, 1.5)) if state != CONNECTION else 0.0
+        rpm = (120 - 15 * hardness + rpm_noise + rng.normal(0, 0.3)) if state != CONNECTION else 0.0
         rop = max(0.0, (65 * rop_factor * (wob / 28) ** 0.8 + rop_noise)) if on_bottom else 0.0
 
         torque = 0.0
@@ -125,11 +137,11 @@ def simulate(well):
             torque = 6.5 + (0.18 * wob if on_bottom else 0) + tq_noise
             if hardness > 0.8 and on_bottom:
                 # Stick-slip in hard rock shows up as a torque oscillation
-                torque += 2.2 * np.sin(i / 4.0) * rng.uniform(0.6, 1.0)
+                torque += 1.6 * np.sin(i / 6.0) + rng.normal(0, 0.2)
 
-        flow_in = (680 + rng.normal(0, 4)) * pump
-        spp = (3150 + 0.04 * (hole - 8000) + rng.normal(0, 18)) * pump**2
-        flow_out = flow_in * (1 + rng.normal(0, 0.008))
+        flow_in = (680 + rng.normal(0, 1.5)) * pump
+        spp = (3150 + 0.04 * (hole - 8000) + spp_noise + rng.normal(0, 4)) * pump**2
+        flow_out = flow_in * (1 + rng.normal(0, 0.004))
 
         if packoff_left > 0:
             ramp = min(1.0, packoff_left / 60)
@@ -145,12 +157,12 @@ def simulate(well):
             pit += 0.045 * pump
             gas_noise += 0.05
             kick_left -= 1
-        pit += rng.normal(0, 0.05)
+        pit += rng.normal(0, 0.02)
         if pit < 470 and state == CIRCULATING and rng.random() < 0.01:
             pit += 40  # mud engineer tops up the active system
 
         string_weight = 0.026 * hole + 12
-        hookload = string_weight - wob + rng.normal(0, 0.6)
+        hookload = string_weight - wob + hl_noise + rng.normal(0, 0.1)
         if state == CONNECTION:
             hookload = 30 + rng.normal(0, 0.4)  # string in the slips, only the blocks hang
 

@@ -41,7 +41,8 @@ STATUS_ICON = {
     "critical": "tabler:urgent",
 }
 # Earth tones for lithology, always shown with the formation name
-LITHOLOGY = ["#4b4a45", "#8a7448", "#6b7b86", "#55524a", "#9a8350", "#7a7f8a"]
+LITHOLOGY = {"Shale": "#4f5d4a", "Sandstone": "#9a7d3e", "Sand": "#9a7d3e", "Limestone": "#5f7a8c",
+             "Dolomite": "#6f6a8c", "Marl": "#7d6a55", "Siltstone": "#7a7348", "Wash": "#8c5a4a"}
 STATE_COLOR = {"Drilling": "green", "Connection": "gray", "Circulating": "blue"}
 
 WINDOWS = {"15 min": 15 * 60, "1 hr": 3600, "6 hr": 6 * 3600}
@@ -87,7 +88,8 @@ def rolling(values, n, fn):
 
 def alarm_conditions(d):
     per_min = 60 // sim.SAMPLE_SECONDS
-    pumping = d["flow_in"] > 100
+    # Pump ramps after a connection look like spikes, so only check once pumps are steady
+    pumping = rolling(d["flow_in"], 5 * per_min, np.min) > 600
     flow_in = rolling(d["flow_in"], 2 * per_min, np.mean)
     flow_out = rolling(d["flow_out"], 2 * per_min, np.mean)
     return {
@@ -97,6 +99,10 @@ def alarm_conditions(d):
         "torque": d["torque"] > THRESHOLDS["torque"],
         "gas": d["gas"] > THRESHOLDS["gas"],
     }
+
+
+def lithology_color(formation):
+    return next(c for rock, c in LITHOLOGY.items() if rock in formation)
 
 
 def style_axes(fig):
@@ -119,7 +125,7 @@ def style_axes(fig):
 
 
 def depth_log(well_key, idx):
-    """Depth-based tracks for the last DEPTH_LOG_FT of hole, averaged into 1 ft bins."""
+    """Depth-based tracks for the last DEPTH_LOG_FT of hole, averaged into 2 ft bins."""
     well = sim.WELLS_BY_KEY[well_key]
     d = sim.DATA[well_key]
     hole = d["hole_depth"][idx]
@@ -127,11 +133,11 @@ def depth_log(well_key, idx):
     top = hole - DEPTH_LOG_FT
     drilled = slice(0, idx + 1)
     mask = (d["state"][drilled] == sim.DRILLING) & (d["hole_depth"][drilled] >= top)
-    feet = np.floor(d["hole_depth"][drilled][mask]).astype(int)
+    feet = (d["hole_depth"][drilled][mask] // 2).astype(int)
     first = feet.min()
     counts = np.bincount(feet - first)
     filled = counts > 0
-    depth = (first + np.arange(len(counts)))[filled]
+    depth = 2 * (first + np.arange(len(counts)))[filled] + 1
 
     def binned(channel):
         sums = np.bincount(feet - first, weights=d[channel][drilled][mask])
@@ -145,7 +151,7 @@ def depth_log(well_key, idx):
     ]
     fig = make_subplots(
         rows=1, cols=5, shared_yaxes=True, horizontal_spacing=0.025,
-        column_widths=[0.55, 1, 1, 1, 1],
+        column_widths=[0.7, 1, 1, 1, 1],
         subplot_titles=["Formation"] + [f"{label} <span style='color:{MUTED}'>{unit}</span>" for _, label, unit in tracks],
     )
 
@@ -156,10 +162,11 @@ def depth_log(well_key, idx):
         if y0 >= y1:
             continue
         fig.add_shape(type="rect", x0=0, x1=1, y0=y0, y1=y1, xref="x", yref="y",
-                      fillcolor=LITHOLOGY[i], line={"width": 2, "color": SURFACE}, layer="below")
+                      fillcolor=lithology_color(f[0]), line={"width": 2, "color": SURFACE}, layer="below")
         if y1 - y0 > 25:
             fig.add_annotation(x=0.5, y=(y0 + y1) / 2, xref="x", yref="y", text=f[0].replace(" ", "<br>"),
                                showarrow=False, font={"color": INK, "size": 11})
+    fig.update_xaxes(nticks=4)
     fig.update_xaxes(range=[0, 1], visible=False, row=1, col=1)
 
     for col, (channel, label, unit) in enumerate(tracks, start=2):
@@ -205,7 +212,7 @@ def strip_charts(stamps, d, well_key, window_label):
             if len(channels) > 1:
                 fig.add_annotation(x=x[-1], y=y[-1], text=name, showarrow=False, xanchor="left", xshift=6,
                                    font={"color": INK_2, "size": 11}, row=r, col=1)
-    fig.update_xaxes(showticklabels=False)
+    fig.update_xaxes(showticklabels=False, range=[x[0], stamps[-1]])
     fig.update_xaxes(showticklabels=True, tickformat="%H:%M", row=len(rows), col=1)
     fig.update_layout(margin={"l": 56, "r": 64, "t": 28, "b": 24}, hovermode="x unified",
                       uirevision=f"{well_key}-{window_label}")
@@ -253,6 +260,14 @@ def alarm_badge(key, label, severity, active):
     )
 
 
+def graph(graph_id):
+    # A responsive dcc.Graph sizes itself to 100% of its parent, so the parent needs a real height
+    return html.Div(
+        dcc.Graph(id=graph_id, config={"displayModeBar": False, "responsive": True}, style={"height": "100%"}),
+        className="graph-tall",
+    )
+
+
 def card(title, *children, extra=None, **kwargs):
     return dmc.Paper(
         [
@@ -273,7 +288,7 @@ header = dmc.AppShellHeader(
                     dmc.Stack(
                         [
                             dmc.Text("Real-time operations", className="eyebrow", visibleFrom="md"),
-                            dmc.Title("Live Well Drilling Monitor", order=3, className="app-title"),
+                            dmc.Title("Live Well Drilling Monitor", order=3, className="app-title", visibleFrom="sm"),
                         ],
                         gap=0,
                     ),
@@ -288,7 +303,7 @@ header = dmc.AppShellHeader(
                         data=[{"value": w.key, "label": w.name} for w in sim.WELLS],
                         value=sim.WELLS[0].key,
                         allowDeselect=False,
-                        w=190,
+                        w={"base": 170, "sm": 190},
                         leftSection=DashIconify(icon="tabler:map-pin", width=16),
                         **{"aria-label": "Well"},
                     ),
@@ -342,16 +357,14 @@ app.layout = dmc.MantineProvider(
                                 dmc.GridCol(
                                     card(
                                         f"Depth log · last {DEPTH_LOG_FT} ft",
-                                        dcc.Graph(id="depth-log", className="graph-tall",
-                                                  config={"displayModeBar": False, "responsive": True}),
+                                        graph("depth-log"),
                                     ),
                                     span={"base": 12, "lg": 5},
                                 ),
                                 dmc.GridCol(
                                     card(
                                         "Surface sensors",
-                                        dcc.Graph(id="strips", className="graph-tall",
-                                                  config={"displayModeBar": False, "responsive": True}),
+                                        graph("strips"),
                                         extra=dmc.Text("UTC", className="card-hint"),
                                     ),
                                     span={"base": 12, "lg": 7},
@@ -361,7 +374,7 @@ app.layout = dmc.MantineProvider(
                         ),
                         card(
                             "Event log",
-                            dmc.ScrollArea(html.Div(id="event-log"), h=260, type="auto"),
+                            dmc.ScrollArea(html.Div(id="event-log"), mah=260, type="auto"),
                             extra=dmc.Text(id="event-count", className="card-hint"),
                         ),
                     ],
@@ -462,7 +475,8 @@ def refresh(_, well_key, window_label):
     ]
     log = dmc.Table(
         [
-            html.Thead(html.Tr([html.Th(h) for h in ["Time", "Severity", "Alarm", "Detail", "Duration"]])),
+            html.Thead(html.Tr([html.Th(h, className="event-why" if h == "Detail" else None)
+                                for h in ["Time", "Severity", "Alarm", "Detail", "Duration"]])),
             html.Tbody(rows or [html.Tr(html.Td(f"No alarms in the last {window_label}.", colSpan=5,
                                                 className="empty"))]),
         ],
