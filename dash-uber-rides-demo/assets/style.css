@@ -1,0 +1,136 @@
+body {
+  background: #1e1e1e;
+}
+
+.mantine-AppShell-header,
+.card {
+  background: #2b2b2b;
+}
+
+.stat-card {
+  background: #1e1e1e;
+}
+
+/* The whole dashboard fits in one viewport on desktop: controls on the left,
+   the map and hourly chart share the remaining space on the right */
+.page {
+  box-sizing: border-box;
+  height: calc(100dvh - var(--app-shell-header-height));
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 12px 20px 16px;
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.card {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.controls {
+  overflow-y: auto;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 28px;
+  margin-bottom: 6px;
+}
+
+.charts {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) clamp(170px, 26%, 240px);
+  gap: 12px;
+}
+
+.map-graph,
+.histogram-graph {
+  flex: 1;
+  min-height: 0;
+}
+
+.map-graph {
+  border-radius: var(--mantine-radius-sm);
+  overflow: hidden;
+}
+
+/* Keep a long hour selection from pushing the stats down */
+.hours-select .mantine-MultiSelect-pillsList {
+  max-height: 64px;
+  overflow-y: auto;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.stat-grid > :last-child {
+  grid-column: span 2;
+}
+
+.stat-card {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero-number {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.source p {
+  margin: 0;
+  font-size: var(--mantine-font-size-xs);
+  color: var(--mantine-color-dimmed);
+}
+
+.source a {
+  color: inherit;
+}
+
+.dash-logo {
+  display: flex;
+}
+
+/* Small screens: stack the controls above the charts and let the page scroll */
+@media (max-width: 900px) {
+  .page {
+    height: auto;
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .charts {
+    grid-template-rows: 60vh 220px;
+  }
+}
+
+/* Dark map attribution to match the basemap */
+.map-graph .maplibregl-ctrl.maplibregl-ctrl-attrib.maplibregl-compact {
+  background: rgba(30, 30, 30, 0.85);
+  color: #a6a7ab;
+}
+
+.map-graph .maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
+}
+
+.map-graph .maplibregl-ctrl-attrib a {
+  color: inherit;
+}
