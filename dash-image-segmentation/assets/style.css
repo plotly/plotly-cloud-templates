@@ -1,0 +1,268 @@
+/* Keep colors in sync with STAIN in app.py */
+:root {
+  --stain: #e3276e;
+  --stain-soft: rgba(227, 39, 110, 0.09);
+  --bench: #f6f5f2;
+  --panel: #ffffff;
+  --line: #e6e3dc;
+  --ink: #1d1f24;
+  --muted: #7a7f88;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+body {
+  background: var(--bench);
+  color: var(--ink);
+}
+
+.mantine-AppShell-header,
+.mantine-AppShell-navbar {
+  background: var(--panel);
+  border-color: var(--line);
+}
+
+/* Header */
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: var(--stain);
+  background: var(--stain-soft);
+  box-shadow: inset 0 0 0 1px rgba(227, 39, 110, 0.25);
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--stain);
+  line-height: 1.4;
+}
+
+.app-title {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.dash-logo {
+  display: flex;
+  align-items: center;
+}
+
+/* Sidebar */
+
+.sidebar {
+  overflow-y: auto;
+}
+
+.stage-number {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--stain);
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--stain-soft);
+}
+
+.stage-title {
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.stage {
+  position: relative;
+}
+
+.stage + .stage::before {
+  content: "";
+  position: absolute;
+  top: calc(-1 * var(--mantine-spacing-xl) / 2);
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--line);
+}
+
+.swatch {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--swatch);
+  color: rgba(0, 0, 0, 0.7);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  font: 600 12px/1 var(--mono);
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.swatch:hover {
+  transform: scale(1.08);
+}
+
+.swatch.selected {
+  box-shadow: 0 0 0 3px var(--panel), 0 0 0 5px var(--swatch), 0 4px 14px var(--swatch);
+}
+
+/* Viewer: a slide-scanner stage that fills the window below the header */
+
+.viewer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - var(--app-shell-header-height, 64px) - 2 * var(--mantine-spacing-md));
+  min-height: 420px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(29, 31, 36, 0.04), 0 8px 24px -12px rgba(29, 31, 36, 0.12);
+  background:
+    radial-gradient(circle at 1px 1px, rgba(29, 31, 36, 0.11) 1px, transparent 0) 0 0 / 22px 22px,
+    var(--panel);
+}
+
+.viz-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  margin: 44px 16px 0;
+}
+
+.specimen-tag {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 500 11px/1 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--stain);
+  box-shadow: 0 0 8px var(--stain);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.readout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 9px 16px;
+  border-top: 1px solid var(--line);
+  background: #fbfaf8;
+  font: 12px/1.4 var(--mono);
+  color: var(--muted);
+}
+
+.readout svg {
+  flex: none;
+  color: var(--stain);
+}
+
+/* How it works */
+
+.modal-title {
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.howto {
+  align-items: flex-start;
+}
+
+.example-img {
+  width: 240px;
+  flex: none;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.help-text {
+  font-size: var(--mantine-font-size-sm);
+  line-height: 1.6;
+  color: #3d4048;
+}
+
+.help-text h3 {
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: var(--mantine-font-size-md);
+  color: var(--ink);
+  margin: 1.1em 0 0.3em;
+}
+
+.help-text h3:first-child {
+  margin-top: 0;
+}
+
+.help-text p,
+.help-text ul {
+  margin: 0 0 0.6em;
+}
+
+.help-text a {
+  color: var(--mantine-color-stain-7);
+}
+
+.help-text code {
+  font-family: var(--mono);
+  font-size: 0.9em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--bench);
+}
+
+@media (max-width: 760px) {
+  .howto {
+    flex-wrap: wrap !important;
+  }
+
+  .example-img {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .dash-logo {
+    display: none;
+  }
+
+  .title-group,
+  .title-group > div {
+    min-width: 0;
+  }
+
+  .app-title {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .viz-body {
+    margin: 40px 8px 0;
+  }
+}
