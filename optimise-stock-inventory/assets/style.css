@@ -1,0 +1,443 @@
+/* Keep colors in sync with the chart constants in app.py */
+:root {
+  --page: #eef1f5;
+  --surface: #ffffff;
+  --surface-2: #f5f7fa;
+  --line: #e1e6ed;
+  --ink: #101828;
+  --ink-2: #475467;
+  --muted: #7d8796;
+  --navy: #14233c;
+  --navy-2: #1d3150;
+  --plan: #2a78d6;
+  --critical: #d03b3b;
+  --critical-text: #b42323;
+  --warning-text: #8a5a00;
+  --good-text: #0a6e0a;
+  --mono: "Fragment Mono", ui-monospace, monospace;
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+}
+
+/* Top bar */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  padding: 18px 32px;
+  background: var(--navy);
+  color: #fff;
+  border-bottom: 3px solid var(--plan);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--navy-2);
+  color: #9ec5f4;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9fb0c8;
+}
+
+.eyebrow.dark {
+  color: var(--muted);
+}
+
+.title {
+  margin: 2px 0 0;
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.asof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 13px;
+  color: #c4cfde;
+}
+
+.asof strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Page */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 20px 32px 32px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 20px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.card-title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.card-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  max-width: 68ch;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.num,
+.mono {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.mono {
+  font-size: 11px;
+}
+
+.right {
+  text-align: right !important;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.t-critical {
+  color: var(--critical-text);
+  font-weight: 600;
+}
+
+/* Controls */
+
+.controls {
+  padding: 16px 20px 26px;
+}
+
+.ctl-label,
+.ctl .mantine-InputWrapper-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+
+.ctl-readout {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--plan);
+  margin-bottom: 6px;
+}
+
+.ctl .mantine-Slider-root {
+  margin-top: 10px;
+}
+
+.ctl .mantine-Slider-markLabel {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* KPIs */
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kpi-icon {
+  color: var(--muted);
+}
+
+.kpi-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.kpi-value {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.kpi-sub {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+/* Runway */
+
+.runway-scroll {
+  max-height: 600px;
+  overflow-y: auto;
+  margin-top: 8px;
+  margin-right: -8px;
+}
+
+/* Detail */
+
+.detail-title {
+  margin: 2px 0 0;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  margin: 14px 0 12px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.fact {
+  background: var(--surface-2);
+  padding: 10px 12px;
+}
+
+.fact-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.fact-value {
+  margin-top: 2px;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fact-sub {
+  font-size: 11.5px;
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-tabs .mantine-Tabs-list {
+  margin-bottom: 4px;
+}
+
+.note {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  max-width: none;
+}
+
+/* Status badges: text in ink tones, color carried by the icon */
+
+.status {
+  text-transform: none;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.status-critical {
+  background: #fbe9e9;
+  color: var(--critical-text);
+}
+
+.status-warning {
+  background: #fff4dc;
+  color: var(--warning-text);
+}
+
+.status-good {
+  background: #e6f5e6;
+  color: var(--good-text);
+}
+
+/* Purchase orders */
+
+.po-scroll {
+  max-height: 560px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.po-scroll {
+  overflow-x: auto;
+}
+
+.po {
+  font-size: 13px;
+  min-width: 600px;
+}
+
+.po thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.po-group td {
+  background: var(--surface-2);
+  padding-top: 10px !important;
+}
+
+.po-row {
+  cursor: pointer;
+}
+
+.po-row.selected td {
+  background: #eaf2fc;
+}
+
+.po-row.selected td:first-child {
+  box-shadow: inset 3px 0 0 var(--plan);
+}
+
+.arrow {
+  margin: 0 4px;
+  vertical-align: -1px;
+}
+
+.footer {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+  .facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar,
+  .main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Runway legend, kept outside the scrolling chart */
+
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.lg-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lg-axis {
+  margin-left: auto;
+  color: var(--muted);
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.sw-critical {
+  background: #d03b3b;
+}
+
+.sw-warning {
+  background: #fab219;
+}
+
+.sw-good {
+  background: #0ca30c;
+}
+
+.sw-tick {
+  width: 3px;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--ink);
+}

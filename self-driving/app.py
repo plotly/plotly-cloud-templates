@@ -6,6 +6,7 @@ objects found by a YOLO v3 network. Pick an object class to browse frames that
 contain it, then tune the confidence and overlap thresholds of the model.
 """
 
+import fcntl
 import os
 import random
 import threading
@@ -98,37 +99,70 @@ def frame_time(frame):
 
 
 # Model, downloaded and loaded in the background so that the server can start
-# answering requests right away
+# answering requests right away. Each gunicorn worker process loads its own copy
 
-model = {"net": None, "error": None, "downloaded": 0, "total": 0}
+model = {"net": None, "error": None, "downloaded": 0, "total": 0, "pid": None}
 net_lock = threading.Lock()  # an OpenCV network can't run in two threads at once
+start_lock = threading.Lock()
+
+
+def download_weights():
+    # Only one process downloads; others wait on the lock and reuse its file
+    os.makedirs(CACHE_DIR, exist_ok=True)
+    with open(WEIGHTS_PATH + ".lock", "w") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+        except OSError:
+            pass  # some network volumes don't support locks; download anyway
+        if os.path.exists(WEIGHTS_PATH):
+            return
+        print(f"Downloading YOLO v3 weights to {WEIGHTS_PATH}...", flush=True)
+        tmp_path = WEIGHTS_PATH + ".part"
+        with requests.get(WEIGHTS_URL, stream=True, timeout=60) as r:
+            r.raise_for_status()
+            model["total"] = int(r.headers.get("content-length", 0))
+            with open(tmp_path, "wb") as f:
+                for chunk in r.iter_content(chunk_size=1 << 20):
+                    f.write(chunk)
+                    model["downloaded"] += len(chunk)
+        if model["total"] and os.path.getsize(tmp_path) != model["total"]:
+            raise OSError("The weights download was incomplete")
+        # Only a complete file ever appears under the final name
+        os.replace(tmp_path, WEIGHTS_PATH)
 
 
 def load_model():
     try:
         if not os.path.exists(WEIGHTS_PATH):
-            print(f"Downloading YOLO v3 weights to {WEIGHTS_PATH}...", flush=True)
-            os.makedirs(CACHE_DIR, exist_ok=True)
-            tmp_path = WEIGHTS_PATH + ".part"
-            with requests.get(WEIGHTS_URL, stream=True, timeout=60) as r:
-                r.raise_for_status()
-                model["total"] = int(r.headers.get("content-length", 0))
-                with open(tmp_path, "wb") as f:
-                    for chunk in r.iter_content(chunk_size=1 << 20):
-                        f.write(chunk)
-                        model["downloaded"] += len(chunk)
-            os.replace(tmp_path, WEIGHTS_PATH)
-        model["net"] = cv2.dnn.readNetFromDarknet(CONFIG_PATH, WEIGHTS_PATH)
+            download_weights()
+        net = cv2.dnn.readNetFromDarknet(CONFIG_PATH, WEIGHTS_PATH)
+        # With these optimizations on, OpenCV caches extra copies of the weights
+        # and the first inference peaks at ~1.8 GB instead of ~0.7 GB, enough
+        # to get the app killed on a small instance. It's no slower without them
+        net.enableWinograd(False)
+        net.enableFusion(False)
+        model["net"] = net
         print("YOLO v3 model loaded.", flush=True)
     except Exception as e:
         model["error"] = str(e)
         print(f"Could not load the YOLO v3 model: {e}", flush=True)
 
 
-threading.Thread(target=load_model, daemon=True).start()
+def ensure_model_loading():
+    """Start loading the model in this process, once. Checking the process id
+    also covers servers that import the app before forking workers (gunicorn
+    --preload), since threads don't survive the fork."""
+    with start_lock:
+        if model["pid"] != os.getpid():
+            model.update(net=None, error=None, downloaded=0, total=0, pid=os.getpid())
+            threading.Thread(target=load_model, daemon=True).start()
+
+
+ensure_model_loading()
 
 
 def model_state():
+    ensure_model_loading()
     if model["net"] is not None:
         return "ready"
     return "error" if model["error"] else "loading"
