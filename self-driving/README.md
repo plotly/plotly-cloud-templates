@@ -1,48 +1,48 @@
-# Run this app locally
+# Object Detection for Self-Driving Cars
 
-Clone the repo:
-```
-git clone https://github.com/plotly/dash-self-driving
-cd dash-self-driving
-```
+Compare the human annotations of the
+[Udacity self-driving car dataset](https://github.com/udacity/self-driving-car/tree/master/annotations)
+with the objects a [YOLO v3](https://pjreddie.com/darknet/yolo/) network finds
+in the same dashcam frame. Pick an object class to browse frames containing it,
+step through them or jump to a random one, and tune the model's confidence and
+overlap (non-max suppression) thresholds.
 
-Create a environment:
-```
-conda create -n dash-self-driving python=3.7
-conda activate dash-self-driving
+Built with [Dash](https://dash.plotly.com/),
+[Dash Mantine Components](https://www.dash-mantine-components.com/) and
+[OpenCV](https://opencv.org/).
+
+![Screenshot of app](assets/screenshot.png)
+
+## Running locally
+
+Requires Python 3.13.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-```
-
-Run the app:
-```
 python app.py
 ```
 
-## Redis
+Then open http://127.0.0.1:8050.
 
-This app makes use of Flasking caching through redis. If you are running this app locally and don't have redis-server installed, install it:
-```
-sudo apt install redis-server
-```
+On first start the app downloads the YOLO v3 weights (~250 MB) in the
+background to `~/.cache/dash-self-driving/`, outside the project folder so they
+are never uploaded. Until then the YOLO panel shows the frame with the download
+progress, and the predictions appear by themselves once the model is loaded.
+Frames are fetched from `images.plot.ly` as they're viewed.
 
-Ensure that the following environment variable is created: `REDIS_URL="redis://localhost:6379"`. There's many way to do it, one of them is to modify the `.bashrc` file (e.g. using `vim ~/.bashrc`) and add the following line:
-```
-export REDIS_URL="redis://localhost:6379"
-```
+## Deploying to Plotly Cloud
 
-Then, open a new terminal and run `redis-server`.
+The app exposes `server` for gunicorn (see `Procfile`) and the Python version is
+pinned in `.python-version`. A single worker holds the network in memory and
+serves requests with threads. The weights are downloaded at startup, so they
+don't need to be published with the app.
 
+## Notes
 
-## Potential errors
-
-If you run into the following error:
-```
-ImportError: libSM.so.6: cannot open shared object file: No such file or directory
-```
-
-Then, check out [this issue](https://github.com/NVIDIA/nvidia-docker/issues/864). Make sure that you install the correct libraries (possibly add `sudo` if needed):
-```
-apt-get update
-apt-get install -y libsm6 libxext6 libxrender-dev
-pip install opencv-python
-```
+- OpenCV is pinned to the 4.x series: OpenCV 5 removed support for Darknet
+  models.
+- YOLO runs once per frame and its candidate detections are cached, so moving
+  the threshold sliders is instant.
+- `Exploration.ipynb` is the notebook the app was originally prototyped in.

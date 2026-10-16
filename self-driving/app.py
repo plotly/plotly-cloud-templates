@@ -27,7 +27,12 @@ from dash_iconify import DashIconify
 IMAGE_BUCKET = "https://images.plot.ly/udacity-self-driving-cars/"
 WEIGHTS_URL = IMAGE_BUCKET + "yolov3.weights"
 CONFIG_PATH = "yolov3.cfg"
-WEIGHTS_PATH = "yolov3.weights"
+# The weights (~250 MB) are downloaded at startup into a cache folder outside
+# the project, so they never end up in an upload
+CACHE_DIR = os.path.join(
+    os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache")), "dash-self-driving"
+)
+WEIGHTS_PATH = os.path.join(CACHE_DIR, "yolov3.weights")
 IMG_WIDTH, IMG_HEIGHT = 512, 320
 
 # Candidates below this score are dropped before caching, so the sliders only
@@ -57,17 +62,18 @@ YOLO_TO_UDACITY = {
     9: "trafficLight",
 }
 
-# Road-line amber, the accent of the whole app
-AMBER = ["#FFF8E1", "#FFEDB3", "#FFE082", "#FFD54F", "#FFCA28",
-         "#FFB300", "#FFA000", "#FF8F00", "#E67E00", "#C66A00"]
+# Highway-sign green, the accent of the whole app. Overpass is based on the
+# typeface of US road signs
+SIGN = ["#E7F5EF", "#C9E9DA", "#9FD8BE", "#6FC39F", "#43AE82",
+        "#1F9A6B", "#0E8659", "#00734B", "#005F3E", "#004A30"]
 THEME = {
-    "fontFamily": "'Chakra Petch', system-ui, sans-serif",
-    "fontFamilyMonospace": "'Martian Mono', ui-monospace, monospace",
-    "headings": {"fontFamily": "'Chakra Petch', system-ui, sans-serif"},
-    "colors": {"amber": AMBER},
-    "primaryColor": "amber",
-    "primaryShade": 5,
-    "defaultRadius": "xs",
+    "fontFamily": "Overpass, system-ui, sans-serif",
+    "fontFamilyMonospace": "'Overpass Mono', ui-monospace, monospace",
+    "headings": {"fontFamily": "Overpass, system-ui, sans-serif"},
+    "colors": {"sign": SIGN},
+    "primaryColor": "sign",
+    "primaryShade": 7,
+    "defaultRadius": "md",
 }
 GRAPH_CONFIG = {"displayModeBar": False, "responsive": True}
 
@@ -89,32 +95,44 @@ def frame_time(frame):
 # Model, downloaded and loaded in the background so that the server can start
 # answering requests right away
 
-model = {"net": None, "error": None}
-model_ready = threading.Event()
+model = {"net": None, "error": None, "downloaded": 0, "total": 0}
 net_lock = threading.Lock()  # an OpenCV network can't run in two threads at once
 
 
 def load_model():
     try:
         if not os.path.exists(WEIGHTS_PATH):
-            print("Downloading YOLO v3 weights...", flush=True)
+            print(f"Downloading YOLO v3 weights to {WEIGHTS_PATH}...", flush=True)
+            os.makedirs(CACHE_DIR, exist_ok=True)
             tmp_path = WEIGHTS_PATH + ".part"
             with requests.get(WEIGHTS_URL, stream=True, timeout=60) as r:
                 r.raise_for_status()
+                model["total"] = int(r.headers.get("content-length", 0))
                 with open(tmp_path, "wb") as f:
                     for chunk in r.iter_content(chunk_size=1 << 20):
                         f.write(chunk)
+                        model["downloaded"] += len(chunk)
             os.replace(tmp_path, WEIGHTS_PATH)
         model["net"] = cv2.dnn.readNetFromDarknet(CONFIG_PATH, WEIGHTS_PATH)
         print("YOLO v3 model loaded.", flush=True)
     except Exception as e:
         model["error"] = str(e)
         print(f"Could not load the YOLO v3 model: {e}", flush=True)
-    finally:
-        model_ready.set()
 
 
 threading.Thread(target=load_model, daemon=True).start()
+
+
+def model_state():
+    if model["net"] is not None:
+        return "ready"
+    return "error" if model["error"] else "loading"
+
+
+def model_progress():
+    if model["total"] and model["downloaded"] < model["total"]:
+        return f"Downloading model {model['downloaded'] / model['total']:.0%}"
+    return "Loading model"
 
 
 @lru_cache(maxsize=256)
@@ -128,9 +146,8 @@ def load_image(frame):
 def yolo_candidates(frame):
     """Run the network once per frame and keep every plausible detection.
     Returns the boxes, scores and labels along with the inference time."""
-    model_ready.wait()
     if model["net"] is None:
-        raise RuntimeError(model["error"])
+        raise RuntimeError(model["error"] or "The model is still loading")
     image = load_image(frame)
     h, w = image.shape[:2]
     blob = cv2.dnn.blobFromImage(image, 1 / 255.0, (416, 416), swapRB=True, crop=False)
@@ -193,16 +210,19 @@ def frame_figure(frame, boxes):
             hoveron="fills",
             hoverinfo="text",
             text=hover,
-            hoverlabel={"bgcolor": "#0A0D12", "bordercolor": color, "font_color": "#E8ECF1"},
+            hoverlabel={"bgcolor": "#FFFFFF", "bordercolor": color, "font_color": "#1F2A24"},
             name="",
         )
-    fig.update_xaxes(range=[0, IMG_WIDTH], visible=False, fixedrange=True)
+    fig.update_xaxes(
+        range=[0, IMG_WIDTH], visible=False, fixedrange=True, constrain="domain", constraintoward="center"
+    )
     fig.update_yaxes(
         range=[IMG_HEIGHT, 0],
         visible=False,
         fixedrange=True,
         scaleanchor="x",
         constrain="domain",
+        constraintoward="middle",
     )
     fig.update_layout(
         # The browser loads the frame straight from the bucket
@@ -223,7 +243,20 @@ def frame_figure(frame, boxes):
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         showlegend=False,
-        font_family="Martian Mono, monospace",
+        font_family="Overpass, sans-serif",
+    )
+    return fig
+
+
+def blank_figure():
+    # Shown until the first frame arrives, instead of Plotly's empty axes
+    fig = go.Figure()
+    fig.update_xaxes(visible=False)
+    fig.update_yaxes(visible=False)
+    fig.update_layout(
+        margin=dict(l=0, r=0, t=0, b=0),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
     )
     return fig
 
@@ -252,7 +285,7 @@ app = dash.Dash(
     __name__,
     title="Object Detection for Self-Driving Cars",
     external_stylesheets=[
-        "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Martian+Mono:wght@400;500&display=swap"
+        "https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700;800&family=Overpass+Mono:wght@400;600&display=swap"
     ],
 )
 server = app.server
@@ -262,17 +295,19 @@ header = dmc.AppShellHeader(
         [
             dmc.Group(
                 [
-                    html.Div(DashIconify(icon="tabler:steering-wheel", width=22), className="brand-mark"),
+                    html.Div(DashIconify(icon="tabler:car", width=24), className="brand-mark"),
                     dmc.Stack(
                         [
-                            html.Div("Perception lab · YOLO v3", className="eyebrow"),
+                            html.Div("Computer vision with YOLO v3", className="eyebrow"),
                             dmc.Title("Object Detection for Self-Driving Cars", order=1, className="app-title"),
                         ],
                         gap=0,
+                        miw=0,
                     ),
                 ],
                 gap="sm",
                 wrap="nowrap",
+                miw=0,
             ),
             dmc.Group(
                 [
@@ -306,14 +341,14 @@ header = dmc.AppShellHeader(
 )
 
 
-def feed(prefix, cam, title, subtitle):
+def feed(prefix, icon, title, subtitle):
     return html.Section(
         [
             html.Div(
                 [
                     html.Div(
                         [
-                            html.Span(cam, className="cam-tag"),
+                            html.Span(DashIconify(icon=icon, width=18), className="feed-badge"),
                             html.Span(title, className="feed-title"),
                             html.Span(subtitle, className="feed-subtitle"),
                         ],
@@ -325,11 +360,16 @@ def feed(prefix, cam, title, subtitle):
             ),
             html.Div(
                 dcc.Loading(
-                    dcc.Graph(id=f"{prefix}-graph", config=GRAPH_CONFIG, className="feed-graph"),
+                    dcc.Graph(
+                        id=f"{prefix}-graph",
+                        figure=blank_figure(),
+                        config=GRAPH_CONFIG,
+                        className="feed-graph",
+                    ),
                     type="circle",
-                    color=AMBER[5],
+                    color=SIGN[7],
                     delay_show=300,
-                    overlay_style={"visibility": "visible", "opacity": 0.45},
+                    overlay_style={"visibility": "visible", "opacity": 0.6},
                     parent_className="feed-loading",
                 ),
                 className="feed-body",
@@ -359,7 +399,6 @@ def readout_slider(label, slider_id, value, minimum):
                 size="sm",
                 updatemode="mouseup",
                 label=None,
-                marks=[{"value": minimum, "label": f"{minimum:g}"}, {"value": 1, "label": "1"}],
             ),
         ],
         className="control",
@@ -417,7 +456,9 @@ console = html.Div(
                             "Random",
                             id="random-frame",
                             leftSection=DashIconify(icon="tabler:arrows-shuffle", width=16),
-                            variant="light",
+                            variant="filled",
+                            color="yellow.5",
+                            autoContrast=True,
                             size="sm",
                         ),
                     ],
@@ -443,8 +484,8 @@ app.layout = dmc.MantineProvider(
                         [
                             html.Div(
                                 [
-                                    feed("truth", "CAM 01", "Ground truth", "human annotated"),
-                                    feed("yolo", "CAM 01", "YOLO v3", "model predictions"),
+                                    feed("truth", "tabler:user-check", "Ground truth", "Human annotated"),
+                                    feed("yolo", "tabler:cpu", "YOLO v3", "Model predictions"),
                                 ],
                                 className="feeds",
                             ),
@@ -458,9 +499,12 @@ app.layout = dmc.MantineProvider(
             padding=0,
         ),
         dcc.Store(id="frame-index", data=0),
+        # Polls the background model download until the network is loaded
+        dcc.Store(id="model-state", data="loading"),
+        dcc.Interval(id="model-poll", interval=1000),
     ],
     theme=THEME,
-    forceColorScheme="dark",
+    forceColorScheme="light",
 )
 
 
@@ -512,17 +556,40 @@ def update_ground_truth(object_class, index):
     Input("frame-index", "data"),
     Input("confidence", "value"),
     Input("overlap", "value"),
+    Input("model-state", "data"),
 )
-def update_yolo(object_class, index, confidence, overlap):
+def update_yolo(object_class, index, confidence, overlap, state):
     frames = FRAMES[object_class]
     frame = frames[index % len(frames)]
+    if model_state() == "loading":
+        # Show the frame right away; the boxes are added once the model is ready
+        waiting = html.Span(
+            "YOLO v3 is loading (first start only), predictions will appear shortly",
+            className="count-empty",
+        )
+        return frame_figure(frame, pd.DataFrame(columns=["label"])), waiting, model_progress()
     try:
         boxes, elapsed = yolo_v3(frame, confidence, overlap)
     except Exception as e:
         print(f"YOLO v3 failed on {frame}: {e}", flush=True)
         empty = frame_figure(frame, pd.DataFrame(columns=["label"]))
-        return empty, html.Span("Model unavailable, try again shortly", className="count-empty"), "offline"
-    return frame_figure(frame, boxes), class_counts(boxes), f"inference {elapsed * 1000:,.0f} ms"
+        return empty, html.Span("Model unavailable, try again shortly", className="count-empty"), "Offline"
+    return frame_figure(frame, boxes), class_counts(boxes), f"Inference {elapsed * 1000:,.0f} ms"
+
+
+@app.callback(
+    Output("model-state", "data"),
+    Output("yolo-meta", "children", allow_duplicate=True),
+    Output("model-poll", "disabled"),
+    Input("model-poll", "n_intervals"),
+    prevent_initial_call=True,
+)
+def poll_model(_):
+    state = model_state()
+    if state == "loading":
+        return dash.no_update, model_progress(), False
+    # Changing the state re-runs update_yolo, which now has the model
+    return state, dash.no_update, True
 
 
 app.clientside_callback(
@@ -535,4 +602,4 @@ app.clientside_callback(
 
 
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True, use_reloader=False, port=8080)

@@ -1,6 +1,3 @@
 __pycache__/
 .venv/
 .DS_Store
-# Downloaded at startup, too large to publish with the app
-yolov3.weights
-yolov3.weights.part
