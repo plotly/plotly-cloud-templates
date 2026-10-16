@@ -1,0 +1,9 @@
+dash==4.4.1
+dash-iconify==0.1.2
+dash-mantine-components==2.8.0
+gunicorn==26.2.0
+numpy==2.5.4
+opencv-python-headless==4.14.0.94
+pandas==3.0.6
+plotly==7.1.0
+requests==2.34.2
