@@ -1,0 +1,366 @@
+/* Keep colors in sync with the chart constants in app.py */
+:root {
+  --page: #eef2f3;
+  --surface: #ffffff;
+  --surface-2: #f4f7f8;
+  --line: rgba(19, 33, 43, 0.1);
+  --ink: #13212b;
+  --ink-2: #4a5b67;
+  --muted: #7a8a96;
+  --copper: #d0601f;
+  --warning: #c98500;
+  --good: #0ca30c;
+  --mono: "Martian Mono", ui-monospace, monospace;
+}
+
+html,
+body {
+  background: var(--page);
+  color: var(--ink);
+  margin: 0;
+}
+
+/* The page is exactly one viewport tall; the chart takes whatever is left */
+.shell {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: Archivo, system-ui, sans-serif;
+  background-color: var(--page);
+  background-image:
+    linear-gradient(rgba(19, 33, 43, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(19, 33, 43, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+  padding: 16px 24px 20px;
+  box-sizing: border-box;
+}
+
+/* Header */
+
+.top {
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 6px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 750;
+  font-stretch: 118%;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+
+.h1-dim {
+  color: var(--muted);
+  font-weight: 500;
+  font-stretch: 100%;
+}
+
+.subline {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 6px 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.tag-k {
+  color: var(--muted);
+}
+
+.tag-live {
+  align-items: center;
+}
+
+.live-k {
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--good);
+}
+
+.pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--good);
+}
+
+.pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--good);
+  animation: pulse 2s ease-out infinite;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse::after {
+    animation: none;
+  }
+}
+
+/* Body */
+
+.body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 16px 18px;
+  box-shadow: 0 1px 2px rgba(19, 33, 43, 0.04);
+}
+
+.panel-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+/* Friction overlay */
+
+.ff-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.mu {
+  font-size: 22px;
+  color: var(--copper);
+  font-style: italic;
+}
+
+.ff-big {
+  font-family: var(--mono);
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.ff-at {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 12px 0 6px;
+}
+
+.ff-at > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.ff-at .k {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.ff-at .v {
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.ff-at .u {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.ff-readout {
+  margin-bottom: 16px;
+}
+
+.ff-slider {
+  margin-bottom: 14px;
+}
+
+.ff-slider .mantine-Slider-markLabel {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* Fitted friction */
+
+.fit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+}
+
+.fit-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fit-glyph {
+  font-size: 11px;
+}
+
+.fit-values {
+  display: flex;
+  gap: 16px;
+  text-align: right;
+}
+
+.fit-values > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.fit-value {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.fit-recent.is-rising {
+  color: var(--warning);
+}
+
+.fit-sub {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.alert {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink);
+  background: rgba(201, 133, 0, 0.08);
+  border: 1px solid rgba(201, 133, 0, 0.35);
+}
+
+.alert.is-ok {
+  background: rgba(12, 163, 12, 0.06);
+  border-color: rgba(12, 163, 12, 0.3);
+}
+
+.alert.is-ok svg {
+  color: var(--good);
+}
+
+.alert svg {
+  color: var(--warning);
+  flex: none;
+  margin-top: 1px;
+}
+
+/* Chart */
+
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 6px 6px 2px;
+  min-width: 0;
+  min-height: 0;
+  box-shadow: 0 1px 2px rgba(19, 33, 43, 0.04);
+}
+
+/* Narrow screens stack the panels, so the page scrolls there */
+@media (max-width: 980px) {
+  .shell {
+    height: auto;
+    overflow: visible;
+    padding: 16px;
+  }
+  .body {
+    grid-template-columns: 1fr;
+  }
+  .chart-card {
+    height: 820px;
+  }
+}

@@ -1,0 +1,402 @@
+/* Keep colors in sync with the chart constants in app.py */
+:root {
+  --page: #f1f1ee;
+  --surface: #fdfdfc;
+  --line: rgba(17, 16, 20, 0.09);
+  --ink: #111014;
+  --ink-2: #4f4d57;
+  --muted: #7d7b86;
+  --side: #17151f;
+  --side-2: #221f2d;
+  --side-line: rgba(255, 255, 255, 0.09);
+  --side-ink: #f3f1ea;
+  --side-muted: #a29fae;
+  --volt: #f5b301;
+  --forecast: #2a78d6;
+  --neg: #b42323;
+  --pos: #0a6e0a;
+  --num: "Space Grotesk", Manrope, sans-serif;
+  --shadow: 0 1px 2px rgba(17, 16, 20, 0.04), 0 6px 18px rgba(17, 16, 20, 0.05);
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: Manrope, system-ui, sans-serif;
+}
+
+.mantine-AppShell-main {
+  background: var(--page);
+}
+
+/* Sidebar */
+
+.sidebar {
+  background: var(--side) !important;
+  border-right: none !important;
+  overflow-y: auto;
+}
+
+.sidebar-inner {
+  padding: 22px 22px 28px;
+  color: var(--side-ink);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 10px;
+  background: var(--volt);
+  color: var(--side);
+}
+
+.brand-name {
+  font-family: var(--num);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--side-ink);
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: var(--side-muted);
+}
+
+.side-section {
+  margin-bottom: -8px;
+  padding-top: 18px;
+  border-top: 1px solid var(--side-line);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--side-muted);
+}
+
+.side-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--side-ink);
+}
+
+.side-value {
+  font-family: var(--num);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--volt);
+}
+
+.side-help {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--side-muted);
+}
+
+.side-slider {
+  margin-bottom: 14px;
+}
+
+.side-slider .mantine-Slider-markLabel {
+  font-size: 11px;
+  color: var(--side-muted);
+}
+
+.side-slider .mantine-Slider-track::before {
+  background: var(--side-2);
+}
+
+.side-slider .mantine-Slider-mark {
+  border-color: var(--side-2);
+  background: var(--side-2);
+}
+
+.sidebar .mantine-Checkbox-input {
+  background: var(--side-2);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.sidebar .mantine-Checkbox-input:checked {
+  background: var(--volt);
+  border-color: var(--volt);
+}
+
+.sidebar .mantine-Checkbox-icon {
+  color: var(--side) !important;
+}
+
+.unit-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: var(--side-ink);
+  line-height: 1.25;
+}
+
+.unit-mw {
+  font-size: 11.5px;
+  color: var(--side-muted);
+}
+
+.reset {
+  align-self: flex-start;
+  color: var(--side-muted) !important;
+}
+
+.reset:hover {
+  background: var(--side-2) !important;
+}
+
+.side-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 18px;
+  border-top: 1px solid var(--side-line);
+}
+
+/* Main */
+
+.main {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px 28px 40px;
+}
+
+.header {
+  padding-bottom: 4px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--num);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.badge {
+  border-color: var(--line) !important;
+  color: var(--ink-2) !important;
+  text-transform: none !important;
+  font-weight: 600 !important;
+  background: var(--surface) !important;
+}
+
+/* KPIs */
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.kpi {
+  padding: 16px 18px;
+  background: var(--surface) !important;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.kpi-icon {
+  color: var(--muted);
+}
+
+.kpi-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.kpi-value {
+  margin-top: 6px;
+  font-family: var(--num);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.kpi-value.neg {
+  color: var(--neg);
+}
+
+.kpi-value.pos {
+  color: var(--pos);
+}
+
+.kpi-sub {
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Cards */
+
+.card {
+  padding: 16px 18px 10px;
+  background: var(--surface) !important;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.card-head {
+  margin-bottom: 6px;
+}
+
+.card-title {
+  font-family: var(--num);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card-hint {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Risk calendar */
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 4px -4px 8px;
+}
+
+.risk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.risk-table th {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-align: left;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.risk-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.risk-table tbody tr {
+  cursor: pointer;
+}
+
+.risk-table tbody tr:hover {
+  background: rgba(17, 16, 20, 0.03);
+}
+
+.risk-table tbody tr.row-selected {
+  background: rgba(245, 179, 1, 0.14);
+}
+
+.day {
+  font-weight: 700;
+}
+
+.num {
+  font-family: var(--num);
+  font-variant-numeric: tabular-nums;
+}
+
+.strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.range {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.neg {
+  color: var(--neg);
+}
+
+.dr-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(42, 120, 214, 0.1);
+  font-size: 11px;
+  font-weight: 700;
+  color: #1c5cab;
+}
+
+.risk-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.risk-track {
+  width: 70px;
+  height: 6px;
+  flex: none;
+  border-radius: 3px;
+  background: rgba(17, 16, 20, 0.07);
+  overflow: hidden;
+}
+
+.risk-fill {
+  height: 100%;
+  min-width: 2px;
+  border-radius: 3px;
+  background: var(--ink-2);
+}
+
+.risk-cell .num {
+  min-width: 34px;
+}
+
+.level {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.level-good { background: rgba(12, 163, 12, 0.1); color: #0a6e0a; }
+.level-warning { background: rgba(250, 178, 25, 0.18); color: #8a5a00; }
+.level-serious { background: rgba(236, 131, 90, 0.18); color: #a94418; }
+.level-critical { background: rgba(208, 59, 59, 0.12); color: #b42323; }
+
+@media (max-width: 1100px) {
+  .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .main { padding: 16px 16px 32px; }
+  .kpi-row { grid-template-columns: 1fr; }
+  .title { font-size: 23px; }
+}
+
+/* Let wide children (the risk table) scroll inside their card instead of widening the page */
+.main > *,
+.card,
+.mantine-Grid-col {
+  min-width: 0;
+}

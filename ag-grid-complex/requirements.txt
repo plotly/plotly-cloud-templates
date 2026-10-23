@@ -1,0 +1,4 @@
+dash==4.4.1
+dash-ag-grid==35.3.0
+gunicorn==26.2.0
+numpy==2.5.4
