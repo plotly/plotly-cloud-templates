@@ -79,7 +79,7 @@ def view():
                                         colorDataRange=color_range,
                                         children=[dash_vtk.Mesh(id="cfd-tubes", state=tubes)]),
         dash_vtk.GeometryRepresentation(
-            property={"color": [0.78, 0.96, 0.38], "representation": 0, "pointSize": 7},
+            property={"color": [0.36, 0.78, 1.0], "representation": 0, "pointSize": 7},
             children=[dash_vtk.Algorithm(id="cfd-seed", vtkClass="vtkLineSource", state=seed_state(0, 0, 10))],
         ),
     ])

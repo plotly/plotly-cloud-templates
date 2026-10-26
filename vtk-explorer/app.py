@@ -1,8 +1,8 @@
 """
 VTK Explorer
 
-A gallery of seven interactive 3D scenes built with dash-vtk: procedural geometry, a terrain mesh,
-a lidar point cloud, synthetic and CT volumes, orthogonal slices and CFD streamlines. Pick a scene
+A gallery of eight interactive 3D scenes built with dash-vtk: procedural geometry, a terrain mesh,
+a lidar point cloud, synthetic and CT volumes, orthogonal slices, CFD streamlines and vehicle aerodynamics. Pick a scene
 on the left, drive it from the inspector on the right; everything renders in the browser with vtk.js.
 """
 
@@ -17,18 +17,18 @@ from demos import BY_SLUG, DEMOS
 FONTS = ("https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800"
          "&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap")
 
-# Acid lime on violet-black, kept in sync with assets/style.css
+# Sky blue on violet-black, kept in sync with assets/style.css
 THEME = {
     "fontFamily": "'DM Sans', system-ui, sans-serif",
     "fontFamilyMonospace": "'DM Mono', ui-monospace, monospace",
     "headings": {"fontFamily": "Syne, 'DM Sans', sans-serif"},
-    "primaryColor": "acid",
+    "primaryColor": "sky",
     "primaryShade": 4,
     "autoContrast": True,
     "defaultRadius": "sm",
     "colors": {
-        "acid": ["#f8ffe6", "#effdc9", "#e2fb9f", "#d5f97a", "#c8f560",
-                 "#b3e046", "#97c22f", "#779a22", "#58731a", "#3b4e12"],
+        "sky": ["#eaf8ff", "#d0efff", "#a8e2ff", "#80d5ff", "#5cc8ff",
+                "#3ab4f0", "#2496d4", "#1a76a9", "#13587e", "#0c3a54"],
         "dark": ["#ecebf2", "#c9c7d6", "#a9a6b8", "#6f6c80", "#3a3746",
                  "#2a2734", "#1f1d28", "#15131c", "#100e16", "#0c0b10"],
     },
@@ -71,7 +71,7 @@ header = html.Header(
     [
         html.Div(
             [
-                html.Div([html.Span(className="mark-cube"), "VTK", html.Em("Explorer")], className="wordmark"),
+                html.Div(["VTK", html.Em("Explorer")], className="wordmark"),
                 html.Span("3D scientific visualization in Dash", className="tagline"),
             ],
             className="brand",
@@ -187,4 +187,4 @@ clientside_callback(
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8080)

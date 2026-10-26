@@ -20,7 +20,7 @@ SOURCES = {
     "cylinder": "vtkCylinderSource",
     "sphere": "vtkSphereSource",
 }
-SWATCHES = ["#c8f560", "#ff7a59", "#7aa2ff", "#f2efe6", "#c58bff"]
+SWATCHES = ["#5cc8ff", "#ff7a59", "#c8f560", "#f2efe6", "#c58bff"]
 
 
 def _state(source, resolution, capping):

@@ -1,4 +1,4 @@
-/* VTK Explorer: a darkroom for 3D data. Violet-black panels, acid lime signal. */
+/* VTK Explorer: a darkroom for 3D data. Violet-black panels, sky blue signal. */
 
 :root {
   --bg: #0c0b10;
@@ -9,8 +9,8 @@
   --ink: #ecebf2;
   --ink-2: #a9a6b8;
   --muted: #6f6c80;
-  --acid: #c8f560;
-  --acid-dim: rgba(200, 245, 96, 0.12);
+  --accent: #5cc8ff;
+  --accent-dim: rgba(92, 200, 255, 0.12);
   --viewport: #09080c; /* matches BACKGROUND in demos/common.py */
   --display: Syne, "DM Sans", sans-serif;
   --sans: "DM Sans", system-ui, sans-serif;
@@ -31,7 +31,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: var(--acid); color: #10130a; }
+::selection { background: var(--accent); color: #06141c; }
 
 /* ---------- shell: one screen, no page scroll ---------- */
 
@@ -75,17 +75,7 @@ html, body {
 .wordmark em {
   font-style: normal;
   font-weight: 500;
-  color: var(--acid);
-}
-
-/* An isometric cube drawn with borders */
-.mark-cube {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--acid);
-  transform: rotate(45deg) skew(-10deg, -10deg);
-  box-shadow: 4px -4px 0 -2px var(--bg), 4px -4px 0 0 var(--acid);
-  margin-right: 4px;
+  color: var(--accent);
 }
 
 .tagline {
@@ -161,7 +151,7 @@ html, body {
 
 .nav-item:hover { background: var(--panel-2); color: var(--ink); }
 
-.nav-item.active { background: var(--acid-dim); color: var(--ink); }
+.nav-item.active { background: var(--accent-dim); color: var(--ink); }
 
 .nav-item.active::before {
   content: "";
@@ -171,11 +161,11 @@ html, body {
   bottom: 8px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: var(--acid);
+  background: var(--accent);
 }
 
 .nav-index { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-.nav-item.active .nav-index { color: var(--acid); }
+.nav-item.active .nav-index { color: var(--accent); }
 
 .nav-thumb {
   width: 52px;
@@ -186,7 +176,7 @@ html, body {
   background: var(--viewport);
 }
 
-.nav-item.active .nav-thumb { border-color: var(--acid); }
+.nav-item.active .nav-thumb { border-color: var(--accent); }
 
 .nav-text { display: flex; flex-direction: column; min-width: 0; }
 
@@ -241,7 +231,7 @@ html, body {
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--acid);
+  color: var(--accent);
   pointer-events: none;
 }
 
@@ -310,7 +300,7 @@ kbd {
   color: var(--muted);
 }
 
-.insp-meta span:first-child { color: var(--acid); }
+.insp-meta span:first-child { color: var(--accent); }
 
 .insp-title {
   margin: 8px 0 8px;
@@ -349,7 +339,7 @@ kbd {
 .field-hint { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
 .hints { margin: 0 0 10px; padding-left: 16px; font-size: 12.5px; line-height: 1.55; color: var(--ink-2); }
-.hints li::marker { color: var(--acid); content: "› "; }
+.hints li::marker { color: var(--accent); content: "› "; }
 
 .probe { display: grid; gap: 4px; margin-bottom: 10px; }
 

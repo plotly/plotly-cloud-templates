@@ -43,7 +43,7 @@ def view():
             showCubeAxes=False,
             cubeAxesStyle={
                 "axisLabels": ["Easting", "Northing", "Altitude"],
-                "axisTextStyle": {"fontColor": "#c8f560", "fontFamily": "DM Mono, monospace", "fontSize": 15},
+                "axisTextStyle": {"fontColor": "#5cc8ff", "fontFamily": "DM Mono, monospace", "fontSize": 15},
                 "tickTextStyle": {"fontColor": "#a9a6b8", "fontFamily": "DM Mono, monospace", "fontSize": 12},
             },
             children=[
@@ -58,7 +58,7 @@ def view():
         dash_vtk.GeometryRepresentation(
             id="terrain-pick-rep",
             actor={"visibility": False},
-            property={"color": [0.78, 0.96, 0.38]},
+            property={"color": [0.36, 0.78, 1.0]},
             children=[dash_vtk.Algorithm(id="terrain-pick", vtkClass="vtkSphereSource",
                                        state={"center": CENTER, "radius": 90})],
         ),

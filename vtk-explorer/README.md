@@ -1,6 +1,6 @@
 # VTK Explorer
 
-A gallery of seven interactive 3D scenes built with
+A gallery of eight interactive 3D scenes built with
 [dash-vtk](https://dash.plotly.com/vtk), each driven from Python and rendered in
 the browser with vtk.js:
 
@@ -16,6 +16,8 @@ the browser with vtk.js:
   with window and level
 - **CFD streamlines**: airflow around a motorbike from an OpenFOAM run, traced
   through the velocity field with VTK on the server
+- **Vehicle aerodynamics**: a race car from an OpenFOAM run, colored by surface
+  pressure or velocity, with a wake isosurface and a hover probe
 
 The whole app fits one screen: scenes on the left, the viewport in the middle and
 each scene's controls on the right.
@@ -51,12 +53,13 @@ libraries are needed on the server.
 - `app.py`: the shell, navigation and routing
 - `demos/`: one module per scene, each exposing `view()`, `controls()` and
   `stats()` and registering its own callbacks; `demos/__init__.py` sets the order
-- `data/`: the CT volume, the CFD meshes and pre-sampled copies of PyVista's
+- `data/`: the CT volume, the CFD meshes, the race car parts with a decimated
+  copy of its isosurface, and pre-sampled copies of PyVista's
   lidar and crater example datasets
 - `assets/style.css`: the theme
 
 ## Acknowledgements
 
-The head CT, motorbike CFD case and the lidar and crater datasets come from the
+The head CT, motorbike CFD case, race car case and the lidar and crater datasets come from the
 [dash-vtk](https://github.com/plotly/dash-vtk) and
 [PyVista](https://docs.pyvista.org/) example collections.
