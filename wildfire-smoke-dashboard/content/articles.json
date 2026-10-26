@@ -1,0 +1,180 @@
+[
+  {
+    "slug": "three-seasons",
+    "kicker": "The seasons",
+    "title": "Three seasons of smoke",
+    "dek": "Two northern summers of large fires and a winter firestorm in Los Angeles: the windows this dashboard covers, and how they were chosen.",
+    "image": {
+      "file": "three-seasons.jpg",
+      "alt": "The Bay Bridge and the San Francisco skyline under a dark orange sky",
+      "caption": "Smoke from the North Complex Fire turns the daytime sky over the Bay Bridge a dark orange, September 9, 2020.",
+      "credit": "Christopher Michel",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:North_Complex_smoke_in_San_Francisco_-_Bay_Bridge_and_Financial_District.jpg"
+    },
+    "body": [
+      {"type": "p", "text": "In the late summer of 2020, smoke from fires across Northern California turned the daytime sky over San Francisco a dark orange. That season, with the August Complex, the SCU, LNU and CZU lightning complexes, the Creek Fire and the North Complex, is the first of the {seasons} this dashboard follows."},
+      {"type": "p", "text": "The second is the summer of 2021, when the Dixie, Caldor and Monument fires and the River Complex burned across the north of the state."},
+      {"type": "p", "text": "The third is different in kind. In January 2025 the Palisades and Eaton fires burned into neighborhoods of Los Angeles County, months outside the usual summer fire season."},
+      {"type": "quote", "text": "The map opens on each season's worst day for fine particles."},
+      {"type": "h", "text": "Why these windows"},
+      {"type": "p", "text": "Each window is long enough to show the air before, during and after the worst smoke: August through October in 2020, July through September in 2021, and the first six weeks of 2025."},
+      {"type": "p", "text": "The map opens on each season's worst statewide day for fine particles. The exception is 2025: the statewide peak that January came from fireworks and a Central Valley inversion, so the map opens instead on January 8, the day Los Angeles monitors peaked."}
+    ],
+    "facts": [
+      {"label": "2020", "value": "{window_2020} · {note_2020}"},
+      {"label": "2021", "value": "{window_2021} · {note_2021}"},
+      {"label": "2025 LA", "value": "{window_2025} · {note_2025}"}
+    ],
+    "source": null
+  },
+  {
+    "slug": "smoke",
+    "kicker": "Smoke",
+    "title": "Smoke, seen from orbit",
+    "dek": "Every day, NOAA analysts trace the edges of smoke plumes on satellite imagery. Those outlines become the shaded layer on the map.",
+    "image": {
+      "file": "smoke.jpg",
+      "alt": "Satellite view of thick tan smoke spreading west from the California and Oregon coast over the Pacific",
+      "caption": "Smoke from fires along the West Coast spreads out over the Pacific, September 9, 2020.",
+      "credit": "NASA Earth Observatory",
+      "license": "Public domain",
+      "license_url": "",
+      "source_url": "https://commons.wikimedia.org/wiki/File:The_Fast_Fire_Threat_(153689_-_westernfires_tmo_2020253_lrg).jpg"
+    },
+    "body": [
+      {"type": "p", "text": "The smoke layer comes from NOAA's Hazard Mapping System. Each day, analysts review satellite imagery and draw the extent of the smoke they can see, grading each area as light, medium or heavy."},
+      {"type": "p", "text": "The dashboard keeps the plumes over California, trims them to the state outline and simplifies their edges for display."},
+      {"type": "h", "text": "What counts as a smoke day"},
+      {"type": "p", "text": "A county has a smoke day when smoke of a chosen density, or denser, covers at least {smoke_cover} of its area. The threshold control in the sidebar sets which density counts."},
+      {"type": "quote", "text": "The analysis describes smoke anywhere in the column of air, not necessarily at ground level."},
+      {"type": "p", "text": "That distinction matters. A county can sit under a thick plume aloft while its monitors read clean air, so the smoke layer and the monitor readings are best read together."}
+    ],
+    "facts": [
+      {"label": "Publisher", "value": "NOAA NESDIS Hazard Mapping System"},
+      {"label": "Frequency", "value": "Daily analyst-drawn polygons"},
+      {"label": "Densities", "value": "Light, medium, heavy"},
+      {"label": "Smoke day", "value": "At least {smoke_cover} of a county's area"}
+    ],
+    "source": {"label": "HMS smoke polygons", "url": "https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile/"}
+  },
+  {
+    "slug": "monitors",
+    "kicker": "Air quality",
+    "title": "{monitors} monitors, one number a day",
+    "dek": "How readings from regulatory air monitors become the daily AQI colors on the map.",
+    "image": {
+      "file": "monitors.jpg",
+      "alt": "A white air monitoring shelter with sampling equipment on its roof, behind a chain-link fence",
+      "caption": "An air monitoring station in Moe, Victoria, Australia, shown for illustration.",
+      "credit": "Environment Protection Authority Victoria",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Air_monitoring_station_-_Moe.jpg"
+    },
+    "body": [
+      {"type": "p", "text": "The circles on the map are regulatory air monitors whose readings are reported to the U.S. Environmental Protection Agency. The dashboard reads EPA AirData's pre-generated daily files: the 24-hour mean of fine particulate matter (PM2.5, parameter 88101, from federal reference and equivalent methods) and the daily maximum 8-hour average of ozone (parameter 44201)."},
+      {"type": "p", "text": "Where a site has more than one instrument for the same pollutant, their values are averaged, so each site contributes a single number per day. The snapshot holds {monitors} California sites."},
+      {"type": "h", "text": "From concentration to AQI"},
+      {"type": "p", "text": "Each daily value is converted to the Air Quality Index with the EPA's breakpoints, using the May 2024 revision for PM2.5, and the concentration is truncated first. Ozone's 8-hour table stops at 200 ppb, an AQI of 300, so higher readings are capped there."},
+      {"type": "quote", "text": "Each site contributes a single number per day."},
+      {"type": "p", "text": "County figures are the average of a county's reporting monitors. The statewide population-weighted mean weights each county by its residents and counts only counties with a monitor."}
+    ],
+    "facts": [
+      {"label": "Publisher", "value": "U.S. EPA AirData"},
+      {"label": "Pollutants", "value": "PM2.5 24-hour mean (µg/m³), ozone daily maximum 8-hour (ppb)"},
+      {"label": "Sites", "value": "{monitors} in California"},
+      {"label": "AQI", "value": "EPA breakpoints, May 2024 PM2.5 revision"}
+    ],
+    "source": {"label": "EPA AirData pre-generated daily files", "url": "https://aqs.epa.gov/aqsweb/airdata/download_files.html"}
+  },
+  {
+    "slug": "fires",
+    "kicker": "Fire",
+    "title": "Where the fires burned",
+    "dek": "CAL FIRE's perimeters show how far each large fire eventually spread, and what the outlines on the map can and cannot tell you.",
+    "image": {
+      "file": "fires.jpg",
+      "alt": "A line of flame along a forested ridge under a pink, smoke-filled sky",
+      "caption": "The Doe Fire, part of the August Complex, from Forest Highway 7, August 19, 2020.",
+      "credit": "U.S. Forest Service",
+      "license": "Public domain",
+      "license_url": "",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Doe_Fire_looking_south_from_forest_highway_7_(2020-08-19).jpg"
+    },
+    "body": [
+      {"type": "p", "text": "The fire layer uses the California Fire Perimeters maintained by CAL FIRE's Fire and Resource Assessment Program. It includes fires of 1,000 acres or more that burned during each season."},
+      {"type": "p", "text": "A fire appears on the map from its alarm date and turns grey after its containment date."},
+      {"type": "h", "text": "A final outline, not a daily one"},
+      {"type": "p", "text": "Each shape is the fire's final mapped extent. On the day a fire starts, the map already draws the full area it would eventually burn."},
+      {"type": "quote", "text": "The layer shows where a fire went, not how it grew."}
+    ],
+    "facts": [
+      {"label": "Publisher", "value": "CAL FIRE Fire and Resource Assessment Program"},
+      {"label": "Minimum size", "value": "1,000 acres"},
+      {"label": "Shown from", "value": "Alarm date"},
+      {"label": "Grey after", "value": "Containment date"}
+    ],
+    "source": {"label": "California Fire Perimeters (CAL FIRE FRAP)", "url": "https://services1.arcgis.com/jUJYIo9tSA7EHvfZ/ArcGIS/rest/services"}
+  },
+  {
+    "slug": "asthma",
+    "kicker": "Health",
+    "title": "Breathing it in",
+    "dek": "County rates of asthma emergency-department visits show where smoke lands on people who are already vulnerable.",
+    "image": {
+      "file": "asthma.jpg",
+      "alt": "A dark bank of smoke above apartment buildings and rooftops at dusk",
+      "caption": "Smoke from the Eaton Fire over homes in Los Angeles, January 2025.",
+      "credit": "Jeremy Thompson",
+      "license": "CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Los_Angeles_(54313222683).jpg"
+    },
+    "body": [
+      {"type": "p", "text": "The health layer uses age-adjusted rates of emergency-department visits for asthma per 10,000 residents, published by the California Department of Public Health through the state's open data portal. The rates are annual, cover 2015 to {health_last_year}, and are available for all ages and for children aged 0 to 17."},
+      {"type": "p", "text": "Each season uses the rate for its own year. Seasons after {health_last_year} use the {health_last_year} rate, the latest published."},
+      {"type": "h", "text": "Reading the numbers with care"},
+      {"type": "p", "text": "Emergency-department use in 2020 and 2021 was lower than usual because of COVID-19, so those years understate the typical burden. The department also suppresses rates for some small counties, which leaves those counties without a value."},
+      {"type": "p", "text": "On the map, the asthma rate can be combined with smoke days into a score from 0 to 100, scaled so the top county is 100."},
+      {"type": "quote", "text": "It is a screening index for where asthma burden and repeated smoke overlap, not an estimate of risk."}
+    ],
+    "facts": [
+      {"label": "Publisher", "value": "California Department of Public Health"},
+      {"label": "Measure", "value": "Asthma ED visits per 10,000, age-adjusted"},
+      {"label": "Years", "value": "2015–{health_last_year}, annual"},
+      {"label": "Ages", "value": "All ages; children 0–17"}
+    ],
+    "source": {"label": "Asthma emergency department visit rates (CHHS Open Data)", "url": "https://data.chhs.ca.gov/dataset/asthma-emergency-department-visit-rates"}
+  },
+  {
+    "slug": "people",
+    "kicker": "Population",
+    "title": "Who lives under the smoke",
+    "dek": "Census estimates turn smoke and air quality into a count of residents, county by county.",
+    "image": {
+      "file": "people.jpg",
+      "alt": "Market Street in San Francisco, lined with towers under an orange sky, streetlights on in daytime",
+      "caption": "Market Street, San Francisco, September 9, 2020.",
+      "credit": "Dllu",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Market_St_during_Orange_Skies_Day_dllu.jpg"
+    },
+    "body": [
+      {"type": "p", "text": "The map's {counties} counties come from a public county boundary file, filtered to California."},
+      {"type": "p", "text": "Population figures are the U.S. Census Bureau's Vintage 2025 county estimates, matched to each season's year. They weight the statewide exposure numbers and count the residents of affected counties."},
+      {"type": "h", "text": "What the counts mean"},
+      {"type": "p", "text": "Residents in AQI above 100 adds up the population of every county whose county-mean AQI is Unhealthy for Sensitive Groups or worse. Residents under smoke counts counties with medium or heavy smoke over at least {smoke_cover} of their area."},
+      {"type": "quote", "text": "Both count whole counties: how many people live where conditions were poor, not how many were exposed."}
+    ],
+    "facts": [
+      {"label": "Publisher", "value": "U.S. Census Bureau"},
+      {"label": "Estimates", "value": "Vintage 2025, 2020–2025"},
+      {"label": "Geography", "value": "{counties} California counties"},
+      {"label": "Boundaries", "value": "plotly/datasets county GeoJSON"}
+    ],
+    "source": {"label": "Census Vintage 2025 county estimates", "url": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/counties/totals/"}
+  }
+]

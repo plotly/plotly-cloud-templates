@@ -1,0 +1,795 @@
+/*
+ * Dashboard styles — prussian / charcoal-blue chrome, papaya canvas, peach accents
+ * (palette tokens live in theme.py).
+ * Mantine components are styled via their static class names (.mantine-X-y) or
+ * our own classNames — never the hashed m_xxxx classes. Overrides are scoped
+ * under #sidebar / .mantine-AppShell-header so they out-rank Mantine's single-
+ * class selectors without !important.
+ *
+ * Layout language: a light sidebar of white panels on the papaya canvas, and a
+ * stats pane of dark charcoal cards on a pale-slate rail (the --side-* tokens). Sidebar
+ * selected states are a raised white pill on a recessed papaya track; the header nav
+ * is plain text tabs with a charcoal underline.
+ */
+
+:root {
+  --canvas: var(--mantine-color-papaya-1);
+  --surface: var(--mantine-color-white);
+  --hairline: var(--mantine-color-gray-2);
+  --ink: var(--mantine-color-charcoal-9);
+  --accent: var(--mantine-color-charcoal-6);
+
+  /* dark surfaces: stats pane (dark cards on a pale-slate rail) and the dark sidebar */
+  --side-rail: var(--mantine-color-gray-4);
+  --side-bg: var(--mantine-color-charcoal-9);
+  --side-panel: var(--mantine-color-charcoal-8);
+  --side-control: var(--mantine-color-charcoal-6);
+  --side-text: var(--mantine-color-papaya-2);
+  --side-label: var(--mantine-color-gray-4);
+  --side-muted: var(--mantine-color-gray-5);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Header nav: full-height text tabs, charcoal underline on the active one ─ */
+.mantine-AppShell-header .nav-tabs-list {
+  height: 100%;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.mantine-AppShell-header .nav-tabs-list::before {
+  display: none; /* the header's own bottom border is the baseline */
+}
+
+.mantine-AppShell-header .nav-tab {
+  height: 100%;
+  margin-bottom: 0;
+  padding: 0 14px;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  color: var(--mantine-color-gray-6);
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 500;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.mantine-AppShell-header .nav-tab:hover {
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--mantine-color-gray-3);
+}
+
+.mantine-AppShell-header .nav-tab[data-active],
+.mantine-AppShell-header .nav-tab[data-active]:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+/* ── Sidebar: papaya canvas with white section panels ────────────────────── */
+#sidebar {
+  background: var(--canvas);
+}
+
+#sidebar .sidebar-section {
+  margin: 0 12px 10px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border-radius: var(--mantine-radius-lg);
+  box-shadow: var(--mantine-shadow-xs);
+}
+
+#sidebar .sidebar-section:first-of-type {
+  margin-top: 12px;
+}
+
+#sidebar .sidebar-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+#sidebar .sidebar-label,
+#sidebar .mantine-InputWrapper-label {
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 500;
+  color: var(--mantine-color-gray-7);
+}
+
+#sidebar .mantine-InputWrapper-label {
+  margin-bottom: 4px;
+}
+
+#sidebar .sidebar-caption {
+  font-size: 11px;
+  color: var(--mantine-color-dimmed);
+}
+
+#sidebar .week-label {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: var(--mantine-color-gray-7);
+}
+
+#sidebar .week-label b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Segmented controls: white pill on a papaya track */
+#sidebar .mantine-SegmentedControl-root {
+  background: var(--mantine-color-papaya-2);
+}
+
+#sidebar .mantine-SegmentedControl-label {
+  color: var(--mantine-color-gray-7);
+}
+
+#sidebar .mantine-SegmentedControl-label[data-active],
+#sidebar .mantine-SegmentedControl-label[data-active]:hover {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Day slider month marks and layer switches */
+#sidebar .mantine-Slider-markLabel {
+  font-size: 10px;
+  color: var(--mantine-color-dimmed);
+}
+
+#sidebar .mantine-Switch-label {
+  font-size: var(--mantine-font-size-xs);
+  color: var(--mantine-color-gray-8);
+}
+
+#sidebar #live-badge {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* ── Sidebar, dark variant: prussian shell with charcoal panels ──────────────
+   callbacks/navigation.py adds .sidebar-dark on the tabs in DARK_SIDEBAR_TABS
+   (Time Series). Covers the controls those tabs show: segmented controls and
+   the county multi-select. */
+#sidebar,
+#sidebar .sidebar-section {
+  transition: background-color 150ms ease;
+}
+
+#sidebar.sidebar-dark {
+  background: var(--side-bg);
+}
+
+#sidebar.sidebar-dark .sidebar-section {
+  background: var(--side-panel);
+  box-shadow: none;
+}
+
+#sidebar.sidebar-dark .sidebar-section-title {
+  color: var(--side-text);
+}
+
+#sidebar.sidebar-dark .sidebar-label,
+#sidebar.sidebar-dark .mantine-InputWrapper-label {
+  color: var(--side-label);
+}
+
+#sidebar.sidebar-dark .sidebar-caption {
+  color: var(--side-muted);
+}
+
+#sidebar.sidebar-dark .mantine-SegmentedControl-root {
+  background: var(--side-control);
+}
+
+#sidebar.sidebar-dark .mantine-SegmentedControl-indicator {
+  background: var(--mantine-color-papaya-2);
+}
+
+#sidebar.sidebar-dark .mantine-SegmentedControl-label {
+  color: var(--mantine-color-gray-3);
+}
+
+#sidebar.sidebar-dark .mantine-SegmentedControl-label:hover {
+  color: var(--side-text);
+}
+
+#sidebar.sidebar-dark .mantine-SegmentedControl-label[data-active],
+#sidebar.sidebar-dark .mantine-SegmentedControl-label[data-active]:hover {
+  color: var(--ink);
+}
+
+/* --input-bg also feeds the clear (×) button, which Mantine paints inline with it */
+#sidebar.sidebar-dark .mantine-MultiSelect-wrapper {
+  --input-bg: var(--side-control);
+}
+
+#sidebar.sidebar-dark .mantine-MultiSelect-input {
+  border-color: transparent;
+  color: var(--side-text);
+}
+
+#sidebar.sidebar-dark .mantine-MultiSelect-input:focus-within {
+  border-color: var(--mantine-color-peach-3);
+}
+
+#sidebar.sidebar-dark .mantine-MultiSelect-inputField {
+  color: var(--side-text);
+}
+
+#sidebar.sidebar-dark .mantine-MultiSelect-inputField::placeholder {
+  color: var(--mantine-color-gray-3);
+}
+
+#sidebar.sidebar-dark .mantine-MultiSelect-pill {
+  background: var(--mantine-color-papaya-2);
+  color: var(--ink);
+}
+
+#sidebar.sidebar-dark .mantine-MultiSelect-section,
+#sidebar.sidebar-dark .mantine-ComboboxChevron-chevron {
+  color: var(--side-label);
+}
+
+#sidebar.sidebar-dark .mantine-InputClearButton-root {
+  color: var(--side-label);
+}
+
+#sidebar.sidebar-dark .mantine-InputClearButton-root:hover {
+  color: var(--side-text);
+}
+
+/* ── Map view ────────────────────────────────────────────────────────────── */
+.mode-bar {
+  flex-shrink: 0;
+}
+
+/* Map graph sizing — same chain as Houston_MSA (.map-container → .graph-loading-wrapper
+   → .graph-fill → Plotly inner divs). Every flex level needs min-height: 0 or the
+   MapLibre canvas sizes itself before the container is laid out. */
+.map-pane {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.map-container,
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  isolation: isolate;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.map-container .graph-loading-wrapper,
+.chart-container .graph-loading-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+}
+
+.map-container .graph-fill,
+.chart-container .graph-fill {
+  box-sizing: border-box;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.map-container .js-plotly-plot,
+.map-container .plot-container,
+.map-container .svg-container,
+.chart-container .js-plotly-plot,
+.chart-container .plot-container,
+.chart-container .svg-container {
+  width: 100%;
+  height: 100%;
+}
+
+.map-legend {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  width: 200px;
+  z-index: 5;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.legend-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mantine-color-gray-8);
+}
+
+.legend-text {
+  font-size: 10px;
+  color: var(--mantine-color-gray-7);
+}
+
+.legend-note {
+  font-size: 9px;
+  line-height: 1.25;
+  color: var(--mantine-color-gray-5);
+}
+
+.legend-gradient {
+  height: 10px;
+  border-radius: 4px;
+}
+
+/* Stats pane: dark charcoal cards on a pale-slate rail. Mantine's text, dimmed and divider
+   variables are re-pointed inside the scope, so card contents need no per-component colours. */
+.stats-column {
+  height: 100%;
+  flex-shrink: 0;
+  background: var(--side-rail);
+  color: var(--side-text);
+  --mantine-color-text: var(--side-text);
+  --mantine-color-dimmed: var(--side-label);
+  --hairline: var(--mantine-color-charcoal-5);
+}
+
+.stats-column .mantine-Card-root {
+  background: var(--side-panel);
+  box-shadow: none;
+}
+
+.stats-column .mantine-Divider-root {
+  --divider-color: var(--hairline);
+}
+
+/* ── Stat-card primitives ───────────────────────────────────────────────── */
+/* Stat grid: 2×2 cells split by hairlines, no tiles or tints */
+.stat-grid {
+  border-top: 1px solid var(--hairline);
+}
+
+.stat-cell {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.stat-cell:nth-child(odd) {
+  padding-right: 12px;
+  border-right: 1px solid var(--hairline);
+}
+
+.stat-cell:nth-child(even) {
+  padding-left: 12px;
+}
+
+.swatch {
+  flex-shrink: 0;
+}
+
+.swatch-circle {
+  border-radius: 50%;
+}
+
+.swatch-square {
+  border-radius: 2px;
+}
+
+.info-tip {
+  display: inline-flex;
+  cursor: help;
+}
+
+/* ── Time series ─────────────────────────────────────────────────────────── */
+.ts-card {
+  height: 100%;
+  gap: var(--mantine-spacing-sm);
+}
+
+.pin-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/* ── About: editorial index and articles ─────────────────────────────────────
+   Magazine layout on the papaya canvas: IBM Plex Serif type, hairline rules, photos
+   with captions below them. Deliberately no card boxes, badges, scrims, icon tiles or
+   hover zoom. Markup: components/about_tab.py. */
+.editorial {
+  --font-serif: "IBM Plex Serif", Georgia, serif;
+  --ed-rule: var(--mantine-color-gray-3);
+  color: var(--ink);
+}
+
+.editorial a:not(.ed-story-link):not(.ed-next):not(.ed-back) {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--mantine-color-gray-4);
+  text-underline-offset: 3px;
+}
+
+.editorial a:not(.ed-story-link):not(.ed-next):not(.ed-back):hover {
+  text-decoration-color: currentColor;
+}
+
+/* Index */
+.ed-index {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 48px 40px 72px;
+}
+
+.ed-masthead {
+  margin-bottom: 36px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.ed-masthead-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 46px;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+.ed-masthead-dek {
+  max-width: 60ch;
+  margin: 12px 0 0;
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--mantine-color-gray-7);
+}
+
+.ed-note {
+  margin: -12px 0 28px;
+  font-size: 14px;
+  color: var(--mantine-color-gray-7);
+}
+
+/* Story teasers */
+.ed-story-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border-radius: 2px;
+}
+
+.ed-story-link:focus-visible,
+.ed-next:focus-visible,
+.ed-back:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+}
+
+.ed-frame {
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--mantine-color-gray-2);
+}
+
+.ed-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 150ms ease;
+}
+
+.ed-story-link:hover .ed-img {
+  opacity: 0.92;
+}
+
+.ed-kicker {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.ed-headline {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.ed-story-link:hover .ed-headline {
+  text-decoration-line: underline;
+}
+
+.ed-dek {
+  margin: 10px 0 0;
+  font-family: var(--font-serif);
+  line-height: 1.5;
+  color: var(--mantine-color-gray-7);
+}
+
+.ed-story-lead {
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 36px;
+  align-items: center;
+  padding-bottom: 40px;
+}
+
+.ed-story-lead .ed-headline {
+  font-size: 38px;
+}
+
+.ed-story-lead .ed-dek {
+  font-size: 19px;
+}
+
+.ed-row {
+  display: grid;
+  gap: 40px 36px;
+  padding: 36px 0 40px;
+  border-top: 1px solid var(--ed-rule);
+}
+
+.ed-row-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.ed-row-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.ed-row .ed-frame {
+  margin-bottom: 18px;
+}
+
+.ed-story-half .ed-headline {
+  font-size: 26px;
+}
+
+.ed-story-half .ed-dek {
+  font-size: 17px;
+}
+
+.ed-story-third .ed-headline {
+  font-size: 21px;
+}
+
+.ed-story-third .ed-dek {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 16px;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.ed-credits {
+  padding-top: 24px;
+  border-top: 1px solid var(--ed-rule);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--mantine-color-gray-6);
+}
+
+.ed-credits-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.ed-credits ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ed-credits-story {
+  color: var(--mantine-color-gray-8);
+}
+
+/* Article */
+.ed-article {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 32px 40px 80px;
+}
+
+.ed-back {
+  display: inline-block;
+  margin-bottom: 40px;
+  font-size: 14px;
+  color: var(--mantine-color-gray-7);
+  text-decoration: none;
+}
+
+.ed-back:hover {
+  color: var(--ink);
+}
+
+.ed-article-head,
+.ed-body {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.ed-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 46px;
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+
+.ed-dek-lg {
+  margin-top: 16px;
+  font-size: 21px;
+}
+
+.ed-figure {
+  margin: 40px 0 44px;
+}
+
+.ed-figure .ed-frame {
+  aspect-ratio: 16 / 9;
+}
+
+.ed-figure figcaption {
+  max-width: 680px;
+  margin: 12px auto 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--mantine-color-gray-6);
+}
+
+.ed-body {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.ed-body p {
+  margin: 0 0 1.1em;
+}
+
+.ed-subhead {
+  margin: 1.8em 0 0.6em;
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.ed-quote {
+  margin: 1.6em 0;
+  padding: 22px 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ed-rule);
+  font-family: var(--font-serif);
+  font-size: 25px;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+.ed-facts {
+  margin-top: 2.4em;
+  padding-top: 14px;
+  border-top: 1px solid var(--ed-rule);
+  font-family: var(--mantine-font-family);
+}
+
+.ed-facts-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ed-facts dl {
+  display: grid;
+  grid-template-columns: minmax(120px, 30%) 1fr;
+  margin: 0;
+}
+
+.ed-facts dt,
+.ed-facts dd {
+  margin: 0;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--ed-rule);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.ed-facts dt {
+  padding-right: 16px;
+  color: var(--mantine-color-gray-7);
+}
+
+.ed-source {
+  margin-top: 1.4em;
+  font-family: var(--mantine-font-family);
+  font-size: 14px;
+  color: var(--mantine-color-gray-7);
+}
+
+.ed-article-foot {
+  max-width: 680px;
+  margin: 56px auto 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--ed-rule);
+}
+
+.ed-next {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ed-next-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.ed-next-title {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  line-height: 1.2;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.ed-next:hover .ed-next-title {
+  text-decoration-line: underline;
+}
+
+@media (max-width: 1100px) {
+  .ed-row-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .ed-story-lead,
+  .ed-row-2,
+  .ed-row-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .ed-index,
+  .ed-article {
+    padding: 28px 20px 56px;
+  }
+
+  .ed-masthead-title,
+  .ed-title {
+    font-size: 34px;
+  }
+}
