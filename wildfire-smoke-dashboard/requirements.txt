@@ -1,0 +1,7 @@
+dash==4.0.0
+dash-mantine-components==2.8.0
+dash-iconify>=0.1.2
+plotly==6.5.2
+pandas==3.0.0
+geopandas==1.1.2
+orjson>=3.10

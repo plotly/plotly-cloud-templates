@@ -1,0 +1,36 @@
+{
+  "fetched_at": "2026-10-16T19:56:11+00:00",
+  "seasons": {
+    "2020": [
+      "2020-08-01",
+      "2020-10-31"
+    ],
+    "2021": [
+      "2021-07-01",
+      "2021-09-30"
+    ],
+    "2025": [
+      "2025-01-01",
+      "2025-02-15"
+    ]
+  },
+  "sources": {
+    "air_quality": [
+      "https://aqs.epa.gov/aqsweb/airdata/daily_88101_2020.zip",
+      "https://aqs.epa.gov/aqsweb/airdata/daily_44201_2020.zip",
+      "https://aqs.epa.gov/aqsweb/airdata/daily_88101_2021.zip",
+      "https://aqs.epa.gov/aqsweb/airdata/daily_44201_2021.zip",
+      "https://aqs.epa.gov/aqsweb/airdata/daily_88101_2025.zip",
+      "https://aqs.epa.gov/aqsweb/airdata/daily_44201_2025.zip"
+    ],
+    "smoke": "https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile/",
+    "fires": [
+      "https://services1.arcgis.com/jUJYIo9tSA7EHvfZ/ArcGIS/rest/services/2020_California_Fire_Perimeters_View/FeatureServer/0/query",
+      "https://services1.arcgis.com/jUJYIo9tSA7EHvfZ/ArcGIS/rest/services/2021_California_Fire_Perimeters/FeatureServer/0/query",
+      "https://services1.arcgis.com/jUJYIo9tSA7EHvfZ/ArcGIS/rest/services/2025_California_Fire_Perimeters_View/FeatureServer/0/query"
+    ],
+    "asthma": "https://data.chhs.ca.gov/dataset/34f3464e-b2eb-4f74-9ef9-f378711aa0f5/resource/94d84508-8046-40a7-b8d9-0ed73b13b697/download/asthma-emergency-department-visit-rates-by-county-2015_2023.csv",
+    "population": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/counties/totals/co-est2025-alldata.csv",
+    "counties": "https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json"
+  }
+}
