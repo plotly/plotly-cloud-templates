@@ -1,0 +1,8 @@
+dash==4.4.1
+dash-iconify==0.1.2
+dash-mantine-components==2.8.1
+dash-vtk==0.0.9
+flask-compress==1.25
+gunicorn==26.2.0
+numpy==2.5.4
+vtk==9.7.1
