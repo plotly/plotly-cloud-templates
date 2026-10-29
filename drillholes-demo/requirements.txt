@@ -1,0 +1,9 @@
+dash>=3.0.0
+dash-ag-grid>=33.0.0
+dash-mantine-components>=0.14.0
+dash-iconify>=0.1.2
+dash-tour-component>=0.0.2
+plotly>=6.0.0
+pandas>=2.0.0
+numpy>=1.26.0
+gunicorn>=21.0.0

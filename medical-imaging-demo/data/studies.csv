@@ -1,0 +1,9 @@
+study_id,patient_id,patient_name,age,gender,view_position,finding_labels,study_date,accession,image_file,referrer
+ST0001,PT1001,Mark White,45,M,PA,No Finding,2026-06-15,ACC515886,xray_01.png,Dr. Smith
+ST0002,PT1002,Robert Jones,67,F,PA,Cardiomegaly,2026-06-15,ACC382218,xray_02.png,Dr. Baker
+ST0003,PT1003,Matthew Nelson,72,M,AP,Pleural Effusion|Cardiomegaly,2026-06-15,ACC381137,xray_03.png,Dr. Williams
+ST0004,PT1004,Daniel Allen,58,F,PA,Pneumonia|Consolidation,2026-06-15,ACC526207,xray_04.png,Dr. Baker
+ST0005,PT1005,Charles Hall,81,M,AP,Atelectasis,2026-06-15,ACC802856,xray_05.png,Dr. King
+ST0006,PT1006,Nancy Wilson,63,F,PA,Nodule,2026-06-15,ACC224291,xray_06.png,Dr. King
+ST0007,PT1007,Jessica Harris,34,M,AP,Pneumothorax,2026-06-15,ACC124300,xray_07.png,Dr. Wilson
+ST0008,PT1008,Anthony Allen,69,F,PA,Mass,2026-06-15,ACC206818,xray_08.png,Dr. Harris
