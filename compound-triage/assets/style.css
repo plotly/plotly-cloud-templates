@@ -1,0 +1,364 @@
+/* Keep colors in sync with the chart constants in app.py */
+:root {
+  --page: #f2f4f3;
+  --surface: #ffffff;
+  --line: rgba(11, 11, 11, 0.08);
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #7f7e78;
+  --accent: #0f766e;
+  --accent-soft: #e6f4f1;
+  --good: #006300;
+  --bad: #b8322f;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+  margin: 0;
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+/* Header */
+
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #ffffff;
+  flex: none;
+}
+
+.brand-name {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+
+.brand-sub,
+.asof {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Sidebar */
+
+.navbar {
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+}
+
+.side-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+
+.side-hint,
+.side-count {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.side-count {
+  margin-left: 2px;
+}
+
+.gate {
+  padding-bottom: 14px;
+}
+
+.gate-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.gate-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.gate-slider {
+  margin: 8px 4px 18px;
+}
+
+.gate-slider .mantine-Slider-markLabel {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.gate-count {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* Page */
+
+.main {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 20px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+  height: 100%;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.card-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.graph {
+  height: 340px;
+}
+
+.graph.short {
+  height: 250px;
+}
+
+.graph.mid {
+  height: 290px;
+}
+
+.foot {
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 900px;
+}
+
+.empty {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* KPIs */
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.kpi-icon {
+  color: var(--accent);
+}
+
+.kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.kpi-value {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
+.kpi-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Candidate shelf */
+
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(150px, 1fr));
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.shelf-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+
+.shelf-item:hover {
+  border-color: rgba(15, 118, 110, 0.45);
+}
+
+.shelf-item.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+  background: #fbfefd;
+}
+
+.cid {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.score {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ink-2);
+}
+
+.thumb {
+  width: 100%;
+  height: 110px;
+  object-fit: contain;
+}
+
+.series-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.shelf-note {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.shelf-note.ok {
+  color: var(--good);
+  font-weight: 600;
+}
+
+/* Compound detail */
+
+.cmp-title {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.cmp-meta {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+.structure-wrap {
+  background: #fafaf8;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  padding: 8px;
+}
+
+.structure {
+  width: 100%;
+  max-width: 420px;
+  height: 230px;
+  object-fit: contain;
+}
+
+.smiles {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 8px 2px 12px;
+  word-break: break-all;
+}
+
+.props {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.prop-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.prop-value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.prop-value.warn {
+  color: var(--bad);
+}
+
+.verdict {
+  text-transform: none;
+}
+
+@media (max-width: 1100px) {
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding: 16px;
+  }
+
+  .kpis {
+    grid-template-columns: 1fr;
+  }
+
+  .props {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Let wide children (the candidate shelf) scroll inside their card instead of widening the page */
+.main,
+.card,
+.mantine-Grid-col {
+  min-width: 0;
+}

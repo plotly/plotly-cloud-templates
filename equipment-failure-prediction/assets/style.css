@@ -1,0 +1,552 @@
+/* Keep colors in sync with the chart constants in app.py */
+:root {
+  --page: #f3f2ee;
+  --surface: #fcfcfb;
+  --line: rgba(11, 11, 11, 0.1);
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #898781;
+  --accent: #eb6834;
+  --good: #0ca30c;
+  --critical: #d03b3b;
+  --mono: "Azeret Mono", ui-monospace, monospace;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: "Schibsted Grotesk", system-ui, sans-serif;
+}
+
+.page {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 0 20px 32px;
+}
+
+/* Header */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px 0 14px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  background: var(--ink);
+  color: var(--accent);
+  border-radius: 4px;
+  /* hazard stripe along the bottom edge */
+  box-shadow: inset 0 -4px 0 var(--accent);
+}
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.brand-sub {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.ctl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ctl-label {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.horizon {
+  background: #e7e6e0;
+}
+
+.as-of {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--good);
+  box-shadow: 0 0 0 3px rgba(12, 163, 12, 0.18);
+}
+
+/* Tabs */
+
+.tabs-list {
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+
+.tabs .mantine-Tabs-tab {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tab-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Cards and tiles */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px 16px;
+  min-width: 0;
+}
+
+.card-head {
+  margin-bottom: 8px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.card-sub {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--ink);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+.tile-alert {
+  border-top-color: var(--critical);
+}
+
+.tile-good {
+  border-top-color: var(--good);
+}
+
+.tile-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.tile-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 4px 0 2px;
+}
+
+.tile-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.row {
+  display: grid;
+  gap: 16px;
+}
+
+.row-floor {
+  grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
+}
+
+.row-asset {
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+}
+
+.row-half {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.floor-graph {
+  height: 400px;
+}
+
+.sensor-graph {
+  height: 520px;
+}
+
+.driver-graph {
+  height: 230px;
+}
+
+.history-graph {
+  height: 240px;
+}
+
+.half-graph {
+  height: 290px;
+}
+
+.lead-graph {
+  height: 420px;
+}
+
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.key-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+
+/* Watchlist */
+
+.watchlist {
+  display: flex;
+  flex-direction: column;
+}
+
+.w-row {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 70px 40px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.w-row:hover {
+  background: rgba(11, 11, 11, 0.04);
+}
+
+.w-row.is-selected {
+  background: rgba(235, 104, 52, 0.1);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.w-tag,
+.ah-tag,
+.w-pct {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.w-pct {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.w-mid {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.w-name {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.w-mode {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.w-bar {
+  height: 6px;
+  background: #ebeae5;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.w-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+}
+
+.w-down {
+  grid-column: 3 / 5;
+  justify-self: end;
+  color: var(--ink-2);
+}
+
+/* Asset detail */
+
+.asset-head {
+  padding: 4px 2px 0;
+  border-top: 2px solid var(--ink);
+  margin-top: 6px;
+}
+
+.ah-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.ah-tag {
+  font-size: 14px;
+  background: var(--ink);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
+.ah-name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.ah-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.chip {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 3px 9px;
+  border-radius: 99px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--badge) 18%, transparent);
+  border: 1px solid var(--badge);
+}
+
+.ol-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ol-cell {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 8px 10px;
+}
+
+.ol-cell.is-active {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.ol-h {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ol-p {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.ol-bar {
+  height: 4px;
+  background: #ebeae5;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ol-fill {
+  height: 100%;
+  background: var(--ink);
+}
+
+.ol-block {
+  margin-top: 14px;
+}
+
+.ol-k {
+  font-size: 11px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.ol-mode {
+  font-size: 17px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.ol-match,
+.ol-action {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-top: 2px;
+  line-height: 1.45;
+}
+
+.ol-down {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  background: #ebeae5;
+  padding: 8px 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+/* Model tab */
+
+.controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: end;
+}
+
+.thr {
+  padding-bottom: 18px;
+}
+
+.thr-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.thr-value {
+  font-family: var(--mono);
+  font-size: 20px;
+  color: var(--accent);
+}
+
+.costs {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.costs .mantine-NumberInput-root {
+  width: 150px;
+}
+
+.note {
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.55;
+  max-width: 980px;
+}
+
+@media (max-width: 1000px) {
+  .row-floor,
+  .row-asset,
+  .row-half,
+  .controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .page {
+    padding: 0 16px 24px;
+  }
+  .tiles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .floor-graph {
+    height: 300px;
+  }
+  .costs .mantine-NumberInput-root {
+    width: 100%;
+  }
+}
