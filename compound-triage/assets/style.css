@@ -8,8 +8,8 @@
   --muted: #7f7e78;
   --accent: #0f766e;
   --accent-soft: #e6f4f1;
-  --good: #006300;
-  --bad: #b8322f;
+  --pass: #0a8a0a;
+  --fail: #c63434;
   --mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -19,15 +19,12 @@ body {
   margin: 0;
 }
 
-.mono {
-  font-family: var(--mono);
-}
+/* Header and sidebar */
 
-/* Header */
-
-.header {
+.header,
+.navbar {
   background: var(--surface);
-  border-bottom: 1px solid var(--line);
+  border-color: var(--line);
 }
 
 .brand-mark {
@@ -44,21 +41,14 @@ body {
 .brand-name {
   font-size: 17px;
   font-weight: 800;
-  letter-spacing: -0.01em;
   line-height: 1.15;
 }
 
 .brand-sub,
-.asof {
+.side-hint,
+.card-hint {
   font-size: 12px;
   color: var(--muted);
-}
-
-/* Sidebar */
-
-.navbar {
-  background: var(--surface);
-  border-right: 1px solid var(--line);
 }
 
 .side-title {
@@ -67,20 +57,6 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--ink-2);
-}
-
-.side-hint,
-.side-count {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.side-count {
-  margin-left: 2px;
-}
-
-.gate {
-  padding-bottom: 14px;
 }
 
 .gate-label {
@@ -96,36 +72,36 @@ body {
 }
 
 .gate-slider {
-  margin: 8px 4px 18px;
-}
-
-.gate-slider .mantine-Slider-markLabel {
-  font-size: 10px;
-  color: var(--muted);
-}
-
-.gate-count {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.dot {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  flex: none;
+  margin: 8px 4px 4px;
 }
 
 /* Page */
 
 .main {
-  max-width: 1480px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 20px 24px 32px;
+  padding: 24px 24px 32px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.main,
+.mantine-Grid-col {
+  min-width: 0;
+}
+
+.headline {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.subline {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin: 4px 0 0;
 }
 
 .card {
@@ -139,207 +115,131 @@ body {
 .card-title {
   font-size: 14px;
   font-weight: 700;
-  color: var(--ink);
-}
-
-.card-hint {
-  font-size: 12px;
-  color: var(--muted);
+  margin-bottom: 12px;
 }
 
 .graph {
-  height: 340px;
-}
-
-.graph.short {
-  height: 250px;
-}
-
-.graph.mid {
-  height: 290px;
+  height: 360px;
 }
 
 .foot {
   font-size: 12px;
   color: var(--muted);
-  max-width: 900px;
 }
 
-.empty {
-  font-size: 13px;
-  color: var(--muted);
-}
+/* Candidate cards */
 
-/* KPIs */
-
-.kpis {
+.cands {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.kpi {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 14px 16px;
-}
-
-.kpi-icon {
-  color: var(--accent);
-}
-
-.kpi-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink-2);
-}
-
-.kpi-value {
-  font-size: 30px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  margin-top: 4px;
-}
-
-.kpi-sub {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-/* Candidate shelf */
-
-.shelf {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 4px;
 }
 
-.shelf-item {
+.cand {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 10px;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: border-color 120ms, box-shadow 120ms;
+  transition: border-color 120ms;
 }
 
-.shelf-item:hover {
+.cand:hover {
   border-color: rgba(15, 118, 110, 0.45);
 }
 
-.shelf-item.selected {
+.cand.selected {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent-soft);
-  background: #fbfefd;
 }
 
-.cid {
+.card-row {
+  display: flex;
+  justify-content: space-between;
   font-size: 12px;
-  font-weight: 500;
+}
+
+.cid,
+.cmp-id {
+  font-family: var(--mono);
 }
 
 .score {
-  font-size: 12px;
   font-weight: 800;
   color: var(--ink-2);
 }
 
 .thumb {
+  display: block;
   width: 100%;
-  height: 110px;
+  height: 120px;
   object-fit: contain;
+  margin: 4px 0;
 }
 
-.series-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+.note {
   font-size: 12px;
-  color: var(--ink-2);
-}
-
-.shelf-note {
-  font-size: 11px;
   color: var(--muted);
-  line-height: 1.35;
 }
 
-.shelf-note.ok {
-  color: var(--good);
+.note.ok {
+  color: var(--pass);
   font-weight: 600;
 }
 
-/* Compound detail */
+/* Selected compound */
 
-.cmp-title {
-  font-family: var(--mono);
-  font-size: 22px;
+.cmp-id {
+  font-size: 20px;
   font-weight: 500;
-}
-
-.cmp-meta {
-  font-size: 12px;
-  color: var(--muted);
-  font-family: var(--mono);
-}
-
-.structure-wrap {
-  background: #fafaf8;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  padding: 8px;
-}
-
-.structure {
-  width: 100%;
-  max-width: 420px;
-  height: 230px;
-  object-fit: contain;
-}
-
-.smiles {
-  font-size: 11px;
-  color: var(--muted);
-  margin: 8px 2px 12px;
-  word-break: break-all;
-}
-
-.props {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px 12px;
-}
-
-.prop-label {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.prop-value {
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.prop-value.warn {
-  color: var(--bad);
 }
 
 .verdict {
   text-transform: none;
 }
 
-@media (max-width: 1100px) {
-  .kpis {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.structure {
+  display: block;
+  width: 100%;
+  height: 240px;
+  object-fit: contain;
+  margin: 8px 0 12px;
+}
+
+.check {
+  display: grid;
+  grid-template-columns: 22px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.check-icon.pass,
+.check-value.pass {
+  color: var(--pass);
+}
+
+.check-icon.fail,
+.check-value.fail {
+  color: var(--fail);
+}
+
+.check-icon.untested,
+.check-value.untested {
+  color: var(--muted);
+}
+
+.check-value {
+  font-weight: 700;
+  text-align: right;
+}
+
+.check-bar {
+  font-size: 12px;
+  color: var(--muted);
+  min-width: 96px;
+  text-align: right;
 }
 
 @media (max-width: 640px) {
@@ -347,18 +247,7 @@ body {
     padding: 16px;
   }
 
-  .kpis {
-    grid-template-columns: 1fr;
+  .headline {
+    font-size: 22px;
   }
-
-  .props {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* Let wide children (the candidate shelf) scroll inside their card instead of widening the page */
-.main,
-.card,
-.mantine-Grid-col {
-  min-width: 0;
 }
