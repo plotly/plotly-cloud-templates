@@ -68,6 +68,8 @@ class Plate:
     flags: list = field(default_factory=list)  # (severity, short label, detail)
     status: str = "Pass"
     hits: list = field(default_factory=list)
+    activity: np.ndarray = None  # true fraction of signal each compound removes, kept so a re-read repeats it
+    rerun: bool = False
 
 
 def well_name(r, c):
@@ -156,7 +158,7 @@ def build_campaign():
                     compounds[r, c] = f"HB-{cmpd_counter}"
             plates.append(Plate(
                 plate_id=f"ZK7-{run}{k + 1:02d}", run=run, seq=seq, order_in_run=k + 1, read_at=read_at,
-                reader=reader, dispenser=dispenser, lot=lot, raw=raw, compounds=compounds,
+                reader=reader, dispenser=dispenser, lot=lot, raw=raw, compounds=compounds, activity=frac,
             ))
     for p in plates:
         qc(p)
@@ -247,8 +249,26 @@ def qc(p):
     p.hits = sorted(hits, key=lambda h: -h["pct"])
 
 
+def reread(p):
+    """The same compounds dispensed and read again with the fault fixed: the chemistry repeats, the noise doesn't."""
+    rng = np.random.default_rng(SEED * 1000 + p.seq)
+    hi_mu, lo_mu = LOTS[p.lot]
+    hi, lo = hi_mu * rng.normal(1, 0.015), lo_mu * rng.normal(1, 0.02)
+    raw = rng.normal(hi, hi * 0.04, (N_ROWS, N_COLS)) - p.activity * (hi - lo)
+    raw[:, LOW_COLS] = rng.normal(lo, lo * 0.07, (N_ROWS, len(LOW_COLS)))
+    q = Plate(
+        plate_id=p.plate_id, run=p.run, seq=p.seq, order_in_run=p.order_in_run, read_at=p.read_at,
+        reader=p.reader, dispenser="Multidrop-1", lot=p.lot, raw=np.clip(raw, 200, None), compounds=p.compounds,
+        activity=p.activity, rerun=True,
+    )
+    qc(q)
+    return q
+
+
 PLATES = build_campaign()
 BY_ID = {p.plate_id: p for p in PLATES}
+# What each flagged plate looks like when the lab re-runs it, built up front so the server holds no state
+REREADS = {p.plate_id: reread(p) for p in PLATES if p.status != "Pass"}
 RUN_DATES = {r: min(p.read_at for p in PLATES if p.run == r).date() for r in range(1, N_RUNS + 1)}
 LOT_CHANGE_SEQ = next(p.seq for p in PLATES if p.lot != PLATES[0].lot)
 AS_OF = max(p.read_at for p in PLATES)

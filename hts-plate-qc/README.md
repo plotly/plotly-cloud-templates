@@ -6,32 +6,28 @@ screening scientist has before hits go to confirmation: which plates can be
 trusted, which broke a QC rule and why, and are the hits on a plate real
 chemistry or an artifact of the plate.
 
-The app shows:
+The app has three parts:
 
-- **A strip of every plate in run order** in the header, colored by its QC
-  result, with plates still awaiting review outlined. Click a tile to open it
-- **Campaign totals**: plates read, the share that passed auto QC, median Z′,
-  hit rate on accepted plates and how many plates are waiting for review
-- **A review queue** of every plate that broke a QC rule, open items first,
-  with the rules it broke and the decision taken
-- **Plate quality across the campaign** in run order: Z′-factor against the
-  review and fail limits, control signal (mean ± 3 SD) or hit rate. The reagent
-  lot change and run boundaries are marked, so drift and lot effects show up
-- **For the selected plate**:
-  - Z′, robust Z′, signal window, control CVs, edge-vs-interior ratio and hits
-  - A plate map in % inhibition, raw signal or B-score, with the median of each
-    row and column alongside and hits outlined
-  - Why it was flagged, in words
-  - Control separation: DMSO and reference-inhibitor wells with their ±3 SD
-    bands, against the compound distribution
-  - The hits on the plate, with a caution when one sits in a suspect row or
-    edge well
-  - **Accept, Re-run or Reject** buttons. Decisions update the queue, KPIs and
-    table, and are kept for the browser session
-- **A table of every plate** with all QC metrics, reader, dispenser and
-  reagent lot
+- **A strip of every plate in run order** in the header, colored by where it
+  stands: accepted, awaiting review, sent for a re-run or rejected. Tiles
+  change color as you make decisions
+- **A to-review list** of the flagged plates nobody has decided on yet,
+  failures first
+- **The plate being reviewed**: its plate map in % inhibition with hits
+  outlined, Z′, DMSO CV and hit count, why it was flagged in plain words, and
+  buttons to **accept, re-run or reject** it
 
-Click a plate in the header strip, the queue, the chart or the table to open it.
+Deciding on a plate drops it from the list and opens the next one. A plate
+sent for a **re-run** goes to an "In the lab" list with a countdown, and after
+15 seconds (shortened for the demo) it comes back to the top of the queue as a
+fresh read with the fault fixed. Real actives repeat; artifacts don't, so
+ZK7-304's 20 row-K "hits" drop to none. Undo brings
+the last plate back. Any plate can also be opened from the header strip, and a
+decided plate can be sent back to the queue.
+
+The app is stateless: decisions live in the page only, so refreshing starts
+the review over from the full list. To keep them, write each decision to your
+LIMS or a database in the `decide` callback.
 
 ## The data
 
@@ -63,13 +59,11 @@ values.
 | Hit rate (≥ 50% inhibition) | above 2% | |
 
 Percent inhibition is normalised to the medians of each plate's own controls.
-B-scores are Tukey median-polish residuals of the compound wells scaled by
-their MAD, which removes row, column and edge patterns: a hit in a stripe row
-keeps a high % inhibition but a B-score near zero.
+`screening.py` also computes robust Z′, signal-to-background and B-scores for
+every plate if you want to show more.
 
-Built with [Dash](https://dash.plotly.com/),
-[Dash Mantine Components](https://www.dash-mantine-components.com/) and
-[Dash AG Grid](https://dash.plotly.com/dash-ag-grid).
+Built with [Dash](https://dash.plotly.com/) and
+[Dash Mantine Components](https://www.dash-mantine-components.com/).
 
 ![Screenshot of app](assets/screenshot.png)
 
