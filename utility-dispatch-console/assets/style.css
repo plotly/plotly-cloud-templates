@@ -48,11 +48,8 @@ body {
 .brand-mark {
   width: 36px;
   height: 36px;
-  display: grid;
-  place-items: center;
-  background: var(--accent);
-  color: #fff;
-  border-radius: 4px;
+  display: block;
+  flex: none;
 }
 
 .brand-name {
@@ -223,8 +220,14 @@ body {
   height: 170px;
 }
 
+.events-panel {
+  flex: 1 1 0;
+}
+
+/* fill whatever height the crew board leaves, so both cards end on the same line */
 .events {
-  height: 186px;
+  flex: 1 1 0;
+  min-height: 120px;
   overflow-y: auto;
   padding: 6px 12px;
 }
@@ -526,6 +529,8 @@ body {
   .queue-panel, .map-panel { height: 600px; }
   .detail-panel { grid-column: 1 / -1; }
   .lower { grid-template-columns: 1fr; }
+  .events-panel, .events { flex: none; }
+  .events { height: 186px; }
 }
 
 @media (max-width: 800px) {

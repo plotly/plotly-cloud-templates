@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" role="img" aria-label="Cedar Valley Power">
+  <defs>
+    <!-- lightning bolt punched through the cedar as negative space -->
+    <mask id="bolt-cut">
+      <rect width="36" height="36" fill="#fff"/>
+      <path d="M19.6 8.6 L14.6 17.4 H17.9 L16.4 24.6 L21.9 15.2 H18.5 Z" fill="#000"/>
+    </mask>
+  </defs>
+  <rect width="36" height="36" rx="5" fill="#f76707"/>
+  <!-- valley: far ridge, then near hill -->
+  <path d="M0 25.5 Q7 20.5 13 23.5 T27 21.5 T36 23 V36 H0 Z" fill="#fff" fill-opacity="0.22"/>
+  <path d="M0 29.5 Q10 25 19 28 T36 27 V36 H0 Z" fill="#fff" fill-opacity="0.38"/>
+  <!-- cedar: three tiers and a trunk -->
+  <g fill="#fff" mask="url(#bolt-cut)">
+    <path d="M18 5 L23.6 12.6 H12.4 Z"/>
+    <path d="M18 9 L25.8 18.4 H10.2 Z"/>
+    <path d="M18 13.4 L28 24.4 H8 Z"/>
+    <rect x="16.6" y="24" width="2.8" height="4.6" rx="0.6"/>
+  </g>
+</svg>

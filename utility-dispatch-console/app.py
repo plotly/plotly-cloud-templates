@@ -6,12 +6,13 @@ come in as outages while planned work orders wait in the same queue. Pick a job
 to see who is affected and which crews could get there soonest, dispatch one,
 and watch the crew drive out, switch customers back on and close the job. The
 clock runs on its own; turn the storm on to see the queue fill faster than the
-crews can clear it, or let auto-assign take the emergencies.
+crews can clear it, or switch auto-assign on and let it dispatch for you.
 
 The territory, crews and calls are synthetic, see dispatch.py.
 """
 
 import copy
+import zlib
 
 import dash
 import dash_mantine_components as dmc
@@ -156,6 +157,62 @@ def _lines(segments):
     return lat, lon
 
 
+def _hex_rgba(color, alpha):
+    c = color.lstrip("#")
+    return f"rgba({int(c[0:2], 16)},{int(c[2:4], 16)},{int(c[4:6], 16)},{alpha})"
+
+
+def outage_area(j):
+    """Ragged polygon of the area a job has blacked out, stable for a given job id.
+
+    Main-line faults black out the feeder downstream of the device, so their
+    area is a jagged corridor along that stretch of line. Fuse and transformer
+    faults take out a pocket of streets around the fault, a lopsided blob
+    sized by the customers affected.
+    """
+    rng = np.random.default_rng(zlib.crc32(j["id"].encode()))
+    pts = dp.FEEDERS[j["feeder"]]["pts"][j["idx"]:] if j["main_line"] else []
+    if len(pts) >= 2:
+        # densify the line so the edge gets more kinks than the feeder has vertices
+        path = []
+        for a, b in zip(pts[:-1], pts[1:]):
+            path += [a, ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)]
+        path.append(pts[-1])
+        xy = [((p[1] - path[0][1]) / dp.KM_LON, (p[0] - path[0][0]) / dp.KM_LAT) for p in path]
+        left, right = [], []
+        wl, wr = rng.uniform(0.4, 0.7, 2)
+        for i, p in enumerate(path):
+            a, b = xy[max(i - 1, 0)], xy[min(i + 1, len(xy) - 1)]
+            dx, dy = b[0] - a[0], b[1] - a[1]
+            n = np.hypot(dx, dy) or 1.0
+            nx, ny = -dy / n, dx / n
+            # widths wander along the line rather than jumping, so edges read as ragged, not spiky
+            wl = float(np.clip(wl + rng.normal(0, 0.14), 0.25, 0.9))
+            wr = float(np.clip(wr + rng.normal(0, 0.14), 0.25, 0.9))
+            left.append(dp.offset(p, nx * wl, ny * wl))
+            right.append(dp.offset(p, -nx * wr, -ny * wr))
+        # blunt, uneven caps at both ends
+        def cap(p, toward, out):
+            dx, dy = (toward[1] - p[1]) / dp.KM_LON, (toward[0] - p[0]) / dp.KM_LAT
+            n = np.hypot(dx, dy) or 1.0
+            return dp.offset(p, -dx / n * out, -dy / n * out)
+        end = cap(path[-1], path[-2], rng.uniform(0.3, 0.7))
+        start = cap(path[0], path[1], rng.uniform(0.1, 0.3))
+        ring = left + [end] + right[::-1] + [start]
+    else:
+        r = 0.18 + 0.055 * np.sqrt(max(j["out"], 1))
+        k = int(rng.integers(7, 12))
+        ang = np.sort(rng.uniform(0, 2 * np.pi, k))
+        rad = r * rng.uniform(0.55, 1.0, k)
+        stretch, tilt = rng.uniform(1.0, 1.7), rng.uniform(0, np.pi)
+        ring = []
+        for a, d in zip(ang, rad):
+            x, y = d * np.cos(a) * stretch, d * np.sin(a)
+            ring.append(dp.offset((j["lat"], j["lon"]), x * np.cos(tilt) - y * np.sin(tilt),
+                                  x * np.sin(tilt) + y * np.cos(tilt)))
+    return ring + [ring[0]]
+
+
 def map_figure(state, selected):
     jobs = open_jobs(state)
     dead = {}  # feeder -> first de-energized point on the main line
@@ -173,6 +230,21 @@ def map_figure(state, selected):
             dead_segs.append(f["pts"][k:])
 
     fig = go.Figure()
+    # outage areas sit underneath everything; worst priority drawn last so it's on top
+    for p in (3, 2, 1):
+        for active in (False, True):
+            group = [j for j in jobs if j["kind"] == "outage" and j["out"] > 0 and j["priority"] == p
+                     and (j["status"] == "Unassigned") == active]
+            if not group:
+                continue
+            lat, lon = _lines([outage_area(j) for j in group])
+            fig.add_trace(go.Scattermap(
+                lat=lat, lon=lon, mode="lines", fill="toself",
+                fillcolor=_hex_rgba(PRIORITY_COLOR[p], 0.30 if active else 0.16),
+                line={"color": _hex_rgba(PRIORITY_COLOR[p], 0.85 if active else 0.45), "width": 1.2},
+                legendgroup=f"p{p}", showlegend=False, hoverinfo="skip",
+            ))
+
     lat, lon = _lines(live_segs)
     fig.add_trace(go.Scattermap(lat=lat, lon=lon, mode="lines", line={"color": LINE_OK, "width": 2},
                                 name="Energized feeder", hoverinfo="skip"))
@@ -214,12 +286,13 @@ def map_figure(state, selected):
         group = [j for j in jobs if j["priority"] == p]
         if not group:
             continue
-        size = [9 if j["kind"] == "order" else 10 + 3.2 * np.sqrt(j["out"]) ** 0.75 for j in group]
+        # the area polygon shows the extent; the marker is just the fault location and click target
+        size = [9 if j["kind"] == "order" else 10 for j in group]
         fig.add_trace(go.Scattermap(
             lat=[j["lat"] for j in group], lon=[j["lon"] for j in group], mode="markers",
             marker={"size": size, "color": PRIORITY_COLOR[p],
                     "opacity": [0.95 if j["status"] == "Unassigned" else 0.5 for j in group]},
-            name=dp.PRIORITIES[p],
+            name=dp.PRIORITIES[p], legendgroup=f"p{p}",
             customdata=[["job", j["id"], j["type"], j["status"], j["out"], j["address"]] for j in group],
             hovertemplate="<b>%{customdata[1]}</b> · %{customdata[2]}<br>%{customdata[5]}"
                           "<br>%{customdata[4]:,} customers out · %{customdata[3]}<extra></extra>",
@@ -509,7 +582,7 @@ header = html.Header(
     [
         html.Div(
             [
-                html.Div(DashIconify(icon="tabler:bolt", width=22), className="brand-mark"),
+                html.Img(src=app.get_asset_url("logo.svg"), alt="", className="brand-mark"),
                 html.Div([html.Div(dp.UTILITY, className="brand-name"),
                           html.Div("Outage & work order dispatch", className="brand-sub")]),
             ],
@@ -531,8 +604,14 @@ header = html.Header(
                                            {"label": "15 min/s", "value": "15"}]),
                 dmc.Button("Storm", id="storm", variant="light", color="gray", size="sm", n_clicks=0,
                            leftSection=DashIconify(icon="tabler:cloud-storm", width=16)),
-                dmc.Button("Auto-assign", id="auto", size="sm", n_clicks=0,
-                           leftSection=DashIconify(icon="tabler:route", width=16)),
+                dmc.Tooltip(
+                    dmc.Button("Auto-assign on", id="auto", variant="filled", color="green", size="sm", n_clicks=0,
+                               leftSection=DashIconify(icon="tabler:route", width=16)),
+                    label="While on, the nearest free crew with the right skill is sent to each waiting job as "
+                          "it comes in, highest priority first. Jobs no free crew can reach within "
+                          f"{dp.AUTO_MAX_ETA} min wait for you.",
+                    multiline=True, w=280, withArrow=True,
+                ),
                 dmc.Tooltip(dmc.ActionIcon(DashIconify(icon="tabler:refresh", width=18), id="reset", size="lg",
                                            variant="subtle", color="gray", n_clicks=0),
                             label="Start the shift over"),
@@ -577,7 +656,7 @@ app.layout = dmc.MantineProvider(
                             [
                                 panel("Customers out",
                                       dcc.Graph(id="trend", config={"displayModeBar": False}, className="trend")),
-                                panel("Activity", html.Div(id="events", className="events")),
+                                panel("Activity", html.Div(id="events", className="events"), cls="events-panel"),
                             ],
                             className="side-stack",
                         ),
@@ -622,11 +701,15 @@ def step(_, __, ___, ____, _____, ______, state, speed):
     if trig == "reset":
         return copy.deepcopy(INITIAL)
     if trig == "tick":
-        return dp.tick(state, SPEEDS[speed])
+        state = dp.tick(state, SPEEDS[speed])
+        return dp.auto_assign(state) if state.get("auto") else state
     if not ctx.triggered[0]["value"]:
         return dash.no_update  # a button that was just rendered
     if trig == "auto":
-        return dp.auto_assign(state)
+        state["auto"] = not state.get("auto")
+        state["events"].insert(0, [state["t"], "Auto-assign on" if state["auto"] else "Auto-assign off"])
+        # place what's already waiting right away rather than on the next tick
+        return dp.auto_assign(state) if state["auto"] else state
     if trig == "storm":
         state.update(storm=not state["storm"], storm_until=None)
         state["events"].insert(0, [state["t"], "Storm mode on" if state["storm"] else "Storm mode off"])
@@ -670,6 +753,9 @@ def select(click, _):
     Output("storm-flag", "children"),
     Output("storm", "variant"),
     Output("storm", "color"),
+    Output("auto", "children"),
+    Output("auto", "variant"),
+    Output("auto", "color"),
     Output("kpis", "children"),
     Output("map", "figure"),
     Output("queue", "children"),
@@ -690,10 +776,12 @@ def render(state, selected, view):
     return (
         dp.clock(state["t"]), storm,
         "filled" if state["storm"] else "light", "red" if state["storm"] else "gray",
+        "Auto-assign on" if state.get("auto") else "Auto-assign off",
+        "filled" if state.get("auto") else "light", "green" if state.get("auto") else "gray",
         kpis(state), map_figure(state, sel), queue(state, view, sel), detail(state, sel),
         crew_board(state), trend(state), event_log(state),
     )
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8052)
+    app.run(debug=True, port=8053)

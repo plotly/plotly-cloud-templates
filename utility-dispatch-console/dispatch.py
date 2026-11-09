@@ -367,19 +367,22 @@ def queue_order(job, t):
     return (job["priority"] - (0.5 if due_soon else 0), -job["out"], job["created"])
 
 
+AUTO_MAX_ETA = 75  # auto-assign won't send a crew that would take longer than this to get there
+
+
 def auto_assign(state, max_priority=4):
-    """Greedy: highest-priority unassigned job gets the soonest available crew that can do it."""
+    """Greedy: highest-priority unassigned job gets the soonest available crew that can do it.
+
+    Each placement shows up in the event log through dispatch(); jobs no free
+    crew can reach within AUTO_MAX_ETA stay in the queue for the next pass.
+    """
     t = state["t"]
     open_jobs = sorted((j for j in state["jobs"] if j["status"] == "Unassigned" and j["priority"] <= max_priority),
                        key=lambda j: queue_order(j, t))
-    n = 0
     for job in open_jobs:
-        best = [r for r in recommend(state, job["id"], n=20) if r["available"] and r["eta"] < 75]
+        best = [r for r in recommend(state, job["id"], n=20) if r["available"] and r["eta"] < AUTO_MAX_ETA]
         if best:
             dispatch(state, job["id"], best[0]["crew"])
-            n += 1
-    if n:
-        state["events"].insert(0, [t, f"Auto-assign placed {n} job{'s' if n > 1 else ''}"])
     return state
 
 
@@ -451,7 +454,7 @@ def tick(state, dt):
 
 def initial_state(seed=4):
     rng = np.random.default_rng(seed)
-    state = {"seed": seed, "t": 0, "storm": False, "cmi": 0.0, "next_out": 3180, "next_wo": 58200,
+    state = {"seed": seed, "t": 0, "storm": False, "auto": True, "cmi": 0.0, "next_out": 3180, "next_wo": 58200,
              "jobs": [], "crews": _new_crews(rng), "history": [[0, 0]], "events": []}
     for _ in range(14):
         state["jobs"].append(new_order(state, rng, 0))

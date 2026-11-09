@@ -35,7 +35,7 @@ and a thunderstorm is rolling through when the shift opens.
 | Play / pause | Runs the sim clock (one tick a second) |
 | 1 / 5 / 15 min/s | Sim minutes per tick |
 | Storm | Turns storm mode on or off (about 4× the outage rate, more tree and lightning faults). The opening storm ends at 10:30 on its own |
-| Auto-assign | Gives each unassigned job, highest priority first, the soonest available crew that can do it within 75 min |
+| Auto-assign | Turns auto-dispatch on or off (on at the start of the shift). While on, every tick gives each unassigned job, highest priority first, the soonest available crew that can do it within 75 min |
 | Reset | Starts the shift over at 07:30 |
 
 ## How the simulation works
