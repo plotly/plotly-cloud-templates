@@ -11,11 +11,15 @@ decide which cells are kept.
 The data is synthetic, see atlas.py.
 """
 
+import os
+import socket
+
 import dash
 import dash_mantine_components as dmc
 import numpy as np
 import plotly.graph_objects as go
 from dash import ALL, Input, Output, State, ctx, dcc, html
+from dash._hooks import HooksManager
 from dash_iconify import DashIconify
 
 import atlas as at
@@ -72,6 +76,10 @@ THEME = {
                  "#0b0b0a", "#050505"],
     },
 }
+
+# Skip installed Dash plugins (such as the Plotly Studio Embedded chat) so the
+# explorer renders on its own. Dash loads them once per process, on first app init
+HooksManager._registered = True
 
 app = dash.Dash(__name__, title="Single-Cell Atlas Explorer")
 server = app.server
@@ -1237,5 +1245,16 @@ def update_qc(min_genes, max_mito):
                                                                                                       max_mito)
 
 
+def free_port(start=8050):
+    """First port from `start` upward that nothing is listening on."""
+    for port in range(start, start + 100):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            if s.connect_ex(("127.0.0.1", port)) != 0:
+                return port
+    raise RuntimeError("no free port found")
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Store the choice in the environment so the debug reloader's child process reuses it.
+    os.environ.setdefault("PORT", str(free_port()))
+    app.run(debug=True, port=int(os.environ["PORT"]))
