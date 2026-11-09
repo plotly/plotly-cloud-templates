@@ -375,3 +375,59 @@ def top_lots(product, days, b, sid, n=8):
     g["bin_rate"] = g["bin_fails"] / (g["wafers"] * GROSS_DIE)
     g["lot_yield"] = 1 - g["all_fails"] / (g["wafers"] * GROSS_DIE)
     return g.sort_values("bin_rate", ascending=False).head(n).reset_index()
+
+
+# ---------- views for the demo panels ----------
+
+PATH = ["litho", "chamber", "dep", "cmp", "imp"]  # route order shown in the line-flow chart
+
+
+@lru_cache(maxsize=64)
+def flow(product, days, b):
+    """Wafer counts and bin-b loss between consecutive route steps, for a Sankey of the line."""
+    m = window_mask(product, days)
+    f = FAILS[m, b].astype(float)
+    nodes, offset = [], {}
+    for col in PATH:
+        offset[col] = len(nodes)
+        nodes += [(col, lvl) for lvl in LEVELS[col]]
+    node_n = np.zeros(len(nodes))
+    node_f = np.zeros(len(nodes))
+    for col in PATH:
+        k = len(LEVELS[col])
+        codes = CODES[col][m]
+        node_n[offset[col]:offset[col] + k] = np.bincount(codes, minlength=k)
+        node_f[offset[col]:offset[col] + k] = np.bincount(codes, f, k)
+    links = []
+    for c1, c2 in zip(PATH, PATH[1:]):
+        k1, k2 = len(LEVELS[c1]), len(LEVELS[c2])
+        pair = CODES[c1][m] * k2 + CODES[c2][m]
+        n = np.bincount(pair, minlength=k1 * k2)
+        fl = np.bincount(pair, f, k1 * k2)
+        for p in np.flatnonzero(n):
+            links.append((offset[c1] + p // k2, offset[c2] + p % k2, int(n[p]), fl[p] / (n[p] * GROSS_DIE)))
+    node_rate = node_f / np.maximum(node_n, 1) / GROSS_DIE
+    return nodes, node_rate, links
+
+
+def lot_wafers(lot):
+    return np.flatnonzero((WAFERS["lot"] == lot).to_numpy())
+
+
+def die_map(i):
+    """One wafer's probe map: -1 off the wafer, 0 a good die, b + 1 a die failing bin b.
+    The wafer's fail counts are real; where they land follows its bins' spatial patterns."""
+    g = np.random.default_rng(int(i))
+    cells = np.flatnonzero(VALID.ravel())
+    out = np.full(GRID * GRID, -1)
+    out[cells] = 0
+    free = np.ones(len(cells), bool)
+    for b in np.argsort(-EXC[i]):  # place the excursion first so it keeps its shape
+        k = int(min(FAILS[i, b], free.sum()))
+        if k == 0:
+            continue
+        p = np.nan_to_num(BASE[i, b] * BASE_PATTERN[b] + EXC[i, b] * BIN_PATTERN[b]).ravel()[cells] * free
+        pick = g.choice(len(cells), k, replace=False, p=p / p.sum())
+        out[cells[pick]] = b + 1
+        free[pick] = False
+    return out.reshape(GRID, GRID)

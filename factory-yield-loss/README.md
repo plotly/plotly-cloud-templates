@@ -19,12 +19,18 @@ The page follows the steps an engineer takes to explain a yield loss:
 2. **What do the losing wafers share?** Route steps ranked by how much more of that
    bin their wafers lose. *Explains* is the share of the bin's above-typical loss on
    those wafers. Click a row to follow that suspect.
-3. **When did it start?** Daily loss for wafers through the suspect against all
+3. **Follow the wafers through the line.** A Sankey of every wafer's path through
+   litho, etch chamber, deposition, CMP and implant. Bands heat up where the selected
+   bin runs above typical, and the suspect lights up.
+4. **When did it start?** Daily loss for wafers through the suspect against all
    other wafers, with the estimated start date.
-4. **What does it look like on the wafer?** Fail rate at each die position, stacked
+5. **Watch it appear on the wafer.** Fail rate at each die position, stacked
    across wafers, with the closest matching pattern (edge ring, arc scratch, center
-   cluster, mid-radius ring).
-5. **Which lots to review.** The lots through the suspect with the most loss.
+   cluster, mid-radius ring). Press **Replay** to watch the pattern build day by day.
+6. **Which lots to review.** The lots through the suspect with the most loss. Click
+   one to open it.
+7. **Open the lot.** All 25 wafers of the lot, die by die. Wafers that ran through
+   the suspect are ringed. For ETC-03 · B, only the even slots fail (chamber B).
 
 A **finding** at the top sums it up in plain words, with a suggested next step and a
 button that copies it to the clipboard to paste into a chat or a shift report.
@@ -61,7 +67,7 @@ overlap in time with any new problem.
 ```
 app.py              # Layout, charts and callbacks
 fab.py              # Synthetic fab data and the commonality analysis
-assets/style.css    # Page layout and styling
+assets/style.css    # Page layout and styling (dark theme)
 ```
 
 ## Publish to Plotly Cloud
@@ -78,4 +84,4 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Then open http://127.0.0.1:8050.
+Then open http://127.0.0.1:8057.

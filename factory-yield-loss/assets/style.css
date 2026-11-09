@@ -1,21 +1,22 @@
 /* Keep colors in sync with the chart constants in app.py */
 :root {
-  --page: #f3f4f2;
-  --surface: #ffffff;
-  --line: rgba(21, 24, 29, 0.09);
-  --ink: #15181d;
-  --ink-2: #4b515a;
-  --muted: #737a84;
-  --head: #15181d;
+  --page: #0b0f17;
+  --surface: #121826;
+  --surface-2: #171f30;
+  --line: rgba(255, 255, 255, 0.07);
+  --ink: #e8ecf2;
+  --ink-2: #aab3c2;
+  --muted: #6f7a8c;
+  --head: #070a10;
   --head-ink: #f4f5f3;
-  --head-muted: #a3a9b2;
-  --excess: #6250d6;
-  --excess-soft: rgba(98, 80, 214, 0.08);
-  --suspect: #eb6834;
-  --neg: #b42323;
-  --pos: #0a6e0a;
+  --head-muted: #8b94a3;
+  --excess: #8b7bff;
+  --excess-soft: rgba(139, 123, 255, 0.14);
+  --suspect: #ff7a45;
+  --neg: #ff6b6b;
+  --pos: #3ddc97;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
-  --shadow: 0 1px 2px rgba(21, 24, 29, 0.04), 0 6px 18px rgba(21, 24, 29, 0.05);
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 * { box-sizing: border-box; }
@@ -23,6 +24,9 @@
 body {
   margin: 0;
   background: var(--page);
+  background-image: radial-gradient(1200px 500px at 85% -10%, rgba(139, 123, 255, 0.12), transparent 60%),
+    radial-gradient(900px 400px at -10% 10%, rgba(255, 122, 69, 0.07), transparent 60%);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: "IBM Plex Sans", system-ui, sans-serif;
 }
@@ -56,8 +60,9 @@ body {
   height: 40px;
   flex: none;
   border-radius: 10px;
-  background: var(--excess);
+  background: linear-gradient(135deg, var(--excess), var(--suspect));
   color: #fff;
+  box-shadow: 0 0 24px rgba(139, 123, 255, 0.45);
 }
 
 .brand-sub {
@@ -101,7 +106,7 @@ body {
 .main > * { min-width: 0; }
 .filters { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: flex-end; min-width: 0; }
 .filter { display: flex; flex-direction: column; gap: 6px; min-width: 0; max-width: 100%; }
-.filter .mantine-SegmentedControl-root { max-width: 100%; overflow-x: auto; scrollbar-width: none; background: #e6e8e6; }
+.filter .mantine-SegmentedControl-root { max-width: 100%; overflow-x: auto; scrollbar-width: none; background: var(--surface-2); }
 
 .filter-label {
   font-size: 11px;
@@ -114,13 +119,15 @@ body {
 /* Finding */
 
 .finding {
+  background: linear-gradient(120deg, rgba(139, 123, 255, 0.16), rgba(255, 122, 69, 0.08) 60%, var(--surface)) !important;
+  animation: rise 0.4s ease both;
   display: grid !important;
   grid-template-columns: auto 1fr auto;
   gap: 16px;
   align-items: start;
   padding: 18px 20px !important;
   border: 1px solid var(--line);
-  border-left: 4px solid var(--excess);
+  border-left: 4px solid var(--suspect);
   box-shadow: var(--shadow);
 }
 
@@ -136,7 +143,7 @@ body {
   color: var(--excess);
 }
 
-.finding-calm .finding-icon { background: #eef0ee; color: var(--ink-2); }
+.finding-calm .finding-icon { background: var(--surface-2); color: var(--ink-2); }
 
 .finding-kicker {
   font-size: 11px;
@@ -164,8 +171,8 @@ body {
   margin-right: 8px;
   padding: 1px 7px;
   border-radius: 4px;
-  background: var(--ink);
-  color: #fff;
+  background: var(--suspect);
+  color: #140b06;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -180,6 +187,9 @@ body {
 .kpi-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 
 .kpi {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface) !important;
   padding: 14px 16px !important;
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
@@ -204,6 +214,8 @@ body {
 /* Cards */
 
 .card {
+  background: var(--surface) !important;
+  animation: rise 0.5s ease both;
   height: 100%;
   padding: 16px 16px 10px !important;
   border: 1px solid var(--line);
@@ -219,7 +231,8 @@ body {
   height: 24px;
   flex: none;
   border-radius: 50%;
-  border: 1.5px solid var(--ink);
+  border: 1.5px solid var(--excess);
+  color: var(--excess);
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 600;
@@ -264,10 +277,10 @@ body {
   transition: background 0.12s;
 }
 
-.sus-row:hover { background: #f6f7f6; }
+.sus-row:hover { background: rgba(255, 255, 255, 0.035); }
 
 .sus-row.selected {
-  background: rgba(235, 104, 52, 0.08);
+  background: linear-gradient(90deg, rgba(255, 122, 69, 0.16), rgba(255, 122, 69, 0.02));
   box-shadow: inset 3px 0 0 var(--suspect);
 }
 
@@ -282,8 +295,8 @@ body {
 .dot { color: var(--muted); }
 
 .share { display: flex; align-items: center; gap: 8px; }
-.share-track { flex: 1; height: 6px; border-radius: 3px; background: #eceeef; overflow: hidden; }
-.share-fill { height: 100%; border-radius: 3px; background: var(--excess); }
+.share-track { flex: 1; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.share-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--excess), #b9adff); }
 .share-val { width: 34px; font-family: var(--mono); font-size: 12px; text-align: right; color: var(--ink); }
 
 .conf {
@@ -298,10 +311,10 @@ body {
   white-space: nowrap;
 }
 
-.conf-critical { background: #fbe9e9; color: #b42323; }
-.conf-serious { background: #fcefe8; color: #a94418; }
-.conf-warning { background: #fdf4dd; color: #8a5a00; }
-.conf-neutral { background: #eff0f1; color: var(--muted); }
+.conf-critical { background: rgba(255, 90, 90, 0.16); color: #ff8a8a; }
+.conf-serious { background: rgba(255, 122, 69, 0.16); color: #ffa27a; }
+.conf-warning { background: rgba(250, 200, 80, 0.14); color: #f5c95a; }
+.conf-neutral { background: var(--surface-2); color: var(--muted); }
 
 .empty { padding: 24px 4px; color: var(--muted); font-size: 14px; }
 
@@ -330,8 +343,8 @@ body {
 .neg { color: var(--neg) !important; }
 
 .bar-cell { display: flex; align-items: center; gap: 10px; min-width: 180px; }
-.bar-track { flex: 1; max-width: 160px; height: 6px; border-radius: 3px; background: #eceeef; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 3px; background: var(--suspect); }
+.bar-track { flex: 1; max-width: 160px; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #ffb18a, var(--suspect)); }
 
 .footnote { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
 
@@ -355,3 +368,68 @@ body {
   .sus-row .share { grid-column: 2; }
   .sus-row .conf { grid-column: 3; grid-row: 1; }
 }
+
+/* Demo touches */
+
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 90, 54, 0.7); }
+  70% { box-shadow: 0 0 0 9px rgba(255, 90, 54, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 90, 54, 0); }
+}
+
+.finding-hot .finding-icon { background: rgba(255, 122, 69, 0.18); color: var(--suspect); }
+.finding-hot .finding-kicker { color: var(--suspect); }
+.finding-head { color: #fff; }
+
+.kpi::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--excess), transparent);
+  opacity: 0.8;
+}
+
+.kpi-value { color: #fff; }
+
+.alert-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border: 1px solid rgba(255, 90, 54, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 90, 54, 0.12);
+  color: #ffb196;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff5a36;
+  animation: pulse 1.6s infinite;
+}
+
+.pulse.calm { background: var(--pos); animation: none; }
+
+.lot-row { cursor: pointer; transition: background 0.12s; }
+.lot-row:hover td { background: rgba(255, 255, 255, 0.035); }
+.lot-row.selected td { background: rgba(255, 122, 69, 0.12); }
+.lot-row.selected td:first-child { box-shadow: inset 3px 0 0 var(--suspect); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 4px 4px 6px; font-size: 12px; color: var(--ink-2); }
+.legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.sw-hit { background: #ff5a36; }
+.sw-other { background: #475369; }
+.sw-ok { background: #1d2636; outline: 1px solid var(--line); }
+.sw-ring { border-radius: 50%; border: 2px solid var(--suspect); width: 12px; height: 12px; }
+
+.mantine-SegmentedControl-indicator { background: linear-gradient(135deg, #5c4ee0, #8b7bff) !important; }
+.mantine-SegmentedControl-label[data-active] { color: #fff !important; }
+
+.js-plotly-plot .slider-rail-rect { rx: 2; }

@@ -20,19 +20,22 @@ from plotly.subplots import make_subplots
 
 import fab
 
-# Chart colors, kept in sync with assets/style.css
-SURFACE = "#ffffff"
-INK = "#15181d"
-INK_2 = "#4b515a"
-MUTED = "#7f8690"
-GRID = "#eceeef"
-AXIS = "#c8ccd1"
-TYPICAL = "#c9ccd1"
-EXCESS = "#6250d6"
-SUSPECT = "#eb6834"
-OTHERS = "#2a78d6"
-SEQ = [[0, "#f3f7fd"], [0.12, "#cde2fb"], [0.3, "#86b6ef"], [0.5, "#3987e5"], [0.7, "#256abf"],
-       [0.85, "#184f95"], [1, "#0d366b"]]
+# Chart colors, kept in sync with assets/style.css (dark "fab control room" theme)
+SURFACE = "#121826"
+INK = "#e8ecf2"
+INK_2 = "#aab3c2"
+MUTED = "#6f7a8c"
+GRID = "#1f2735"
+AXIS = "#2c3646"
+TYPICAL = "#334055"
+EXCESS = "#8b7bff"
+SUSPECT = "#ff7a45"
+OTHERS = "#4aa3ff"
+DIE_OK = "#1d2636"
+DIE_OTHER = "#475369"
+DIE_HIT = "#ff5a36"
+SEQ = [[0, "#141b2a"], [0.12, "#2a1f5c"], [0.3, "#5b2a86"], [0.5, "#a8327a"], [0.7, "#e8574b"],
+       [0.85, "#fca13a"], [1, "#fde68a"]]
 
 FONT = "IBM Plex Sans, system-ui, sans-serif"
 MONO = "IBM Plex Mono, ui-monospace, monospace"
@@ -109,7 +112,7 @@ def base_layout(fig, height, **kw):
         height=height, margin={"l": 8, "r": 12, "t": 8, "b": 8},
         paper_bgcolor=SURFACE, plot_bgcolor=SURFACE,
         font={"family": FONT, "color": INK_2, "size": 12},
-        hoverlabel={"bgcolor": "#ffffff", "bordercolor": AXIS, "font": {"family": FONT, "color": INK, "size": 12}},
+        hoverlabel={"bgcolor": "#0b0f17", "bordercolor": AXIS, "font": {"family": FONT, "color": INK, "size": 12}},
         legend={"orientation": "h", "x": 0, "y": 1.02, "yanchor": "bottom", "font": {"size": 12, "color": INK_2},
                 "bgcolor": "rgba(0,0,0,0)"},
         **kw,
@@ -142,7 +145,7 @@ def pareto_figure(s, sel):
                          textfont={"family": MONO, "size": 11, "color": INK_2}, hovertemplate=hover))
     y = order.index(sel)
     fig.add_shape(type="rect", xref="paper", x0=-0.36, x1=1.02, y0=y - 0.5, y1=y + 0.5, layer="below",
-                  fillcolor="rgba(98, 80, 214, 0.08)", line_width=0)
+                  fillcolor="rgba(139, 123, 255, 0.12)", line_width=0)
     base_layout(fig, 372, barmode="stack", bargap=0.34, barcornerradius=4, clickmode="event",
                 hovermode="closest")
     fig.update_layout(margin={"l": 8, "r": 52, "t": 8, "b": 8})
@@ -159,15 +162,18 @@ def trend_figure(product, days, b, sid, s, start):
     fig = go.Figure()
     fig.add_hline(y=typ, line={"color": MUTED, "width": 1, "dash": "dot"})
     fig.add_annotation(x=x[0], y=typ, text=f"Typical {typ:.2f}%", showarrow=False, xanchor="left",
-                       yanchor="bottom", yshift=10, bgcolor="rgba(255,255,255,0.85)", font={"size": 11, "color": MUTED})
+                       yanchor="bottom", yshift=10, bgcolor="rgba(18,24,38,0.85)", font={"size": 11, "color": MUTED})
     series = [("out", "All other wafers" if sid else "All wafers", OTHERS)]
     if sid:
         series.append(("in", f"Through {fab.suspect_label(sid)}", SUSPECT))
     for key, name, color in series:
         yv = d[key] * 100
         fig.add_trace(go.Scatter(
-            x=x, y=yv, name=name, mode="lines+markers", connectgaps=False,
-            line={"color": color, "width": 2}, marker={"size": 6, "color": color, "line": {"color": SURFACE, "width": 1}},
+            x=x, y=yv, name=name, mode="lines+markers", connectgaps=True,
+            line={"color": color, "width": 2.5, "shape": "spline", "smoothing": 0.6},
+            marker={"size": 6, "color": color, "line": {"color": SURFACE, "width": 1}},
+            fill="tonexty" if key == "in" else "tozeroy",
+            fillcolor="rgba(255, 122, 69, 0.16)" if key == "in" else "rgba(74, 163, 255, 0.06)",
             customdata=d[f"n_{key}"],
             hovertemplate=f"{name} <b>%{{y:.2f}}%</b> · %{{customdata}} wafers<extra></extra>",
         ))
@@ -199,14 +205,22 @@ def maps_figure(product, days, b, sid):
         titles = ["Worst 10% of wafers", "All other wafers"]
     seed = zlib.crc32(f"{product}{days}{b}{sid}".encode())
     za, zb = fab.composite(a_mask, b, seed), fab.composite(b_mask, b, seed + 1)
-    zmax = max(np.nanpercentile(za, 99), np.nanpercentile(zb, 99), 1e-3) * 100
 
+    # Time-lapse of the left wafer: a rolling 5-day stack for each day in the window
+    day = fab.WAFERS["day"].to_numpy()
+    first = fab.DAYS - days
+    lapse = []
+    for d in range(first, fab.DAYS):
+        mm = a_mask & (day > d - 5) & (day <= d)
+        lapse.append((fab.DATES[d], fab.composite(mm, b, seed + 7 + d), int(mm.sum())))
+    zmax = max(np.nanpercentile(za, 99), np.nanpercentile(zb, 99), 1e-3) * 100 * 1.1
+
+    hover = "Die %{x}, %{y}<br><b>%{z:.1f}%</b> failing · %{customdata:,} wafers<extra></extra>"
     fig = make_subplots(rows=1, cols=2, horizontal_spacing=0.06)
     for col, (z, n) in enumerate([(za, a_mask.sum()), (zb, b_mask.sum())], start=1):
         fig.add_trace(go.Heatmap(
             z=z * 100, coloraxis="coloraxis", xgap=1, ygap=1, hoverongaps=False,
-            customdata=np.full(z.shape, n),
-            hovertemplate="Die %{x}, %{y}<br><b>%{z:.1f}%</b> failing · %{customdata:,} wafers<extra></extra>",
+            customdata=np.full(z.shape, n), hovertemplate=hover,
         ), row=1, col=col)
         c = (fab.GRID - 1) / 2
         r = fab.GRID / 2
@@ -219,18 +233,123 @@ def maps_figure(product, days, b, sid):
         fig.add_annotation(text=f"<b>{t}</b><br><span style='color:{MUTED}'>{n:,} wafers</span>", showarrow=False,
                            xref=f"x{'' if i == 1 else i} domain", yref="paper", x=0.5, y=1.0, yanchor="bottom",
                            font={"size": 12, "color": INK})
-    base_layout(fig, 330, coloraxis={
+    window_label = f"All {days} days"
+    fig.frames = [go.Frame(name=window_label, data=[go.Heatmap(z=za * 100, customdata=np.full(za.shape, a_mask.sum()))],
+                           traces=[0])] + [
+        go.Frame(name=date_label(t), traces=[0],
+                 data=[go.Heatmap(z=z * 100, customdata=np.full(z.shape, n))]) for t, z, n in lapse]
+    anim = {"frame": {"duration": 140, "redraw": True}, "transition": {"duration": 0}, "mode": "immediate"}
+    steps = [{"label": f.name, "method": "animate", "args": [[f.name], anim]} for f in fig.frames]
+    base_layout(fig, 400, coloraxis={
         "colorscale": SEQ, "cmin": 0, "cmax": zmax,
-        "colorbar": {"orientation": "h", "y": -0.04, "yanchor": "top", "x": 0.5, "len": 0.6, "thickness": 8,
+        "colorbar": {"orientation": "v", "x": 1.0, "xanchor": "left", "y": 0.55, "len": 0.7, "thickness": 8,
                      "ticksuffix": "%", "outlinewidth": 0, "tickfont": {"size": 10, "color": MUTED},
-                     "title": {"text": "Die failing", "side": "top", "font": {"size": 11, "color": MUTED}}}})
-    fig.update_layout(margin={"l": 4, "r": 4, "t": 40, "b": 36})
+                     "title": {"text": "Die<br>failing", "side": "top", "font": {"size": 10, "color": MUTED}}}},
+        updatemenus=[{
+            "type": "buttons", "direction": "left", "showactive": False, "x": 0, "y": -0.06, "xanchor": "left",
+            "yanchor": "top", "pad": {"r": 8, "t": 0}, "bgcolor": AXIS, "bordercolor": AXIS,
+            "font": {"color": INK, "size": 11},
+            "buttons": [
+                {"label": "▶ Replay", "method": "animate",
+                 "args": [[f.name for f in fig.frames[1:]], {**anim, "fromcurrent": False}]},
+                {"label": "❚❚", "method": "animate", "args": [[None], {**anim, "frame": {"duration": 0}}]},
+            ]}],
+        sliders=[{
+            "active": 0, "steps": steps, "x": 0.21, "len": 0.79, "y": -0.04, "yanchor": "top",
+            "pad": {"t": 0, "b": 0}, "bgcolor": AXIS, "activebgcolor": SUSPECT, "bordercolor": AXIS,
+            "tickcolor": AXIS, "font": {"size": 9, "color": "rgba(0,0,0,0)"}, "ticklen": 3, "minorticklen": 0,
+            "currentvalue": {"prefix": "Left wafer: ", "font": {"size": 11, "color": INK}, "xanchor": "right", "offset": 6},
+        }])
+    fig.update_layout(margin={"l": 4, "r": 44, "t": 40, "b": 70})
     rng = [-1, fab.GRID]
     fig.update_xaxes(visible=False, range=rng, constrain="domain")
     fig.update_yaxes(visible=False, range=rng, scaleanchor="x", row=1, col=1)
     fig.update_yaxes(visible=False, range=rng, scaleanchor="x2", row=1, col=2)
     sig, score = fab.signature(za - zb)
     return fig, sig
+
+
+def _heat(t):
+    """Neutral steel to hot orange, for loss relative to typical."""
+    t = float(np.clip(t, 0, 1))
+    c0, c1 = (110, 125, 150, 0.16), (255, 90, 54, 0.85)
+    r, g, b_, a = (c0[i] + (c1[i] - c0[i]) * t for i in range(4))
+    return f"rgba({r:.0f},{g:.0f},{b_:.0f},{a:.2f})"
+
+
+def suspect_nodes(sid):
+    """Nodes of the line-flow chart that the suspect points at."""
+    hit = set()
+    m = fab.suspect_mask(sid) if sid else None
+    for col, lvl in fab.parse_suspect(sid):
+        if col in fab.PATH:
+            hit.add((col, lvl))
+        elif col == "etch":
+            hit |= {("chamber", c) for c in fab.LEVELS["chamber"] if c.startswith(lvl)}
+        elif col == "slurry":
+            hit |= {("cmp", t) for t in fab.WAFERS.loc[m, "cmp"].unique()}
+    return hit
+
+
+def flow_figure(product, days, b, sid, typ):
+    nodes, node_rate, links = fab.flow(product, days, b)
+    hit = suspect_nodes(sid)
+    node_color = [SUSPECT if n in hit else _heat((r / typ - 1) / 2.5).replace("0.16)", "0.55)")
+                  for n, r in zip(nodes, node_rate)]
+    fig = go.Figure(go.Sankey(
+        arrangement="snap",
+        node={"label": [lvl for _, lvl in nodes], "color": node_color, "pad": 10, "thickness": 14,
+              "line": {"color": SURFACE, "width": 0}, "customdata": node_rate * 100,
+              "hovertemplate": f"<b>%{{label}}</b><br>%{{value:,}} wafers · %{{customdata:.2f}}% {fab.BINS[b].lower()}"
+                               "<extra></extra>"},
+        link={"source": [l[0] for l in links], "target": [l[1] for l in links], "value": [l[2] for l in links],
+              "color": [_heat((l[3] / typ - 1) / 2.5) for l in links], "customdata": [l[3] * 100 for l in links],
+              "hovertemplate": "%{source.label} → %{target.label}<br>%{value:,} wafers · "
+                               f"<b>%{{customdata:.2f}}%</b> {fab.BINS[b].lower()}<extra></extra>"},
+        textfont={"family": MONO, "size": 11, "color": INK},
+    ))
+    for i, col in enumerate(fab.PATH):
+        fig.add_annotation(x=i / (len(fab.PATH) - 1), y=1.0, xref="paper", yref="paper", yanchor="bottom",
+                           xanchor=["left", "center", "center", "center", "right"][i], showarrow=False,
+                           text=fab.FACTORS[col].upper(), font={"size": 10, "color": MUTED})
+    base_layout(fig, 380)
+    fig.update_layout(margin={"l": 8, "r": 8, "t": 26, "b": 8})
+    return fig
+
+
+def lot_figure(lot, b, sid):
+    idx = fab.lot_wafers(lot)
+    G = fab.GRID
+    S, cols = G + 4, 5
+    rows = int(np.ceil(len(idx) / cols))
+    Z = np.full((rows * S, cols * S), np.nan)
+    T = np.full(Z.shape, "", dtype=object)
+    names = np.array(["Good die"] + fab.BINS, dtype=object)
+    inm = fab.suspect_mask(sid)[idx] if sid else np.zeros(len(idx), bool)
+    fig = go.Figure()
+    for k, i in enumerate(idx):
+        r, c = divmod(k, cols)
+        dm = fab.die_map(i)
+        y0, x0 = (rows - 1 - r) * S + 2, c * S
+        Z[y0:y0 + G, x0:x0 + G] = np.where(dm < 0, np.nan, np.where(dm == 0, 0, np.where(dm == b + 1, 2, 1)))
+        w = fab.WAFERS.iloc[i]
+        T[y0:y0 + G, x0:x0 + G] = f"Slot {w.slot} · {w.chamber}<br>" + names[np.clip(dm, 0, None)]
+        cx, cy, rad = x0 + (G - 1) / 2, y0 + (G - 1) / 2, G / 2 + 0.5
+        fig.add_shape(type="circle", x0=cx - rad, x1=cx + rad, y0=cy - rad, y1=cy + rad, layer="above",
+                      line={"color": SUSPECT if inm[k] else AXIS, "width": 2 if inm[k] else 1})
+        n_hit = int(fab.FAILS[i, b])
+        fig.add_annotation(x=cx, y=y0 - 0.6, yanchor="top", showarrow=False, text=f"#{w.slot} · {n_hit}",
+                           font={"family": MONO, "size": 9, "color": SUSPECT if inm[k] else MUTED})
+    fig.add_trace(go.Heatmap(
+        z=Z, text=T, zmin=0, zmax=2, showscale=False, xgap=1, ygap=1, hoverongaps=False,
+        colorscale=[[0, DIE_OK], [0.33, DIE_OK], [0.33, DIE_OTHER], [0.66, DIE_OTHER], [0.66, DIE_HIT], [1, DIE_HIT]],
+        hovertemplate="%{text}<extra></extra>",
+    ))
+    base_layout(fig, 560)
+    fig.update_layout(margin={"l": 4, "r": 4, "t": 4, "b": 4})
+    fig.update_xaxes(visible=False, range=[-1, cols * S - 3], constrain="domain")
+    fig.update_yaxes(visible=False, range=[-1, rows * S], scaleanchor="x")
+    return fig
 
 
 # ---------- components ----------
@@ -295,8 +414,7 @@ def suspect_rows(product, days, b, sid):
     return html.Div([head] + rows, className="sus-list")
 
 
-def lots_table(product, days, b, sid):
-    g = fab.top_lots(product, days, b, sid)
+def lots_table(g, b, lot):
     if g.empty:
         return dmc.Text("No lots in this view.", className="empty")
     hi = g["bin_rate"].max()
@@ -304,7 +422,8 @@ def lots_table(product, days, b, sid):
                                ["Lot", "Started", "Product", "Wafers", f"{fab.BINS[b]} loss", "Lot yield"]]))
     body = []
     for r in g.itertuples():
-        body.append(html.Tr([
+        body.append(html.Tr(id={"type": "lot", "index": r.lot}, n_clicks=0,
+                            className="lot-row" + (" selected" if r.lot == lot else ""), children=[
             html.Td(r.lot, className="mono strong"),
             html.Td(r.date.strftime("%a %b %-d")),
             html.Td(r.product),
@@ -373,6 +492,7 @@ header = html.Header([
         ]),
     ], className="brand"),
     html.Div([
+        html.Span(id="alerts", className="alert-pill"),
         html.Span([DashIconify(icon="tabler:clock", width=14), f"Probe results through {fab.END.strftime('%b %-d')}"],
                   className="meta"),
         html.Span([DashIconify(icon="tabler:circle-dot", width=14), f"{fab.GROSS_DIE} die per wafer"],
@@ -399,31 +519,47 @@ main = html.Main([
     html.Div(id="kpis", className="kpi-row"),
     dmc.Grid([
         dmc.GridCol(step_card(1, "Where is yield lost?", dcc.Graph(id="pareto", config={"displayModeBar": False}),
-                              hint="Die lost by fail bin. Purple is loss above the bin's typical rate. "
+                              hint="Die lost by fail bin. Violet is loss above the bin's typical rate. "
                                    "Click a bin to investigate it."),
                     span={"base": 12, "lg": 5}),
         dmc.GridCol(step_card(2, "What do the losing wafers share?", html.Div(id="suspects"), hint_id="suspects-hint"),
                     span={"base": 12, "lg": 7}),
     ], gutter="md"),
+    step_card(3, "Follow the wafers through the line", dcc.Graph(id="flow", config={"displayModeBar": False}),
+              hint_id="flow-hint"),
     dmc.Grid([
-        dmc.GridCol(step_card(3, "When did it start?", dcc.Graph(id="trend", config={"displayModeBar": False}),
+        dmc.GridCol(step_card(4, "When did it start?", dcc.Graph(id="trend", config={"displayModeBar": False}),
                               hint_id="trend-hint"),
                     span={"base": 12, "lg": 7}),
-        dmc.GridCol(step_card(4, "What does it look like on the wafer?",
+        dmc.GridCol(step_card(5, "Watch it appear on the wafer",
                               dcc.Graph(id="maps", config={"displayModeBar": False}), hint_id="maps-hint"),
                     span={"base": 12, "lg": 5}),
     ], gutter="md"),
-    step_card(5, "Which lots to review", html.Div(id="lots"), hint_id="lots-hint"),
+    dmc.Grid([
+        dmc.GridCol(step_card(6, "Which lots to review", html.Div(id="lots"), hint_id="lots-hint"),
+                    span={"base": 12, "lg": 7}),
+        dmc.GridCol(step_card(7, "Open the lot", html.Div([
+            dcc.Graph(id="lot-map", config={"displayModeBar": False}),
+            html.Div([
+                html.Span([html.I(className="sw sw-hit"), html.Span(id="legend-bin")]),
+                html.Span([html.I(className="sw sw-other"), "Other fail bins"]),
+                html.Span([html.I(className="sw sw-ok"), "Good die"]),
+                html.Span([html.I(className="sw sw-ring"), "Ran through the suspect"]),
+            ], className="legend"),
+        ]), hint_id="lot-hint"), span={"base": 12, "lg": 5}),
+    ], gutter="md"),
     html.P("All data is synthetic. Typical loss is each bin's 20th-percentile daily rate over 60 days. "
-           "Suspects compare wafers through a step with wafers run on the same days, one sample per lot.",
+           "Suspects compare wafers through a step with wafers run on the same days, one sample per lot. "
+           "Die positions in step 7 are simulated from each wafer's real fail counts.",
            className="footnote"),
 ], className="main")
 
 _b0 = default_bin("All", 30)
 app.layout = dmc.MantineProvider(
-    html.Div([header, main, dcc.Store(id="sel", data={"bin": _b0, "suspect": default_suspect("All", 30, _b0)})],
+    html.Div([header, main, dcc.Store(id="sel", data={"bin": _b0, "suspect": default_suspect("All", 30, _b0),
+                                                      "lot": None})],
              className="page"),
-    theme=THEME,
+    theme=THEME, forceColorScheme="dark",
 )
 
 
@@ -432,24 +568,26 @@ app.layout = dmc.MantineProvider(
 @app.callback(
     Output("sel", "data"),
     Input("product", "value"), Input("window", "value"), Input("pareto", "clickData"),
-    Input({"type": "suspect", "index": ALL}, "n_clicks"),
+    Input({"type": "suspect", "index": ALL}, "n_clicks"), Input({"type": "lot", "index": ALL}, "n_clicks"),
     State("sel", "data"), prevent_initial_call=True,
 )
-def select(product, window, click, _rows, sel):
+def select(product, window, click, _rows, _lots, sel):
     days = int(window)
     trig = ctx.triggered_id
     if isinstance(trig, dict):
         if not ctx.triggered[0]["value"]:
             return dash.no_update  # rows re-rendered, not clicked
-        return {**sel, "suspect": trig["index"]}
+        if trig["type"] == "lot":
+            return {**sel, "lot": trig["index"]}
+        return {**sel, "suspect": trig["index"], "lot": None}
     if trig == "pareto":
         if not click:
             return dash.no_update
         b = int(click["points"][0]["customdata"][0])
-        return {"bin": b, "suspect": default_suspect(product, days, b)}
+        return {"bin": b, "suspect": default_suspect(product, days, b), "lot": None}
     # filters changed: keep the bin, pick the new leading suspect
     b = sel["bin"]
-    return {"bin": b, "suspect": default_suspect(product, days, b)}
+    return {"bin": b, "suspect": default_suspect(product, days, b), "lot": None}
 
 
 @app.callback(
@@ -457,6 +595,8 @@ def select(product, window, click, _rows, sel):
     Output("suspects", "children"), Output("suspects-hint", "children"), Output("trend", "figure"),
     Output("trend-hint", "children"), Output("maps", "figure"), Output("maps-hint", "children"),
     Output("lots", "children"), Output("lots-hint", "children"),
+    Output("flow", "figure"), Output("flow-hint", "children"), Output("lot-map", "figure"),
+    Output("lot-hint", "children"), Output("legend-bin", "children"), Output("alerts", "children"),
     Input("product", "value"), Input("window", "value"), Input("sel", "data"),
 )
 def render(product, window, sel):
@@ -488,16 +628,41 @@ def render(product, window, sel):
                 "same days. Explains = share of the bin's above-typical loss. Click a row to follow it.")
     trend_hint = (f"Daily {bin_name.lower()} by lot start date, wafers through {fab.suspect_label(sid)} against the rest."
                   if sid else f"Daily {bin_name.lower()} by lot start date. {who} for this bin.")
-    maps_hint = ("Fail rate at each die position, stacked across wafers. "
+    maps_hint = ("Fail rate at each die position, stacked across wafers. Press Replay to watch the left wafer "
+                 "day by day (5-day rolling stack). "
                  + (f"Pattern match: {sig.lower()}." if sig else "No distinct pattern: the loss is spread evenly."))
     lots_hint = (f"Lots through {fab.suspect_label(sid)} with the most {bin_name.lower()}. Wafers counts only "
-                 "the wafers that ran through it." if sid else f"Lots with the most {bin_name.lower()}.")
+                 "the wafers that ran through it." if sid else f"Lots with the most {bin_name.lower()}.") + \
+        " Click a lot to open it."
+
+    g = fab.top_lots(product, days, b, sid)
+    lot = sel.get("lot") if sel.get("lot") in set(g["lot"]) else (g["lot"].iloc[0] if not g.empty else None)
+    flow_hint = (f"Every wafer's path through litho, etch, deposition, CMP and implant. Wider bands carry more wafers; "
+                 f"hotter bands lose more {bin_name.lower()} than typical."
+                 + (f" {fab.suspect_label(sid)} is lit up." if sid else ""))
+    if lot:
+        lw = fab.lot_wafers(lot)
+        n_in = int(fab.suspect_mask(sid)[lw].sum()) if sid else 0
+        lot_hint = (f"Lot {lot}, all {len(lw)} wafers, die by die. Number under each wafer: its {bin_name.lower()} "
+                    "fails." + (f" {n_in} of {len(lw)} ran through {fab.suspect_label(sid)}." if sid else "")
+                    + " Click another lot in step 6.")
+        lot_fig = lot_figure(lot, b, sid)
+    else:
+        lot_hint, lot_fig = "No lot to show.", go.Figure()
+    alerts = []
+    for bb in range(len(fab.BINS)):
+        top = fab.commonality(product, days, bb)
+        if top and top[0]["z"] >= 5 and s["excess"][bb] >= 0.0005:
+            alerts.append(bb)
+    alert_pill = [html.I(className="pulse"), f"{len(alerts)} excursions detected"] if alerts else \
+        [html.I(className="pulse calm"), "Line healthy"]
 
     return (finding(product, days, b, sid, s, d["dates"][start] if start is not None else None, sig), kpis,
             pareto_figure(s, b), suspect_rows(product, days, b, sid), sus_hint,
             trend_figure(product, days, b, sid, s, start), trend_hint, maps, maps_hint,
-            lots_table(product, days, b, sid), lots_hint)
+            lots_table(g, b, lot), lots_hint, flow_figure(product, days, b, sid, s["typ"][b]), flow_hint,
+            lot_fig, lot_hint, f"{bin_name} fail", alert_pill)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8057)
