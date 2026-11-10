@@ -9,7 +9,8 @@ benches are deeper.
 
 Each well follows an Arps hyperbolic decline from its initial rate, with a
 choke-managed first two months, a rising gas-oil ratio and water-oil ratio,
-random workovers, shut-ins while an offset pad within a mile is fracked, and a
+random workovers, shut-ins while an offset pad within about a mile and a
+half is fracked, and a
 few wells that are shut in at the end of the record. Some old verticals are
 plugged and abandoned along the way.
 
@@ -159,10 +160,13 @@ def _build():
     for rank, i in enumerate(order):
         pad_month[i] = int(np.clip(2 + rank * 1.18 + rng.normal(0, 3), 0, N_MONTHS - 2))
 
-    lease_of_pad = {}
+    lease_of_pad, used = {}, set()
     for p, (plat, plon, q) in enumerate(pads):
         lease = lease_pool[p % len(lease_pool)]
         section = int(rng.integers(1, 37))
+        while (lease, section) in used:  # keep well names unique
+            section = section % 36 + 1
+        used.add((lease, section))
         lease_of_pad[p] = lease
         n = int(rng.choice([2, 3, 4, 4, 5, 6]))
         north_south = rng.random() < 0.78

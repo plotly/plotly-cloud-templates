@@ -238,77 +238,81 @@ FAC = {f["name"]: f for f in bs.FACILITIES}
 
 # ---------------------------------------------------------------- map
 
-def map_figure(idx, m, color_by, size_by, basemap, layers, mode, sel, lasso, tool):
+def map_figure(idx, m, color_by, size_by, basemap, layers, mode, sel, lasso, tool, view=None):
+    """The map. It always has the same nine traces in the same order, empty when not in use:
+    MapLibre layers are matched to traces by position, so adding or removing a trace
+    in front of the wells leaves stale, restyled copies of them on the map."""
     tone = "light" if basemap == "light" else "dark"
     hi = "#0b0b0b" if tone == "light" else "#ffffff"
+    hi_rgba = "rgba(11,11,11,{a})" if tone == "light" else "rgba(255,255,255,{a})"
+    ramp = SEQ["light" if tone == "light" else "dark"]
+    none = dict(lat=[None], lon=[None])
+    w = bs.WELLS[sel] if sel is not None else None
+    offs = bs.offsets(sel) if w else []
     fig = go.Figure()
 
-    if "facilities" in layers:
-        lat, lon = _lines([((FAC[a]["lat"], FAC[a]["lon"]), (FAC[b]["lat"], FAC[b]["lon"])) for a, b in bs.PIPELINES])
-        fig.add_trace(go.Scattermap(lat=lat, lon=lon, mode="lines", hoverinfo="skip",
-                                    line=dict(width=2, color="#8a8780" if tone == "dark" else "#7a7974")))
-        fig.add_trace(go.Scattermap(
-            lat=[f["lat"] for f in bs.FACILITIES], lon=[f["lon"] for f in bs.FACILITIES],
-            mode="markers+text", text=[f["name"] for f in bs.FACILITIES], textposition="bottom right",
-            textfont=dict(color=INK_2 if tone == "dark" else "#52514e", size=11),
-            marker=dict(size=9, color="#e8e6df" if tone == "dark" else "#52514e"),
-            hovertext=[f"<b>{f['name']}</b><br>{f['kind']}" for f in bs.FACILITIES],
-            hovertemplate="%{hovertext}<extra></extra>",
-        ))
+    # 0, 1: pipelines and facilities
+    show_fac = "facilities" in layers
+    lat, lon = _lines([((FAC[a]["lat"], FAC[a]["lon"]), (FAC[b]["lat"], FAC[b]["lon"])) for a, b in bs.PIPELINES])
+    fig.add_trace(go.Scattermap(**(dict(lat=lat, lon=lon) if show_fac else none), mode="lines", hoverinfo="skip",
+                                line=dict(width=2, color="#8a8780" if tone == "dark" else "#7a7974")))
+    fac = bs.FACILITIES if show_fac else []
+    fig.add_trace(go.Scattermap(
+        lat=[f["lat"] for f in fac] or [None], lon=[f["lon"] for f in fac] or [None],
+        mode="markers+text", text=[f["name"] for f in fac], textposition="bottom right",
+        textfont=dict(color=INK_2 if tone == "dark" else "#52514e", size=11),
+        marker=dict(size=9, color="#e8e6df" if tone == "dark" else "#52514e"),
+        hovertext=[f"<b>{f['name']}</b><br>{f['kind']}" for f in fac], hovertemplate="%{hovertext}<extra></extra>",
+    ))
 
-    if "laterals" in layers:
-        hz = [i for i in idx if bs.TYPE[i] == "Horizontal"]
-        lat, lon = _lines([(bs.WELLS[i].heel, bs.WELLS[i].toe) for i in hz])
-        fig.add_trace(go.Scattermap(lat=lat or [None], lon=lon or [None], mode="lines", hoverinfo="skip",
-                                    line=dict(width=1.5, color="rgba(240,239,236,0.28)" if tone == "dark" else "rgba(11,11,11,0.25)")))
+    # 2: horizontal laterals, heel to toe
+    hz = [i for i in idx if bs.TYPE[i] == "Horizontal"] if "laterals" in layers else []
+    lat, lon = _lines([(bs.WELLS[i].heel, bs.WELLS[i].toe) for i in hz])
+    fig.add_trace(go.Scattermap(lat=lat or [None], lon=lon or [None], mode="lines", hoverinfo="skip",
+                                line=dict(width=1.5, color=hi_rgba.format(a=0.28 if tone == "dark" else 0.25))))
 
-    # The selected well: its lateral, a halo, and dotted links to its nearest offsets
-    if sel is not None:
-        w = bs.WELLS[sel]
-        offs = bs.offsets(sel)
-        lat, lon = _lines([((w.lat, w.lon), (bs.LAT[j], bs.LON[j])) for j, _ in offs])
-        fig.add_trace(go.Scattermap(lat=lat, lon=lon, mode="lines", hoverinfo="skip",
-                                    line=dict(width=1, color=hi), opacity=0.45))
-        fig.add_trace(go.Scattermap(lat=[bs.LAT[j] for j, _ in offs], lon=[bs.LON[j] for j, _ in offs],
-                                    mode="markers", hoverinfo="skip", customdata=[j for j, _ in offs],
-                                    marker=dict(size=16, color=hi, opacity=0.18)))
-        if w.well_type == "Horizontal":
-            lat, lon = _lines([(w.heel, w.toe)])
-            fig.add_trace(go.Scattermap(lat=lat, lon=lon, mode="lines", hoverinfo="skip", line=dict(width=4, color=hi)))
-        fig.add_trace(go.Scattermap(lat=[w.lat], lon=[w.lon], mode="markers", hoverinfo="skip", customdata=[sel],
-                                    marker=dict(size=34, color=hi, opacity=0.3)))
+    # 3-6: the selected well's links to its nearest offsets, rings on the offsets, its lateral and a halo
+    lat, lon = _lines([((w.lat, w.lon), (bs.LAT[j], bs.LON[j])) for j, _ in offs])
+    fig.add_trace(go.Scattermap(lat=lat or [None], lon=lon or [None], mode="lines", hoverinfo="skip",
+                                line=dict(width=1, color=hi_rgba.format(a=0.5))))
+    fig.add_trace(go.Scattermap(lat=[bs.LAT[j] for j, _ in offs] or [None], lon=[bs.LON[j] for j, _ in offs] or [None],
+                                mode="markers", hoverinfo="skip", marker=dict(size=16, color=hi_rgba.format(a=0.18))))
+    lat, lon = _lines([(w.heel, w.toe)]) if w and w.well_type == "Horizontal" else ([None], [None])
+    fig.add_trace(go.Scattermap(lat=lat, lon=lon, mode="lines", hoverinfo="skip", line=dict(width=4, color=hi)))
+    fig.add_trace(go.Scattermap(lat=[w.lat] if w else [None], lon=[w.lon] if w else [None], mode="markers",
+                                hoverinfo="skip", marker=dict(size=34, color=hi_rgba.format(a=0.3))))
 
-    if mode == "heat" and len(idx):
-        ramp = SEQ["light" if tone == "light" else "dark"]
-        fig.add_trace(go.Densitymap(
-            lat=bs.LAT[idx], lon=bs.LON[idx], z=bs.BOE[idx, m], radius=26, zmin=0, zmax=500,
-            colorscale=[[0, "rgba(0,0,0,0)"], [0.15, ramp[0]], [0.45, ramp[2]], [1, ramp[4]]],
-            showscale=False, hoverinfo="skip", opacity=0.85,
-        ))
-        fig.add_trace(go.Scattermap(
-            lat=bs.LAT[idx], lon=bs.LON[idx], mode="markers", customdata=idx,
-            marker=dict(size=5, color=hi, opacity=0.55),
-            hovertext=hover_text(idx, m), hovertemplate="%{hovertext}<extra></extra>",
-        ))
+    # 7: production density (heat map view)
+    heat = mode == "heat" and len(idx) > 0
+    fig.add_trace(go.Densitymap(
+        lat=bs.LAT[idx] if heat else [None], lon=bs.LON[idx] if heat else [None],
+        z=bs.BOE[idx, m] if heat else [0], radius=26, zmin=0, zmax=500,
+        colorscale=[[0, "rgba(0,0,0,0)"], [0.15, ramp[0]], [0.45, ramp[2]], [1, ramp[4]]],
+        showscale=False, hoverinfo="skip", opacity=0.85,
+    ))
+
+    # 8: the wells
+    if mode == "heat":
+        colors, sizes = [hi_rgba.format(a=0.55)] * len(idx), np.full(len(idx), 5.0)
         legend = dict(kind="heat", title="Production density, BOE/d", colors=ramp)
     else:
         colors, legend = well_colors(color_by, idx, m, tone)
         sizes = bubble_sizes(idx, m, size_by)
         order = np.argsort(-sizes, kind="stable")  # small bubbles on top of big ones
         idx, colors, sizes = idx[order], [colors[k] for k in order], sizes[order]
-        trace = dict(
-            lat=bs.LAT[idx], lon=bs.LON[idx], mode="markers", customdata=idx,
-            marker=dict(size=sizes, color=colors, opacity=0.9),
-            hovertext=hover_text(idx, m), hovertemplate="%{hovertext}<extra></extra>",
-            unselected=dict(marker=dict(opacity=0.18)),
-        )
-        if lasso:
-            chosen = set(lasso)
-            trace["selectedpoints"] = [k for k, i in enumerate(idx) if i in chosen]
-        fig.add_trace(go.Scattermap(**trace))
+    trace = dict(
+        lat=bs.LAT[idx], lon=bs.LON[idx], mode="markers", customdata=idx.tolist(),
+        marker=dict(size=sizes, color=colors, opacity=1 if mode == "heat" else 0.9),
+        hovertext=hover_text(idx, m), hovertemplate="%{hovertext}<extra></extra>",
+        unselected=dict(marker=dict(opacity=0.18)),
+    )
+    if lasso:
+        chosen = set(lasso)
+        trace["selectedpoints"] = [k for k, i in enumerate(idx) if i in chosen]
+    fig.add_trace(go.Scattermap(**trace))
 
     fig.update_layout(
-        map=dict(center=MAP_CENTER, zoom=9.25, **BASEMAPS[basemap]),
+        map=dict(**(view or dict(center=MAP_CENTER, zoom=9.25)), **BASEMAPS[basemap]),
         margin=dict(l=0, r=0, t=0, b=0), paper_bgcolor="#0e0e0d", showlegend=False,
         uirevision="basin", dragmode=tool, clickmode="event",
         selectionrevision="lasso" if lasso else f"clear-{m}",
@@ -484,8 +488,8 @@ def group_panel(idx_all, idx_now, m, title, sub, clearable):
             hovertemplate="%{y:,.0f}<extra>" + f + "</extra>",
         ))
     chart_layout(fig, 210)
-    fig.update_layout(legend=dict(orientation="h", y=1.18, x=0, font=dict(size=11, color=INK_2)),
-                      margin=dict(t=34))
+    fig.update_layout(legend=dict(orientation="h", y=1.26, x=0, font=dict(size=11, color=INK_2)),
+                      margin=dict(t=48))
     fig.update_yaxes(tickformat="~s", title=None)
     month_marker(fig, m)
 
@@ -687,6 +691,7 @@ app.layout = dmc.MantineProvider(
         drawer,
         dcc.Store(id="sel-well", data=None),
         dcc.Store(id="lasso", data=[]),
+        dcc.Store(id="view", data=None),
         dcc.Interval(id="ticker", interval=650, disabled=True),
     ], className="app"),
 )
@@ -785,16 +790,25 @@ def set_lasso(selected, _clear):
     return sorted(out)
 
 
+@app.callback(Output("view", "data"), Input("map", "relayoutData"), prevent_initial_call=True)
+def remember_view(relayout):
+    """Keep the user's pan and zoom. Plotly's uirevision doesn't hold on to map center
+    and zoom, so every redraw would otherwise jump back to the whole basin."""
+    if not relayout or "map.center" not in relayout:
+        return no_update
+    return {"center": relayout["map.center"], "zoom": relayout["map.zoom"]}
+
+
 @app.callback(
     Output("map", "figure"), Output("legend", "children"),
     *FILTER_INPUTS,
     Input("color-by", "value"), Input("size-by", "value"), Input("basemap", "value"),
     Input("layers", "value"), Input("map-mode", "value"), Input("sel-well", "data"),
-    Input("lasso", "data"), Input("tool", "value"),
+    Input("lasso", "data"), Input("tool", "value"), State("view", "data"),
 )
-def update_map(ops, forms, wtype, statuses, vintage, m, color_by, size_by, basemap, layers, mode, sel, lasso, tool):
+def update_map(ops, forms, wtype, statuses, vintage, m, color_by, size_by, basemap, layers, mode, sel, lasso, tool, view):
     idx = visible(base_mask(ops, forms, wtype, vintage), statuses, m)
-    fig, legend = map_figure(idx, m, color_by, size_by, basemap, layers or [], mode, sel, lasso, tool)
+    fig, legend = map_figure(idx, m, color_by, size_by, basemap, layers or [], mode, sel, lasso, tool, view)
     return fig, legend_view(legend, size_by, mode)
 
 
