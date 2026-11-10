@@ -28,6 +28,8 @@ app:
   data colors, not brand colors
 ```
 
+![Two MCP servers: the design and the docs](infographics/01-mcp-servers.png)
+
 ## 2. Map View screen
 
 ```text
@@ -50,6 +52,10 @@ that uses theme.py. Follow AGENTS.md for the project structure.
 Look up each DMC component in llms.txt before you use it, and check
 the Dash docs for anything in core Dash.
 ```
+
+![Where the data comes from](infographics/02-data-sources.png)
+
+![The agent checks the docs before it writes code](infographics/03-docs-lookups.png)
 
 ## 3. Interactivity
 

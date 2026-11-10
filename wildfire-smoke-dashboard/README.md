@@ -1,8 +1,9 @@
 # Webinar: California Wildfire Smoke & Respiratory Health Dashboard
 
-This app was part of the Plotly webinar [From Figma to Dash](https://plotly.com/webinars/figma-to-dash/).
-See it running at [wildfire-smoke-dashboard.plotly.app](https://wildfire-smoke-dashboard.plotly.app). The prompts used
-to build it are in [PROMPTS.md](PROMPTS.md).
+This app was part of the Plotly webinar [From Figma to Dash](https://plotly.com/webinars/figma-to-dash/),
+held on November 10, 2026. See it running at
+[wildfire-smoke-dashboard.plotly.app](https://wildfire-smoke-dashboard.plotly.app). The prompts used to build it,
+with the infographics from the webinar, are in [PROMPTS.md](PROMPTS.md).
 
 A Dash + Dash Mantine Components dashboard of fine-particle (PM2.5) and ozone air
 quality across California during three wildfire seasons, overlaid with NOAA satellite
