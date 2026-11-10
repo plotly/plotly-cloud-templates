@@ -1,4 +1,8 @@
-# California Wildfire Smoke & Respiratory Health Dashboard
+# Webinar: California Wildfire Smoke & Respiratory Health Dashboard
+
+This app was part of the Plotly webinar [From Figma to Dash](https://plotly.com/webinars/figma-to-dash/).
+See it running at [wildfire-smoke-dashboard.plotly.app](https://wildfire-smoke-dashboard.plotly.app). The prompts used
+to build it are in [PROMPTS.md](PROMPTS.md).
 
 A Dash + Dash Mantine Components dashboard of fine-particle (PM2.5) and ozone air
 quality across California during three wildfire seasons, overlaid with NOAA satellite
@@ -64,21 +68,9 @@ smoke plumes and CAL FIRE fire perimeters, plus a county respiratory-health laye
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install -r requirements-dev.txt
-.venv/bin/python app.py              # http://127.0.0.1:8050  (PORT=8054 to change)
-.venv/bin/python -m pytest           # tests
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python app.py              # http://127.0.0.1:8054
 ```
-
-## Refresh the data
-
-```bash
-.venv/bin/python -I scripts/fetch_data.py
-```
-
-The script downloads the raw files into `data_raw/`, which is gitignored. Downloads
-are cached, so delete that folder to force a fresh download. It then writes the compact
-snapshot to `data/`. The app only reads `data/`. To change the seasons, edit `SEASONS`
-in both `scripts/fetch_data.py` and `config.py`.
 
 ## Layout
 
@@ -91,5 +83,4 @@ callbacks/        @callback registrations (routing, day/playback, map, stats, ti
 content/          articles.json: About the Data stories (text, photo credits)
 utils/            data loading (once, at import) + pure stats / figure builders
 scripts/          fetch_data.py: download + preprocess
-tests/            pytest on the pure functions and callback glue
 ```
