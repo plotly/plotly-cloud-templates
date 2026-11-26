@@ -18,6 +18,7 @@ from dash import Input, Output, Patch, State, clientside_callback, ctx, dcc, htm
 from dash._hooks import HooksManager
 
 import desk
+from why_plotly import add_why_plotly
 
 # Skip installed Dash plugins (such as the Plotly Studio Embedded chat) so the
 # desk renders on its own. Dash loads them once per process, on first app init
@@ -476,6 +477,7 @@ app.layout = html.Div([
     html.Main([screen, propose, check, release], className="main"),
     footer,
 ], className="app")
+add_why_plotly(app, "ag-grid-complex")
 
 
 # Navigation ------------------------------------------------------------------
