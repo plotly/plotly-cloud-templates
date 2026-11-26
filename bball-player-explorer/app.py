@@ -20,6 +20,7 @@ from dash_iconify import DashIconify
 import data
 import figures
 from theme import CATEGORICAL, FONT, HEADING_FONT
+from why_plotly import add_why_plotly
 
 THEME = {
     "fontFamily": FONT,
@@ -367,6 +368,7 @@ app.layout = dmc.MantineProvider(
     theme=THEME,
     forceColorScheme="light",
 )
+add_why_plotly(app, "bball-player-explorer")
 
 
 @app.callback(

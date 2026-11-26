@@ -23,6 +23,7 @@ from dash_iconify import DashIconify
 from plotly.subplots import make_subplots
 
 import tnd
+from why_plotly import add_why_plotly
 
 # Chart colors, kept in sync with assets/style.css
 SURFACE = "#ffffff"
@@ -277,6 +278,7 @@ app.layout = dmc.MantineProvider(
         dcc.Interval(id="tick", interval=2_000),
     ], className="shell"),
 )
+add_why_plotly(app, "torque-chart")
 
 
 @app.callback(

@@ -14,6 +14,7 @@ from utils import (
     is_number_completed,
     update_highlighting,
 )
+from why_plotly import add_why_plotly
 
 dash._dash_renderer._set_react_version("18.2.0")
 
@@ -391,18 +392,11 @@ app.layout = dmc.MantineProvider(
                 ],
                 className="main-game-area",
             ),
-            dmc.Affix(
-                dcc.Link(
-                    dmc.Button("Try Plotly Cloud", className="cloud-button"),
-                    href="https://cloud.plotly.com/",
-                    target="_blank",
-                ),
-                position={"bottom": 20, "right": 20},
-            ),
         ],
         className="sudoku-app",
     )
 )
+add_why_plotly(app, "sudoku")
 
 
 # Callback to update the grid display

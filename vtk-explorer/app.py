@@ -13,6 +13,7 @@ from dash._hooks import HooksManager
 from dash_iconify import DashIconify
 
 from demos import BY_SLUG, DEMOS
+from why_plotly import add_why_plotly
 
 FONTS = ("https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800"
          "&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap")
@@ -132,6 +133,7 @@ app.layout = dmc.MantineProvider(
         className="shell",
     ),
 )
+add_why_plotly(app, "vtk-explorer")
 
 
 def inspector(n, demo):

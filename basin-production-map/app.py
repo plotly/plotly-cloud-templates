@@ -21,6 +21,7 @@ from dash_iconify import DashIconify
 from plotly.subplots import make_subplots
 
 import basin as bs
+from why_plotly import add_why_plotly
 
 # Chart colors, kept in sync with assets/style.css
 INK = "#f0efec"
@@ -695,6 +696,7 @@ app.layout = dmc.MantineProvider(
         dcc.Interval(id="ticker", interval=650, disabled=True),
     ], className="app"),
 )
+add_why_plotly(app, "basin-production-map")
 
 
 # ---------------------------------------------------------------- callbacks

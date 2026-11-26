@@ -18,6 +18,7 @@ from dash import ALL, Input, Output, State, ctx, dcc, html
 from dash_iconify import DashIconify
 
 import trials as tr
+from why_plotly import add_why_plotly
 
 # Chart colors, kept in sync with assets/style.css
 SURFACE = "#fcfcfb"
@@ -462,6 +463,7 @@ app.layout = dmc.MantineProvider(
     theme=THEME,
     forceColorScheme="light",
 )
+add_why_plotly(app, "clinical-trial-enrollment-screen")
 
 
 @app.callback(Output("shell", "navbar"), Input("burger", "opened"), State("shell", "navbar"))

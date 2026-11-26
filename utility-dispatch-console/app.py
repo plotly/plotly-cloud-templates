@@ -22,6 +22,7 @@ from dash import ALL, Input, Output, State, ctx, dcc, html
 from dash_iconify import DashIconify
 
 import dispatch as dp
+from why_plotly import add_why_plotly
 
 # Chart colors, kept in sync with assets/style.css
 SURFACE = "#ffffff"
@@ -676,6 +677,7 @@ app.layout = dmc.MantineProvider(
     theme=THEME,
     forceColorScheme="light",
 )
+add_why_plotly(app, "utility-dispatch-console")
 
 
 # ---------------------------------------------------------------------------

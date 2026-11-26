@@ -23,6 +23,7 @@ from dash._hooks import HooksManager
 from dash_iconify import DashIconify
 
 import atlas as at
+from why_plotly import add_why_plotly
 
 C = at.CELLS
 
@@ -991,6 +992,7 @@ app.layout = dmc.MantineProvider(
     ], header={"height": 64}, padding=0),
     theme=THEME, forceColorScheme="dark",
 )
+add_why_plotly(app, "scrna-atlas-explorer")
 
 
 # ---------------------------------------------------------------- callbacks

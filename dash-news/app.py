@@ -5,6 +5,7 @@ import dash
 import dash_mantine_components as dmc
 from dash import Input, Output, State, dcc, html
 from newsapi import NewsApiClient
+from why_plotly import add_why_plotly
 
 app = dash.Dash(__name__, external_stylesheets=["./custom.css"])
 app.title = "Dash News Network"
@@ -178,18 +179,11 @@ app.layout = dmc.MantineProvider(
             ),
             dcc.Store(id="current-page", data=1),
             dcc.Store(id="total-articles", data=0),
-            dmc.Affix(
-                dcc.Link(
-                    dmc.Button("Try Plotly Cloud", className="cloud-button"),
-                    href="https://cloud.plotly.com/",
-                    target="_blank",
-                ),
-                position={"bottom": 20, "right": 20},
-            ),
         ],
         className="app-container",
     )
 )
+add_why_plotly(app, "dash-news")
 
 
 @app.callback(

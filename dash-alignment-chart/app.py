@@ -7,8 +7,10 @@ import dash_bio
 
 try:
     from layout_helper import run_standalone_app
+    from why_plotly import add_why_plotly
 except ModuleNotFoundError:
     from .layout_helper import run_standalone_app
+    from .why_plotly import add_why_plotly
 
 
 text_style = {
@@ -716,6 +718,7 @@ def callbacks(_app):
 
 
 app = run_standalone_app(layout, callbacks, header_colors, __file__)
+add_why_plotly(app, "dash-alignment-chart")
 server = app.server
 
 if __name__ == '__main__':
