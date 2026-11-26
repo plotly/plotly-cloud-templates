@@ -57,23 +57,23 @@ dagfuncs.compact = (v) => {
 dagfuncs.pct = (v, digits) => (v == null ? "" : (v * 100).toFixed(digits == null ? 1 : digits) + "%");
 dagfuncs.signedPct = (v) => (v == null ? "" : (v > 0 ? "+" : "") + (v * 100).toFixed(2) + "%");
 
-// Value getters for the editable trade ticket. They recompute on every edit, which
+// Value getters for the editable orders. They recompute on every edit, which
 // keeps the undo stack intact (no round trip to Python to refresh the row)
 dagfuncs.notional = (d) => (d ? d.qty * (d.order_type === "Limit" && d.limit ? d.limit : d.price) : null);
 dagfuncs.signedNotional = (d) => (d ? dagfuncs.notional(d) * (d.side === "Buy" ? 1 : -1) : null);
 dagfuncs.postWeight = (d) => (d ? (d.market_value + dagfuncs.signedNotional(d)) / d.account_value : null);
-dagfuncs.estTax = (d) => (d && d.side === "Sell" ? d.qty * d.tax_per_share : 0);
+dagfuncs.saleGain = (d) => (d && d.side === "Sell" ? d.qty * d.gain_per_share : 0);
 dagfuncs.residualDrift = (d) => (d ? dagfuncs.postWeight(d) - d.target : null);
 
-// Wider drift is worse. Used for the default sort on holdings
+// A bigger gap either way is worse. Used for the default sort
 dagfuncs.absComparator = (a, b) => Math.abs(a) - Math.abs(b);
 
 dagfuncs.tradeTooltip = (p) => {
   if (!p.data || p.node.rowPinned) return "";
   const d = p.data;
-  return `${d.side} ${d.qty.toLocaleString()} ${d.ticker} moves weight ${(d.weight * 100).toFixed(2)}% → ${(
+  return `${d.side} ${d.qty.toLocaleString()} shares of ${d.name}: ${(d.weight * 100).toFixed(1)}% of the account → ${(
     dagfuncs.postWeight(d) * 100
-  ).toFixed(2)}% (target ${(d.target * 100).toFixed(2)}%)`;
+  ).toFixed(1)}% (target ${(d.target * 100).toFixed(0)}%)`;
 };
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -86,11 +86,4 @@ dagfuncs.dateFmt = (v) => {
   if (!v) return "";
   const d = parseIso(v);
   return `${MONTHS[d.getMonth()]} ${String(d.getDate()).padStart(2, "0")}, ${d.getFullYear()}`;
-};
-
-// Date filter on ISO strings
-dagfuncs.isoDateComparator = (filterDate, cellValue) => {
-  if (!cellValue) return -1;
-  const d = parseIso(cellValue);
-  return d < filterDate ? -1 : d > filterDate ? 1 : 0;
 };

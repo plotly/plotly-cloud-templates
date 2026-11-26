@@ -1,0 +1,5 @@
+dash==4.4.1
+dash-mantine-components==2.8.0
+dash-iconify==0.1.2
+plotly==7.1.0
+gunicorn==26.2.0

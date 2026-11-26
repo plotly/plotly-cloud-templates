@@ -1,0 +1,393 @@
+/* Dark theme. Keep colors in sync with the chart constants in app.py */
+:root {
+  --page: #111110;
+  --surface: #1a1a19;
+  --raised: #222220;
+  --line: rgba(255, 255, 255, 0.08);
+  --ink: #f0efec;
+  --ink-2: #c3c2b7;
+  --muted: #898781;
+  --up: #e66767;
+  --down: #3987e5;
+  --accent: #6da7ec;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+body {
+  background: var(--page);
+  color: var(--ink);
+  margin: 0;
+}
+
+/* Header */
+
+.header {
+  background: #0b0b0a;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+.header-inner {
+  height: 100%;
+  max-width: 1640px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: #0b0b0a;
+  background: linear-gradient(135deg, #5fd3a5, #6da7ec 55%, #9085e9);
+  flex: none;
+}
+
+.brand-name {
+  font-weight: 650;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.view-switch {
+  background: var(--surface) !important;
+}
+
+/* Main */
+
+.main-inner {
+  max-width: 1640px;
+  margin: 0 auto;
+  padding: 16px 24px 32px;
+}
+
+.filter-bar {
+  background: var(--surface) !important;
+  border: 1px solid var(--line);
+  border-radius: 12px !important;
+  padding: 12px 18px 14px;
+  margin-bottom: 16px;
+  position: sticky;
+  top: 72px;
+  z-index: 5;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.filter-row {
+  row-gap: 14px;
+}
+
+.filter-label,
+.mantine-Select-label {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted) !important;
+}
+
+.slider-block {
+  padding: 0 10px 14px 0;
+}
+
+.divider {
+  width: 1px;
+  align-self: stretch;
+  background: var(--line);
+}
+
+.cell-count {
+  margin-left: auto;
+  text-align: right;
+  line-height: 1.2;
+}
+
+.count-num {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.count-of {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Cards */
+
+.card {
+  background: var(--surface) !important;
+  border: 1px solid var(--line);
+  border-radius: 12px !important;
+  padding: 14px 16px;
+}
+
+.card-head {
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.card-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.control-strip {
+  padding: 12px 16px;
+}
+
+.method-note {
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 560px;
+  padding-bottom: 6px;
+}
+
+.graph-umap {
+  height: 640px;
+}
+
+.graph-volcano {
+  height: 520px;
+}
+
+.graph-detail {
+  height: 520px;
+}
+
+.empty-note {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Stats */
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.stat-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stat-tile {
+  padding: 14px 18px;
+}
+
+/* Selection composition bars */
+
+.comp-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 40px;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+}
+
+.comp-name {
+  font-size: 13px;
+  color: var(--ink-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.comp-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--raised);
+  overflow: hidden;
+}
+
+.comp-bar > div {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.comp-pct {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-2);
+  text-align: right;
+}
+
+.gene-chip {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.gene-chip:hover {
+  background: var(--raised);
+  border-color: var(--accent);
+}
+
+/* DE tables */
+
+.table-title {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  margin: 4px 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table-title::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.table-title.up::before {
+  background: var(--up);
+}
+
+.table-title.down::before {
+  background: var(--down);
+}
+
+.table-title.down {
+  margin-top: 14px;
+}
+
+.gene-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.gene-table th {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  text-align: left;
+  padding: 3px 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.gene-table td {
+  padding: 4px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-2);
+}
+
+.gene-table .gene {
+  font-family: var(--mono);
+  color: var(--ink);
+}
+
+.gene-table .num {
+  text-align: right;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.gene-table .muted {
+  color: var(--muted);
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.gene-table tr.clickable:hover td {
+  background: var(--raised);
+}
+
+.foot {
+  font-size: 12px !important;
+  color: var(--muted);
+  margin-top: 20px;
+}
+
+/* Small screens */
+
+@media (max-width: 1100px) {
+  .header-inner {
+    padding: 0 16px;
+  }
+  .brand-sub {
+    display: none;
+  }
+  .view-switch {
+    overflow-x: auto;
+    max-width: 60vw;
+  }
+  .main-inner {
+    padding: 12px 16px 24px;
+  }
+  .filter-bar {
+    position: static;
+  }
+  .divider {
+    display: none;
+  }
+  .cell-count {
+    margin-left: 0;
+    text-align: left;
+  }
+  .graph-umap {
+    height: 460px;
+  }
+}
+
+@media (max-width: 700px) {
+  .header-inner {
+    gap: 12px;
+  }
+  .brand-name {
+    display: none;
+  }
+  .view-switch {
+    max-width: calc(100vw - 80px);
+  }
+  .graph-umap {
+    height: 380px;
+  }
+}

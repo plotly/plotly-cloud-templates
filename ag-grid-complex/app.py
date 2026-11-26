@@ -1,14 +1,15 @@
 """
 Rebalance Desk
 
-A portfolio rebalancing workflow built around Dash AG Grid. Screen the book for
-accounts that have drifted outside their model's tolerance band, drill into
-holdings and tax lots, size the trades on an editable ticket, run pre-trade
-compliance, then release the orders and watch them fill.
+A portfolio rebalancing workflow built around Dash AG Grid. Each client has a
+target mix of funds; when the market moves the mix drifts. Find the accounts
+that have drifted too far, look at what they own, adjust the buys and sells
+that fix them, check them against three house rules, then send the orders and
+watch them fill.
 
 Every screen is an AG Grid; the controls around it drive the grid API
-(selection, filter models, quick filter, transactions, undo/redo, column state,
-CSV export). The book is synthetic, see desk.py.
+(selection, transactions, undo/redo, CSV export). The data is made up, see
+desk.py.
 """
 
 import dash
@@ -33,12 +34,12 @@ server = app.server
 
 THEME = {"function": "deskTheme(themeQuartz, agGrid)"}
 STEPS = [
-    ("Screen", "Find accounts outside their tolerance band and pick the ones to rebalance"),
-    ("Propose", "Size the trades that take each account back to its model"),
-    ("Check", "Pre-trade compliance on every order before it reaches the market"),
-    ("Release", "Route the cleared orders and follow the fills"),
+    ("Screen", "Find the client accounts that have drifted away from their target mix and pick the ones to fix"),
+    ("Propose", "Review the buys and sells that bring each account back to its target. Edit any order"),
+    ("Check", "Every order is checked against three house rules before it is sent"),
+    ("Release", "Send the approved orders and watch them fill"),
 ]
-NEXT_LABEL = ["Propose trades", "Run checks", "Release orders", "New session"]
+NEXT_LABEL = ["Propose orders", "Run checks", "Send orders", "Start over"]
 FILL_TICK_MS = 900
 MAX_TICKS = 40
 
@@ -59,12 +60,12 @@ def fn(expr):
 # Column helpers -----------------------------------------------------------
 
 def money_col(field, header, compact=False, **kw):
-    return {"field": field, "headerName": header, "type": "rightAligned", "filter": "agNumberColumnFilter",
+    return {"field": field, "headerName": header, "type": "rightAligned",
             "valueFormatter": fn(f"{'compact' if compact else 'money'}(params.value)"), **kw}
 
 
 def pct_col(field, header, digits=1, **kw):
-    return {"field": field, "headerName": header, "type": "rightAligned", "filter": "agNumberColumnFilter",
+    return {"field": field, "headerName": header, "type": "rightAligned",
             "valueFormatter": fn(f"pct(params.value, {digits})"), **kw}
 
 
@@ -76,7 +77,6 @@ SELECTION = {
     "mode": "multiRow",
     "checkboxes": True,
     "headerCheckbox": True,
-    "selectAll": "filtered",
     "enableClickSelection": False,
 }
 
@@ -90,99 +90,66 @@ BASE_OPTIONS = {
     "selectionColumnDef": {"pinned": "left", "width": 48, "suppressHeaderMenuButton": True},
 }
 
-DEFAULT_COL = {"sortable": True, "resizable": True, "filter": True, "cellDataType": False, "minWidth": 90}
+DEFAULT_COL = {"sortable": True, "resizable": True, "cellDataType": False, "minWidth": 90}
 
 
 # Step 1 · Screen -----------------------------------------------------------
 
 ACCOUNT_COLUMNS = [
-    {"field": "household", "headerName": "Household", "cellRenderer": "Drill", "pinned": "left",
-     "minWidth": 270, "filter": "agTextColumnFilter", "lockPinned": True,
-     "tooltipValueGetter": fn("'Open ' + params.data.household + ' holdings'")},
-    {"headerName": "Drift vs model", "children": [
-        {"field": "max_drift", "headerName": "Largest drift", "cellRenderer": "DriftBar", "minWidth": 190,
-         "filter": "agNumberColumnFilter", "sort": "desc",
-         "cellRendererParams": {"scale": 0.08},
-         "headerTooltip": "Widest single-position gap to target. The shaded band is the model's tolerance"},
-        pct_col("abs_drift", "Total drift", 1, minWidth=110,
-                headerTooltip="Half the sum of absolute drifts: the share of the account that is in the wrong place"),
-        pct_col("band", "Band", 1, minWidth=75, hide=True),
-        {"field": "status", "headerName": "Status", "cellRenderer": "Pill", "minWidth": 130,
-         "filter": "agTextColumnFilter"},
-    ]},
-    {"headerName": "Mandate", "children": [
-        {"field": "model", "headerName": "Model", "cellRenderer": "ModelTag", "minWidth": 150},
-        {"field": "advisor", "headerName": "Advisor", "minWidth": 120},
-        {"field": "registration", "headerName": "Registration", "minWidth": 120, "hide": True},
-    ]},
-    {"headerName": "Value", "children": [
-        money_col("value", "AUM", compact=True, minWidth=100),
-        {"field": "history", "headerName": "30 days", "cellRenderer": "Sparkline", "sortable": False,
-         "filter": False, "minWidth": 120, "maxWidth": 130, "columnGroupShow": "open"},
-        {"field": "return_30d", "headerName": "30d return", "type": "rightAligned", "filter": "agNumberColumnFilter",
-         "valueFormatter": fn("signedPct(params.value)"), "minWidth": 105,
-         "cellClassRules": {"pos": "params.value > 0", "neg": "params.value < 0"}},
-        pct_col("cash_weight", "Cash", minWidth=80, columnGroupShow="open"),
-    ], "openByDefault": True},
-    gain_col("unrealized", "Unrealized", minWidth=110),
-    {"field": "positions", "headerName": "Positions", "type": "rightAligned", "filter": "agNumberColumnFilter",
-     "minWidth": 95},
+    {"field": "household", "headerName": "Client", "cellRenderer": "Drill", "pinned": "left",
+     "minWidth": 230, "lockPinned": True,
+     "tooltipValueGetter": fn("'See what ' + params.data.household + ' owns'")},
+    {"field": "model", "headerName": "Target mix", "cellRenderer": "ModelTag", "minWidth": 130},
+    money_col("value", "Value", compact=True, minWidth=100),
+    {"field": "history", "headerName": "Last 30 days", "cellRenderer": "Sparkline", "sortable": False, "minWidth": 120, "maxWidth": 130},
+    {"field": "return_30d", "headerName": "30-day change", "type": "rightAligned",
+     "valueFormatter": fn("signedPct(params.value)"), "minWidth": 120,
+     "cellClassRules": {"pos": "params.value > 0", "neg": "params.value < 0"}},
+    {"field": "max_drift", "headerName": "Biggest gap", "cellRenderer": "DriftBar", "minWidth": 190, "sort": "desc", "comparator": fn("absComparator(valueA, valueB)"),
+     "cellRendererParams": {"scale": 0.12},
+     "headerTooltip": "How far the most off-target fund is from its target. The shaded area is the ±5 point limit"},
+    {"field": "status", "headerName": "Status", "cellRenderer": "Pill", "minWidth": 120},
     {"field": "last_rebalanced", "headerName": "Last rebalanced", "minWidth": 135,
      "valueFormatter": fn("dateFmt(params.value)"),
-     "filter": "agDateColumnFilter",
-     "filterParams": {"comparator": fn("isoDateComparator(filterLocalDateAtMidnight, cellValue)")},
      "cellClassRules": {"stale": "params.data.days_since > 270"}},
 ]
-TOGGLEABLE = [("model", "Model"), ("advisor", "Advisor"), ("registration", "Registration"),
-              ("history", "30-day sparkline"), ("cash_weight", "Cash"), ("band", "Band"),
-              ("unrealized", "Unrealized"), ("positions", "Positions"), ("last_rebalanced", "Last rebalanced")]
-VISIBLE_BY_DEFAULT = [c for c, _ in TOGGLEABLE if c not in ("registration", "band")]
 
 accounts_grid = dag.AgGrid(
     id="accounts-grid",
     rowData=desk.ACCOUNTS,
     columnDefs=ACCOUNT_COLUMNS,
-    defaultColDef={**DEFAULT_COL, "floatingFilter": True},
+    defaultColDef=DEFAULT_COL,
     getRowId="params.data.id",
     dashGridOptions={
         **BASE_OPTIONS,
         "rowSelection": SELECTION,
-        "rowClassRules": {"row-out": "params.data.status === 'Out of band'"},
-        "quickFilterText": "",
+        "rowClassRules": {"row-out": "params.data.status === 'Off target'"},
         "pagination": False,
     },
     csvExportParams={"fileName": "rebalance-desk-accounts.csv",
-                     "columnKeys": ["household", "model", "advisor", "registration", "value", "return_30d",
-                                    "cash_weight", "max_drift", "abs_drift", "status", "unrealized",
-                                    "last_rebalanced"]},
-    persistence=True,
-    persisted_props=["columnState"],
+                     "columnKeys": ["household", "registration", "model", "value", "return_30d", "max_drift",
+                                    "status", "last_rebalanced"]},
     columnSize="responsiveSizeToFit",
     className="grid",
     style={"height": "100%"},
 )
 
 HOLDING_COLUMNS = [
-    {"field": "ticker", "headerName": "Security", "cellRenderer": "Security", "cellRendererParams": {"drill": True},
-     "pinned": "left", "minWidth": 210, "filter": "agTextColumnFilter",
-     "tooltipValueGetter": fn("params.node.rowPinned ? '' : 'Open tax lots for ' + params.value")},
-    {"field": "asset_class", "headerName": "Asset class", "cellRenderer": "AssetClass", "minWidth": 135},
-    {"field": "sector", "headerName": "Sector", "minWidth": 130},
-    {"field": "qty", "headerName": "Shares", "type": "rightAligned", "filter": "agNumberColumnFilter",
+    {"field": "ticker", "headerName": "Fund", "cellRenderer": "Security", "cellRendererParams": {"drill": True},
+     "pinned": "left", "minWidth": 210,
+     "tooltipValueGetter": fn("params.node.rowPinned ? '' : 'See each purchase of ' + params.data.name")},
+    {"field": "qty", "headerName": "Shares", "type": "rightAligned",
      "valueFormatter": fn("params.value == null ? '' : params.value.toLocaleString()")},
-    {"field": "price", "headerName": "Price", "type": "rightAligned", "valueFormatter": fn("price(params.value)"),
-     "filter": "agNumberColumnFilter"},
-    {"field": "change", "headerName": "Day", "type": "rightAligned", "valueFormatter": fn("signedPct(params.value)"),
-     "cellClassRules": {"pos": "params.value > 0", "neg": "params.value < 0"}, "minWidth": 80},
-    money_col("market_value", "Market value", minWidth=120),
-    {"field": "weight", "headerName": "Weight vs target", "cellRenderer": "WeightBar", "minWidth": 170,
-     "cellRendererParams": {"max": 0.3}, "filter": "agNumberColumnFilter",
-     "headerTooltip": "Bar is the current weight, the tick is the model target"},
-    pct_col("target", "Target", 2, minWidth=85),
-    {"field": "drift", "headerName": "Drift", "cellRenderer": "DriftBar", "minWidth": 180, "sort": "desc",
-     "comparator": fn("absComparator(valueA, valueB)"), "filter": "agNumberColumnFilter"},
-    gain_col("gain", "Unrealized", minWidth=110),
-    {"field": "lots", "headerName": "Lots", "type": "rightAligned", "minWidth": 70},
+    {"field": "price", "headerName": "Price", "type": "rightAligned", "valueFormatter": fn("price(params.value)")},
+    money_col("market_value", "Value", minWidth=120),
+    {"field": "weight", "headerName": "Share of account", "cellRenderer": "WeightBar", "minWidth": 170,
+     "cellRendererParams": {"max": 0.7},
+     "headerTooltip": "The bar is how much of the account is in this fund today. The tick is the target"},
+    pct_col("target", "Target", 0, minWidth=85),
+    {"field": "drift", "headerName": "Gap", "cellRenderer": "DriftBar", "minWidth": 180, "sort": "desc",
+     "cellRendererParams": {"scale": 0.12},
+     "comparator": fn("absComparator(valueA, valueB)")},
+    gain_col("gain", "Gain", minWidth=110),
 ]
 
 holdings_grid = dag.AgGrid(
@@ -191,35 +158,23 @@ holdings_grid = dag.AgGrid(
     columnDefs=HOLDING_COLUMNS,
     defaultColDef=DEFAULT_COL,
     getRowId="params.data.id",
-    dashGridOptions={
-        **BASE_OPTIONS,
-        "quickFilterText": "",
-        "pinnedBottomRowData": [],
-        "rowClassRules": {"row-legacy": "params.data.target === 0 && !params.node.rowPinned"},
-    },
+    dashGridOptions={**BASE_OPTIONS, "pinnedBottomRowData": []},
     columnSize="responsiveSizeToFit",
     className="grid",
     style={"height": "100%"},
 )
 
 LOT_COLUMNS = [
-    {"field": "lot", "headerName": "Lot", "pinned": "left", "minWidth": 80, "maxWidth": 90},
-    {"field": "acquired", "headerName": "Acquired", "minWidth": 130, "valueFormatter": fn("dateFmt(params.value)"),
-     "filter": "agDateColumnFilter",
-     "filterParams": {"comparator": fn("isoDateComparator(filterLocalDateAtMidnight, cellValue)")}},
-    {"field": "days_held", "headerName": "Days held", "type": "rightAligned", "filter": "agNumberColumnFilter"},
-    {"field": "term", "headerName": "Term", "cellRenderer": "Pill", "minWidth": 100,
-     "cellRendererParams": {"labels": {"Short": "Short-term", "Long": "Long-term"}}},
-    {"field": "qty", "headerName": "Shares", "type": "rightAligned", "filter": "agNumberColumnFilter",
+    {"field": "lot", "headerName": "Purchase", "pinned": "left", "minWidth": 100, "maxWidth": 110},
+    {"field": "acquired", "headerName": "Bought on", "minWidth": 130, "valueFormatter": fn("dateFmt(params.value)"),},
+    {"field": "qty", "headerName": "Shares", "type": "rightAligned",
      "valueFormatter": fn("params.value == null ? '' : params.value.toLocaleString()")},
-    {"field": "cost", "headerName": "Cost / share", "type": "rightAligned", "valueFormatter": fn("price(params.value)")},
-    money_col("cost_basis", "Cost basis"),
-    money_col("market_value", "Market value"),
+    {"field": "cost", "headerName": "Price paid", "type": "rightAligned", "valueFormatter": fn("price(params.value)")},
+    money_col("cost_basis", "Total paid"),
+    money_col("market_value", "Value today"),
     gain_col("gain", "Gain"),
     {"field": "gain_pct", "headerName": "Gain %", "type": "rightAligned", "valueFormatter": fn("signedPct(params.value)"),
      "cellClassRules": {"pos": "params.value > 0", "neg": "params.value < 0"}},
-    money_col("tax_if_sold", "Tax if sold", headerTooltip="Federal tax a full sale of the lot would realize today",
-              cellClassRules={"warn-text": "params.value > 0"}),
 ]
 
 lots_grid = dag.AgGrid(
@@ -228,7 +183,7 @@ lots_grid = dag.AgGrid(
     columnDefs=LOT_COLUMNS,
     defaultColDef={**DEFAULT_COL, "flex": 1},
     getRowId="params.data.id",
-    dashGridOptions={**BASE_OPTIONS, "quickFilterText": "", "pinnedBottomRowData": []},
+    dashGridOptions={**BASE_OPTIONS, "pinnedBottomRowData": []},
     columnSize="responsiveSizeToFit",
     className="grid",
     style={"height": "100%"},
@@ -240,12 +195,12 @@ lots_grid = dag.AgGrid(
 EDITABLE = {"editable": True, "cellClass": "editable"}
 
 PROPOSAL_COLUMNS = [
-    {"field": "ticker", "headerName": "Security", "cellRenderer": "Security", "pinned": "left", "rowDrag": True,
-     "minWidth": 210, "filter": "agTextColumnFilter", "tooltipValueGetter": fn("tradeTooltip(params)")},
-    {"field": "household", "headerName": "Account", "minWidth": 170, "filter": "agTextColumnFilter",
+    {"field": "ticker", "headerName": "Fund", "cellRenderer": "Security", "pinned": "left", "rowDrag": True,
+     "minWidth": 210, "tooltipValueGetter": fn("tradeTooltip(params)")},
+    {"field": "household", "headerName": "Client", "minWidth": 150,
      "tooltipField": "account_id"},
-    {"field": "side", "headerName": "Side", "cellRenderer": "Side", "minWidth": 80, "maxWidth": 90},
-    {"headerName": "Order ticket · click to edit", "headerClass": "hdr-edit", "children": [
+    {"field": "side", "headerName": "Buy / Sell", "cellRenderer": "Side", "minWidth": 95, "maxWidth": 110},
+    {"headerName": "Your order · click to edit", "headerClass": "hdr-edit", "children": [
         {"field": "qty", "headerName": "Shares", "type": "rightAligned", **EDITABLE, "minWidth": 100,
          "cellEditor": "agNumberCellEditor", "cellEditorParams": {"min": 1, "precision": 0, "showStepperButtons": True},
          "valueFormatter": fn("params.value == null ? '' : params.value.toLocaleString()"),
@@ -253,39 +208,38 @@ PROPOSAL_COLUMNS = [
          "cellClassRules": {"edited": "params.data && params.data.qty !== params.data.orig_qty",
                             "oversell": "params.data && params.data.side === 'Sell' && params.data.qty > params.data.held_qty"}},
         {"field": "order_type", "headerName": "Type", **EDITABLE, "minWidth": 95,
-         "cellEditor": "agSelectCellEditor", "cellEditorParams": {"values": ["Market", "Limit", "VWAP"]},
+         "cellEditor": "agSelectCellEditor", "cellEditorParams": {"values": ["Market", "Limit"]},
+         "headerTooltip": "Market buys at today's price. Limit only trades at your price or better",
          "cellClassRules": {"edited": "params.data && params.data.order_type !== params.data.orig_type"}},
-        {"field": "limit", "headerName": "Limit", "type": "rightAligned", "cellClass": "editable", "minWidth": 95,
+        {"field": "limit", "headerName": "Limit price", "type": "rightAligned", "cellClass": "editable", "minWidth": 105,
          "editable": fn("params.data.order_type === 'Limit'"),
          "cellEditor": "agNumberCellEditor", "cellEditorParams": {"min": 0, "precision": 2},
          "valueParser": fn("params.newValue === '' || params.newValue == null ? null : Number(params.newValue)"),
          "valueFormatter": fn("params.node.rowPinned ? '' : params.data.order_type === 'Limit' ? price(params.value) : '—'"),
          "cellClassRules": {"needs-limit": "params.data && params.data.order_type === 'Limit' && !params.data.limit",
                             "locked": "params.data && params.data.order_type !== 'Limit'"}},
-        {"field": "tif", "headerName": "TIF", **EDITABLE, "minWidth": 75,
-         "cellEditor": "agSelectCellEditor", "cellEditorParams": {"values": ["Day", "GTC", "IOC"]}},
     ]},
     {"field": "price", "headerName": "Price", "type": "rightAligned", "valueFormatter": fn("price(params.value)")},
-    {"colId": "notional", "headerName": "Notional", "type": "rightAligned", "minWidth": 115,
+    {"colId": "notional", "headerName": "Amount", "type": "rightAligned", "minWidth": 115,
      "valueGetter": fn("params.node.rowPinned ? params.data.notional : signedNotional(params.data)"),
      "valueFormatter": fn("money(params.value)"),
+     "headerTooltip": "Money spent on a buy (+) or raised by a sale (−)",
      "cellClassRules": {"buy-text": "params.value > 0", "sell-text": "params.value < 0"}},
-    {"headerName": "Allocation", "children": [
-        pct_col("weight", "Now", 2, minWidth=80),
-        pct_col("target", "Target", 2, minWidth=80),
+    {"headerName": "Share of account", "children": [
+        pct_col("weight", "Now", 1, minWidth=80),
+        pct_col("target", "Target", 0, minWidth=80),
         {"colId": "post_weight", "headerName": "After", "type": "rightAligned", "minWidth": 85,
          "valueGetter": fn("params.node.rowPinned ? null : postWeight(params.data)"),
-         "valueFormatter": fn("pct(params.value, 2)")},
-        {"colId": "residual", "headerName": "Residual drift", "cellRenderer": "DriftBar", "minWidth": 170,
+         "valueFormatter": fn("pct(params.value, 1)")},
+        {"colId": "residual", "headerName": "Gap after", "cellRenderer": "DriftBar", "minWidth": 170,
          "valueGetter": fn("params.node.rowPinned ? null : residualDrift(params.data)"),
-         "cellRendererParams": {"scale": 0.02}},
+         "cellRendererParams": {"band": 0.05, "scale": 0.12}},
     ]},
-    {"colId": "est_tax", "headerName": "Est. tax", "type": "rightAligned", "minWidth": 100,
-     "valueGetter": fn("params.node.rowPinned ? params.data.est_tax : estTax(params.data)"),
+    {"colId": "gain", "headerName": "Gain on sale", "type": "rightAligned", "minWidth": 115,
+     "valueGetter": fn("params.node.rowPinned ? params.data.gain : saleGain(params.data)"),
      "valueFormatter": fn("params.value ? money(params.value) : '—'"),
      "cellClassRules": {"warn-text": "params.value > 0"},
-     "headerTooltip": "Federal tax realized by the sale, pro rata across lots. Zero in tax-deferred accounts"},
-    {"field": "registration", "headerName": "Acct type", "minWidth": 110, "hide": True},
+     "headerTooltip": "Profit a sale locks in. In a taxable account this may be taxed"},
 ]
 
 proposal_grid = dag.AgGrid(
@@ -303,13 +257,11 @@ proposal_grid = dag.AgGrid(
         "stopEditingWhenCellsLoseFocus": True,
         "rowDragManaged": True,
         "rowDragMultiRow": True,
-        "quickFilterText": "",
         "pinnedBottomRowData": [],
-        "rowClassRules": {"row-legacy": "params.data && params.data.legacy"},
     },
     csvExportParams={"fileName": "rebalance-desk-proposal.csv", "onlySelected": True,
-                     "columnKeys": ["household", "ticker", "side", "qty", "order_type", "limit", "tif", "price",
-                                    "notional", "weight", "target", "post_weight", "est_tax"]},
+                     "columnKeys": ["household", "ticker", "side", "qty", "order_type", "limit", "price",
+                                    "notional", "weight", "target", "post_weight", "gain"]},
     columnSize="responsiveSizeToFit",
     className="grid",
     style={"height": "100%"},
@@ -319,29 +271,26 @@ proposal_grid = dag.AgGrid(
 # Step 3 · Check ------------------------------------------------------------
 
 def check_col(key, header, tip):
-    return {"field": f"chk_{key}", "headerName": header, "cellRenderer": "Check", "minWidth": 82, "maxWidth": 100,
-            "headerTooltip": tip, "cellClass": "center", "filter": "agTextColumnFilter"}
+    return {"field": f"chk_{key}", "headerName": header, "cellRenderer": "Check", "minWidth": 95, "maxWidth": 120,
+            "headerTooltip": tip, "cellClass": "center"}
 
 
 CHECK_COLUMNS = [
-    {"field": "household", "headerName": "Account", "spanRows": True, "pinned": "left", "minWidth": 200,
+    {"field": "household", "headerName": "Client", "spanRows": True, "pinned": "left", "minWidth": 170,
      "cellClass": "span-cell", "sortable": False},
-    {"field": "ticker", "headerName": "Security", "cellRenderer": "Security", "minWidth": 190},
-    {"field": "side", "headerName": "Side", "cellRenderer": "Side", "minWidth": 80, "maxWidth": 90},
+    {"field": "ticker", "headerName": "Fund", "cellRenderer": "Security", "minWidth": 190},
+    {"field": "side", "headerName": "Buy / Sell", "cellRenderer": "Side", "minWidth": 95, "maxWidth": 110},
     {"field": "qty", "headerName": "Shares", "type": "rightAligned",
      "valueFormatter": fn("params.value.toLocaleString()")},
-    money_col("notional", "Notional", minWidth=110),
-    {"headerName": "Pre-trade rules", "children": [
-        check_col("restricted", "Restricted", "Advisor restricted list (insider and employer stock)"),
-        check_col("wash_sale", "Wash sale", "Buying back a security sold at a loss within 30 days"),
-        check_col("concentration", "Conc.", "Single-name weight after the trade must stay under 10%"),
-        check_col("tax", "Tax", "Short-term gains above $1,500 in a taxable account"),
-        check_col("liquidity", "Liquidity", "Order above 5% of average daily volume"),
-        check_col("ticket", "Ticket", "Minimum ticket size and complete limit instructions"),
+    money_col("notional", "Amount", minWidth=110),
+    {"headerName": "House rules", "children": [
+        check_col("size", "Order size", f"At least ${desk.MIN_ORDER:,}, and limit orders need a price"),
+        check_col("cash", "Cash", "Buys must be paid for by the account's sales plus the cash it holds"),
+        check_col("tax", "Tax", f"Flags sales in taxable accounts that lock in more than ${desk.GAIN_WARNING:,} of gain"),
     ]},
     {"field": "result", "headerName": "Result", "cellRenderer": "Pill", "minWidth": 105, "pinned": "right",
-     "cellRendererParams": {"labels": {"pass": "Cleared", "warn": "Review", "fail": "Blocked"}}},
-    {"field": "reasons", "headerName": "Detail", "minWidth": 320, "flex": 1, "wrapText": True, "autoHeight": True,
+     "cellRendererParams": {"labels": {"pass": "OK", "warn": "Review", "fail": "Blocked"}}},
+    {"field": "reasons", "headerName": "Why", "minWidth": 300, "flex": 1, "wrapText": True, "autoHeight": True,
      "cellClass": "reason", "tooltipField": "reasons"},
 ]
 
@@ -367,28 +316,19 @@ checks_grid = dag.AgGrid(
 # Step 4 · Release ----------------------------------------------------------
 
 BLOTTER_COLUMNS = [
-    {"field": "order_no", "headerName": "Order", "pinned": "left", "minWidth": 110, "cellClass": "mono"},
-    {"field": "ticker", "headerName": "Security", "cellRenderer": "Security", "minWidth": 190},
-    {"field": "household", "headerName": "Account", "minWidth": 190},
-    {"field": "side", "headerName": "Side", "cellRenderer": "Side", "minWidth": 80, "maxWidth": 90},
+    {"field": "order_no", "headerName": "Order", "pinned": "left", "minWidth": 100, "cellClass": "mono"},
+    {"field": "ticker", "headerName": "Fund", "cellRenderer": "Security", "minWidth": 190},
+    {"field": "household", "headerName": "Client", "minWidth": 160},
+    {"field": "side", "headerName": "Buy / Sell", "cellRenderer": "Side", "minWidth": 95, "maxWidth": 110},
     {"field": "order_type", "headerName": "Type", "minWidth": 85},
-    {"field": "filled", "headerName": "Filled", "cellRenderer": "FillBar", "minWidth": 200,
+    {"field": "filled", "headerName": "Shares filled", "cellRenderer": "FillBar", "minWidth": 200,
      "enableCellChangeFlash": True},
-    {"field": "avg_px", "headerName": "Avg price", "type": "rightAligned", "valueFormatter": fn("params.value == null ? '—' : price(params.value)"),
-     "enableCellChangeFlash": True},
-    {"field": "last_px", "headerName": "Last", "type": "rightAligned", "valueFormatter": fn("params.value == null ? '—' : price(params.value)"),
-     "enableCellChangeFlash": True},
-    {"colId": "slippage", "headerName": "Slippage", "type": "rightAligned", "minWidth": 95,
-     "valueGetter": fn("params.data.avg_px ? (params.data.avg_px / params.data.price - 1) * 1e4 "
-                       "* (params.data.side === 'Buy' ? 1 : -1) : null"),
-     "valueFormatter": fn("params.value == null ? '—' : params.value.toFixed(1) + ' bp'"),
-     "cellClassRules": {"neg": "params.value > 0", "pos": "params.value < 0"},
-     "headerTooltip": "Fill price versus arrival price. Positive costs the client"},
-    {"colId": "done_notional", "headerName": "Executed", "type": "rightAligned", "minWidth": 115,
+    {"field": "avg_px", "headerName": "Avg price", "type": "rightAligned",
+     "valueFormatter": fn("params.value == null ? '—' : price(params.value)"), "enableCellChangeFlash": True},
+    {"colId": "done_notional", "headerName": "Amount traded", "type": "rightAligned", "minWidth": 125,
      "valueGetter": fn("params.data.avg_px ? params.data.filled * params.data.avg_px : 0"),
-     "valueFormatter": fn("money(params.value)")},
-    {"field": "status", "headerName": "Status", "cellRenderer": "Pill", "minWidth": 110, "pinned": "right",
-     "filter": "agTextColumnFilter"},
+     "valueFormatter": fn("money(params.value)"), "enableCellChangeFlash": True},
+    {"field": "status", "headerName": "Status", "cellRenderer": "Pill", "minWidth": 125, "pinned": "right"},
 ]
 
 blotter_grid = dag.AgGrid(
@@ -399,7 +339,7 @@ blotter_grid = dag.AgGrid(
     getRowId="params.data.id",
     dashGridOptions={**BASE_OPTIONS, "cellFlashDuration": 600, "cellFadeDuration": 900,
                      "rowClassRules": {"row-done": "params.data.status === 'Filled'"}},
-    csvExportParams={"fileName": "rebalance-desk-executions.csv"},
+    csvExportParams={"fileName": "rebalance-desk-orders.csv"},
     columnSize="responsiveSizeToFit",
     className="grid",
     style={"height": "100%"},
@@ -422,21 +362,15 @@ def tool(label, id_, kind="", **kw):
     return html.Button(label, id=id_, className=f"tool {kind}".strip(), n_clicks=0, **kw)
 
 
-def segmented(id_, options, value):
-    return dcc.RadioItems(id=id_, options=options, value=value, className="seg", inline=True,
-                          inputClassName="seg-input", labelClassName="seg-label")
-
-
 brand_mark = html.Div([html.Span(className=f"bar b{i}") for i in range(4)], className="mark")
 
 topbar = html.Header([
     html.Div([brand_mark, html.Div([html.B("Rebalance Desk"),
-                                    html.Span("Q4 rebalance window · Private Wealth · Book A")])],
+                                    html.Span(f"Quarterly review · {len(desk.ACCOUNTS)} client accounts")])],
              className="brand"),
     html.Div([
         html.Span([html.I(className="live"), "Market open"], className="mkt"),
         html.Span(f"{desk.TODAY:%a %d %b %Y}", className="mono dim"),
-        html.Span("Dash AG Grid 35 · Community", className="badge"),
     ], className="top-right"),
 ], className="topbar")
 
@@ -456,30 +390,19 @@ def step_head(i, kpis):
 
 
 screen = html.Section([
-    step_head(0, [kpi("Accounts selected", "k-sel", "k-sel-sub"), kpi("AUM in scope", "k-aum"),
-                  kpi("Out of band", "k-oob", "k-oob-sub")]),
+    step_head(0, [kpi("Accounts selected", "k-sel", "k-sel-sub"), kpi("Value selected", "k-aum"),
+                  kpi("Off target", "k-oob", "k-oob-sub")]),
     html.Div([
         html.Div([
-            html.Button("← Back", id="drill-up", className="tool up", n_clicks=0, style={"display": "none"}),
-            html.Button("Book", id="crumb-book", className="crumb", n_clicks=0),
+            html.Button("All clients", id="crumb-book", className="crumb", n_clicks=0),
             html.Span("/", className="crumb-sep", id="sep-1"),
             html.Button("", id="crumb-account", className="crumb", n_clicks=0),
             html.Span("/", className="crumb-sep", id="sep-2"),
             html.Span("", id="crumb-position", className="crumb current"),
         ], className="crumbs"),
         html.Div([
-            dcc.Input(id="quick", type="search", placeholder="Quick filter…  ticker, household, advisor",
-                      debounce=False, className="search"),
-            html.Div(segmented("status-filter", ["All", "Out of band", "Watch", "In band"], "All"),
-                     id="status-wrap"),
             html.Div([
-                tool("Select out-of-band", "select-oob", "accent"),
-                html.Details([
-                    html.Summary("Columns", className="tool"),
-                    dcc.Checklist(id="col-toggle", options=[{"label": l, "value": v} for v, l in TOGGLEABLE],
-                                  value=VISIBLE_BY_DEFAULT, className="col-menu"),
-                ], id="col-menu", className="dropdown"),
-                tool("Reset layout", "reset-cols"),
+                tool("Select off-target", "select-oob", "accent"),
                 tool("Export CSV", "export-accounts"),
             ], id="account-tools", className="tools"),
             html.Div([tool("", "toggle-include", "accent")], id="holding-tools", className="tools"),
@@ -491,56 +414,42 @@ screen = html.Section([
         html.Div(holdings_grid, id="lvl-holdings", className="lvl"),
         html.Div(lots_grid, id="lvl-lots", className="lvl"),
     ], className="grid-frame"),
-    features("rowSelection · selectAll:'filtered'", "cellRendererData", "filterModel", "floatingFilter",
-             "quickFilterText", "setNodesSelected()", "setColumnsVisible()", "resetColumnState",
-             "persistence · columnState", "pinnedBottomRowData", "comparator", "agDateColumnFilter",
+    features("rowSelection", "cellRendererData", "setNodesSelected()", "pinnedBottomRowData", "comparator",
              "exportDataAsCsv"),
 ], id="panel-0", className="panel")
 
 propose = html.Section([
-    step_head(1, [kpi("Trades selected", "p-count", "p-count-sub"), kpi("Buys", "p-buys"), kpi("Sells", "p-sells"),
-                  kpi("Net cash", "p-net"), kpi("Est. tax", "p-tax")]),
+    step_head(1, [kpi("Orders selected", "p-count", "p-count-sub"), kpi("Buying", "p-buys"),
+                  kpi("Selling", "p-sells"), kpi("Net cash", "p-net")]),
     html.Div([
-        html.Div([
-            tool("↶ Undo", "undo"), tool("↷ Redo", "redo"),
-            html.Span(className="divider"),
-            tool("Select out-of-band", "p-select-oob"),
-            tool("Select all", "p-select-all"),
-            tool("Clear", "p-clear"),
-        ], className="tools"),
-        html.Div([
-            html.Span("Selected rows →", className="dim small"),
-            segmented("bulk-type", ["Market", "Limit", "VWAP"], "VWAP"),
-            tool("Apply order type", "bulk-apply", "accent"),
-            tool("Export selected", "export-proposal"),
-        ], className="tools"),
+        html.Div([tool("↶ Undo", "undo"), tool("↷ Redo", "redo")], className="tools"),
+        html.Div([tool("Export selected", "export-proposal")], className="tools"),
     ], className="toolbar"),
     html.Div(html.Div(proposal_grid, className="lvl show"), className="grid-frame"),
     features("editable", "agNumberCellEditor", "agSelectCellEditor", "editable(fn)", "valueGetter", "valueParser",
              "cellValueChanged", "undoRedoCellEditing", "undoCellEditing()", "rowDragManaged · rowDragMultiRow",
-             "rowTransaction.update", "selectedRows(fn)", "cellClassRules", "tooltipValueGetter",
+             "selectedRows", "cellClassRules", "tooltipValueGetter",
              "csvExportParams.onlySelected"),
 ], id="panel-1", className="panel")
 
 check = html.Section([
-    step_head(2, [kpi("Cleared", "c-pass"), kpi("Needs review", "c-warn"), kpi("Blocked", "c-fail"),
-                  kpi("Releasing", "c-sel", "c-sel-sub")]),
+    step_head(2, [kpi("OK", "c-pass"), kpi("Needs review", "c-warn"), kpi("Blocked", "c-fail"),
+                  kpi("Sending", "c-sel", "c-sel-sub")]),
     html.Div([
-        segmented("result-filter", [{"label": "All orders", "value": "all"}, {"label": "Needs review", "value": "warn"},
-                                    {"label": "Blocked", "value": "fail"}], "all"),
-        html.Div([tool("Acknowledge all reviews", "ack-warn", "accent")], className="tools"),
+        html.Span("Blocked orders can't be sent. Orders to review stay unticked until you approve them", className="dim small"),
+        html.Div([tool("Approve all reviews", "ack-warn", "accent")], className="tools"),
     ], className="toolbar"),
     html.Div(html.Div(checks_grid, className="lvl show"), className="grid-frame"),
     features("isRowSelectable", "enableCellSpan · spanRows", "wrapText · autoHeight", "rowClassRules",
-             "pinned: 'right'", "columnGroups", "headerTooltip", "filterModel", "forEachNode()"),
+             "pinned: 'right'", "columnGroups", "headerTooltip", "forEachNode()"),
 ], id="panel-2", className="panel")
 
 release = html.Section([
-    step_head(3, [kpi("Orders", "r-orders"), kpi("Filled", "r-filled", "r-filled-sub"), kpi("Executed", "r-exec"),
-                  kpi("Avg slippage", "r-slip")]),
+    step_head(3, [kpi("Orders", "r-orders"), kpi("Filled", "r-filled", "r-filled-sub"),
+                  kpi("Amount traded", "r-exec")]),
     html.Div([
         html.Div(id="r-banner", className="banner"),
-        html.Div([tool("Export executions", "export-blotter")], className="tools"),
+        html.Div([tool("Export CSV", "export-blotter")], className="tools"),
     ], className="toolbar"),
     html.Div(html.Div(blotter_grid, className="lvl show"), className="grid-frame"),
     features("rowTransaction · update", "getRowId", "enableCellChangeFlash", "cellFlashDuration", "animateRows",
@@ -551,7 +460,7 @@ footer = html.Footer([
     html.Div(id="foot-summary", className="foot-summary"),
     html.Div([
         html.Button("← Back", id="back", className="btn ghost", n_clicks=0),
-        html.Button("Propose trades →", id="next", className="btn primary", n_clicks=0),
+        html.Button("Propose orders →", id="next", className="btn primary", n_clicks=0),
     ], className="foot-actions"),
 ], className="footer")
 
@@ -636,11 +545,11 @@ def navigate(_n, _b, *args):
         orders = []
         for n, t in enumerate(trades[r["id"]] for r in check_rows if r["id"] in chosen):
             orders.append({k: t[k] for k in ("id", "household", "ticker", "name", "side", "qty", "price",
-                                             "order_type", "limit")} | {"order_no": f"ORD-{58210 + n}"})
+                                             "order_type", "limit")} | {"order_no": f"#{1001 + n}"})
         out.update(orders=orders, blotter=[o | desk.fill_state(o, 0) for o in orders], tick=0, paused=False)
         target, reached = 3, 3
     else:
-        # New session: clear everything and go back to the book
+        # Start over: clear everything and go back to the client list
         out.update(trades={}, prop_rows=[], chk_rows=[], orders=[], blotter=[], paused=True, deselect=True,
                    drill={"level": "accounts"})
         target, reached = 0, 0
@@ -679,18 +588,18 @@ def footer_summary(step, accounts, proposal, checks, _blotter, paused):
     if step == 0:
         n = len(accounts or [])
         aum = sum(a["value"] for a in accounts or [])
-        text = [html.B(f"{n} account{'s' * (n != 1)}"), f" selected · {fmt_money(aum)} in scope"] if n else \
-            ["Tick the accounts to rebalance, or click ", html.B("→"), " on a household to inspect its holdings"]
+        text = [html.B(f"{n} account{'s' * (n != 1)}"), f" selected · {fmt_money(aum)} in total"] if n else \
+            ["Tick the accounts to rebalance, or click ", html.B("→"), " on a client to see what they own"]
         return text, n == 0
     if step == 1:
         n = len(proposal or [])
-        return ([html.B(f"{n} trade{'s' * (n != 1)}"), " will go to compliance"] if n
-                else ["Select at least one trade"]), n == 0
+        return ([html.B(f"{n} order{'s' * (n != 1)}"), " will be checked"] if n
+                else ["Select at least one order"]), n == 0
     if step == 2:
         n = len(checks or [])
-        return ([html.B(f"{n} order{'s' * (n != 1)}"), " cleared for release. Blocked orders cannot be selected"]
-                if n else ["Select the orders to release"]), n == 0
-    return ["Orders are working" if not paused else "Session complete. Start a new one to rebalance again"], False
+        return ([html.B(f"{n} order{'s' * (n != 1)}"), " ready to send"]
+                if n else ["Select the orders to send"]), n == 0
+    return ["Orders are filling" if not paused else "All done. Start over to rebalance again"], False
 
 
 # Step 1 · Screen ---------------------------------------------------------------
@@ -701,11 +610,10 @@ def footer_summary(step, accounts, proposal, checks, _blotter, paused):
     Input("holdings-grid", "cellClicked"),
     Input("crumb-book", "n_clicks"),
     Input("crumb-account", "n_clicks"),
-    Input("drill-up", "n_clicks"),
     State("drill", "data"),
     prevent_initial_call=True,
 )
-def drill(renderer, clicked, _book, _acct, _up, current):
+def drill(renderer, clicked, _book, _acct, current):
     trigger = ctx.triggered_id
     if trigger == "accounts-grid" and renderer and renderer.get("value", {}).get("action") == "drill":
         return {"level": "holdings", "account": renderer["value"]["id"]}
@@ -715,11 +623,6 @@ def drill(renderer, clicked, _book, _acct, _up, current):
         return {"level": "accounts"}
     if trigger == "crumb-account" and current.get("account"):
         return {"level": "holdings", "account": current["account"]}
-    if trigger == "drill-up":
-        # One level up: lots -> holdings -> book
-        if current["level"] == "lots":
-            return {"level": "holdings", "account": current["account"]}
-        return {"level": "accounts"}
     raise dash.exceptions.PreventUpdate
 
 
@@ -735,9 +638,6 @@ def drill(renderer, clicked, _book, _acct, _up, current):
     Output("sep-2", "style"),
     Output("crumb-book", "className"),
     Output("crumb-account", "className"),
-    Output("drill-up", "children"),
-    Output("drill-up", "style"),
-    Output("status-wrap", "style"),
     Output("account-tools", "style"),
     Output("holding-tools", "style"),
     Output("holdings-grid", "rowData"),
@@ -763,29 +663,25 @@ def render_drill(state):
         holdings_opts["pinnedBottomRowData"] = [{
             "id": "total", "ticker": "Total invested", "market_value": sum(p["market_value"] for p in rows),
             "weight": sum(p["weight"] for p in rows), "target": sum(p["target"] for p in rows),
-            "gain": sum(p["gain"] for p in rows), "lots": sum(p["lots"] for p in rows),
+            "gain": sum(p["gain"] for p in rows),
         }]
         card = account_card(acct, pos)
     if pos and level == "lots":
-        taxable = acct["registration"] == "Taxable"
-        lots = [l | {"tax_if_sold": round(max(l["gain"], 0) * (desk.ST_RATE if l["term"] == "Short" else desk.LT_RATE), 2)
-                     if taxable else 0.0} for l in desk.lots(pos["id"])]
+        lots = desk.lots(pos["id"])
         lot_rows = lots
         lot_opts = Patch()
         lot_opts["pinnedBottomRowData"] = [{
             "id": "total", "lot": "Total", "qty": sum(l["qty"] for l in lots), "cost_basis": sum(l["cost_basis"] for l in lots),
             "market_value": sum(l["market_value"] for l in lots), "gain": sum(l["gain"] for l in lots),
-            "tax_if_sold": sum(l["tax_if_sold"] for l in lots),
         }]
 
     is_acc, is_hold, is_lots = level == "accounts", level == "holdings", level == "lots"
     return (
         "lvl show" if is_acc else "lvl", "lvl show" if is_hold else "lvl", "lvl show" if is_lots else "lvl",
         acct["household"] if acct else "", show if not is_acc else hide, show if not is_acc else hide,
-        pos["ticker"] + " tax lots" if pos and is_lots else "", show if is_lots else hide, show if is_lots else hide,
+        pos["name"] + " purchases" if pos and is_lots else "", show if is_lots else hide, show if is_lots else hide,
         "crumb current" if is_acc else "crumb", "crumb current" if is_hold else "crumb",
-        "← Holdings" if is_lots else "← All accounts", hide if is_acc else show,
-        show if is_acc else hide, show if is_acc else hide, hide if is_acc else show,
+        show if is_acc else hide, hide if is_acc else show,
         holdings_rows, holdings_opts, lot_rows, lot_opts, card, "account-card" + ("" if is_acc else " show"),
     )
 
@@ -795,17 +691,16 @@ def account_card(acct, pos):
         return html.Div([html.Span(label), html.B(value, className=cls)], className="stat")
 
     stats = [
-        stat("Model", acct["model"]), stat("Advisor", acct["advisor"]), stat("Registration", acct["registration"]),
-        stat("AUM", fmt_money(acct["value"])), stat("Cash", f"{acct['cash_weight']:.1%}"),
-        stat("Largest drift", f"{acct['max_drift']:+.2%}", "bad" if acct["status"] == "Out of band" else ""),
-        stat("Band", f"±{acct['band']:.1%}"),
+        stat("Target mix", acct["model"]), stat("Account type", acct["registration"]),
+        stat("Value", fmt_money(acct["value"])), stat("Uninvested cash", fmt_money(acct["cash"])),
+        stat("Biggest gap", f"{acct['max_drift'] * 100:+.1f} pts", "bad" if acct["status"] == "Off target" else ""),
+        stat("Limit", f"±{acct['band'] * 100:.0f} pts"),
     ]
     if pos:
-        stats = [stat("Security", f"{pos['ticker']} · {pos['name']}"), stat("Shares", f"{pos['qty']:,}"),
-                 stat("Avg cost", f"${pos['avg_cost']:,.2f}"), stat("Price", f"${pos['price']:,.2f}"),
-                 stat("Short-term gain", fmt_money(pos["st_gain"]), "pos" if pos["st_gain"] > 0 else "neg"),
-                 stat("Long-term gain", fmt_money(pos["lt_gain"]), "pos" if pos["lt_gain"] > 0 else "neg"),
-                 stat("Drift", f"{pos['drift']:+.2%}")]
+        stats = [stat("Fund", f"{pos['name']} · {pos['ticker']}"), stat("Shares", f"{pos['qty']:,}"),
+                 stat("Avg price paid", f"${pos['avg_cost']:,.2f}"), stat("Price today", f"${pos['price']:,.2f}"),
+                 stat("Gain", fmt_money(pos["gain"]), "pos" if pos["gain"] > 0 else "neg"),
+                 stat("Gap", f"{pos['drift'] * 100:+.1f} pts")]
     return [html.Div(className=f"card-strip {acct['status'].split()[0].lower()}"), *stats]
 
 
@@ -817,7 +712,7 @@ def account_card(acct, pos):
 )
 def include_label(selected, state):
     included = state.get("account") in {a["id"] for a in selected or []}
-    return ("✓ In this rebalance" if included else "+ Add account to rebalance",
+    return ("✓ In this rebalance" if included else "+ Add to rebalance",
             "tool " + ("on" if included else "accent"))
 
 
@@ -835,12 +730,12 @@ clientside_callback(
     prevent_initial_call=True,
 )
 
-# Select exactly the out-of-band accounts that pass the current filters
+# Select exactly the off-target accounts
 clientside_callback(
     """(n) => {
         const api = dash_ag_grid.getApi('accounts-grid');
         const nodes = [];
-        api.forEachNodeAfterFilter((node) => { if (node.data.status === 'Out of band') nodes.push(node); });
+        api.forEachNode((node) => { if (node.data.status === 'Off target') nodes.push(node); });
         api.deselectAll();
         api.setNodesSelected({nodes: nodes, newValue: true});
         return dash_clientside.no_update;
@@ -849,62 +744,6 @@ clientside_callback(
     Input("select-oob", "n_clicks"),
     prevent_initial_call=True,
 )
-
-# Show and hide columns through the column API
-clientside_callback(
-    """(visible, all) => {
-        const api = dash_ag_grid.getApi('accounts-grid');
-        if (!api) return dash_clientside.no_update;
-        const ids = all.map((o) => o.value);
-        api.setColumnsVisible(ids.filter((c) => !visible.includes(c)), false);
-        api.setColumnsVisible(visible, true);
-        return dash_clientside.no_update;
-    }""",
-    Output("col-menu", "title"),
-    Input("col-toggle", "value"),
-    State("col-toggle", "options"),
-    prevent_initial_call=True,
-)
-
-
-@app.callback(
-    Output("accounts-grid", "resetColumnState"),
-    Output("col-toggle", "value"),
-    Input("reset-cols", "n_clicks"),
-    prevent_initial_call=True,
-)
-def reset_columns(_):
-    return True, VISIBLE_BY_DEFAULT
-
-
-@app.callback(
-    Output("accounts-grid", "filterModel"),
-    Input("status-filter", "value"),
-    State("accounts-grid", "filterModel"),
-)
-def status_filter(status, model):
-    model = {k: v for k, v in (model or {}).items() if k != "status"}
-    if status != "All":
-        model["status"] = {"filterType": "text", "type": "equals", "filter": status}
-    return model
-
-
-@app.callback(
-    Output("accounts-grid", "dashGridOptions"),
-    Output("holdings-grid", "dashGridOptions", allow_duplicate=True),
-    Output("lots-grid", "dashGridOptions", allow_duplicate=True),
-    Output("proposal-grid", "dashGridOptions"),
-    Input("quick", "value"),
-    prevent_initial_call=True,
-)
-def quick_filter(text):
-    patches = []
-    for _ in range(4):
-        p = Patch()
-        p["quickFilterText"] = text or ""
-        patches.append(p)
-    return patches
-
 
 @app.callback(
     Output("accounts-grid", "exportDataAsCsv"),
@@ -927,8 +766,8 @@ def export_accounts(_):
 def screen_kpis(selected, visible):
     selected = selected or []
     visible = visible if visible is not None else desk.ACCOUNTS
-    oob = [a for a in visible if a["status"] == "Out of band"]
-    oob_sel = sum(a["status"] == "Out of band" for a in selected)
+    oob = [a for a in visible if a["status"] == "Off target"]
+    oob_sel = sum(a["status"] == "Off target" for a in selected)
     return (f"{len(selected)}", f"of {len(visible)} shown", fmt_money(sum(a["value"] for a in selected)),
             f"{len(oob)}", f"{oob_sel} selected")
 
@@ -937,31 +776,15 @@ def screen_kpis(selected, visible):
 
 @app.callback(
     Output("trades", "data", allow_duplicate=True),
-    Output("proposal-grid", "rowTransaction"),
     Input("proposal-grid", "cellValueChanged"),
-    Input("bulk-apply", "n_clicks"),
-    State("bulk-type", "value"),
-    State("proposal-grid", "selectedRows"),
     State("trades", "data"),
     prevent_initial_call=True,
 )
-def edit_trades(changes, _bulk, bulk_type, selected, trades):
-    if ctx.triggered_id == "proposal-grid":
-        # Edits already live in the grid; mirror them so totals and checks see them
-        for c in changes or []:
-            trades[c["rowId"]] = c["data"]
-        return trades, dash.no_update
-    if not selected:
-        raise dash.exceptions.PreventUpdate
-    updated = []
-    for r in selected:
-        t = trades[r["id"]]
-        t["order_type"] = bulk_type
-        if bulk_type == "Limit" and not t.get("limit"):
-            # Seed a marketable limit 25 bp through the price
-            t["limit"] = round(t["price"] * (1.0025 if t["side"] == "Buy" else 0.9975), 2)
-        updated.append(t)
-    return trades, {"update": updated}
+def edit_trades(changes, trades):
+    # Edits already live in the grid; mirror them so totals and checks see them
+    for c in changes or []:
+        trades[c["rowId"]] = c["data"]
+    return trades
 
 
 @app.callback(
@@ -971,7 +794,6 @@ def edit_trades(changes, _bulk, bulk_type, selected, trades):
     Output("p-buys", "children"),
     Output("p-sells", "children"),
     Output("p-net", "children"),
-    Output("p-tax", "children"),
     Input("trades", "data"),
     Input("proposal-grid", "selectedRows"),
     prevent_initial_call=True,
@@ -985,23 +807,18 @@ def proposal_totals(trades, selected):
 
     buys = sum(notional(t) for t in chosen if t["side"] == "Buy")
     sells = sum(notional(t) for t in chosen if t["side"] == "Sell")
-    tax = sum(t["qty"] * t["tax_per_share"] for t in chosen if t["side"] == "Sell")
+    gain = sum(t["qty"] * t["gain_per_share"] for t in chosen if t["side"] == "Sell")
     opts = Patch()
-    opts["pinnedBottomRowData"] = [{"id": "total", "ticker": f"{len(chosen)} selected", "household": "", "notional": sells - buys,
-                                    "est_tax": tax}]
+    opts["pinnedBottomRowData"] = [{"id": "total", "ticker": f"{len(chosen)} selected", "household": "",
+                                    "notional": sells - buys, "gain": gain}]
     edited = sum(t["qty"] != t["orig_qty"] or t["order_type"] != t["orig_type"] for t in trades.values())
     return (opts, f"{len(chosen)}", f"of {len(trades)} · {edited} edited", fmt_money(buys), fmt_money(sells),
-            ("+" if sells >= buys else "−") + fmt_money(abs(sells - buys)), fmt_money(tax))
+            ("+" if sells >= buys else "−") + fmt_money(abs(sells - buys)))
 
 
 for button, js in [
     ("undo", "api.undoCellEditing()"),
     ("redo", "api.redoCellEditing()"),
-    ("p-select-all", "api.selectAll('filtered')"),
-    ("p-clear", "api.deselectAll()"),
-    ("p-select-oob", "api.deselectAll(); const nodes = []; "
-                     "api.forEachNodeAfterFilter((n) => { if (n.data.out_of_band) nodes.push(n); }); "
-                     "api.setNodesSelected({nodes: nodes, newValue: true})"),
 ]:
     clientside_callback(
         f"""(n) => {{
@@ -1042,14 +859,6 @@ def check_kpis(rows, selected):
     return count("pass"), count("warn"), count("fail"), len(selected), fmt_money(notional)
 
 
-@app.callback(
-    Output("checks-grid", "filterModel"),
-    Input("result-filter", "value"),
-)
-def result_filter(value):
-    return {} if value == "all" else {"result": {"filterType": "text", "type": "equals", "filter": value}}
-
-
 clientside_callback(
     """(n) => {
         const api = dash_ag_grid.getApi('checks-grid');
@@ -1086,7 +895,6 @@ def fills(tick, orders):
     Output("r-filled", "children"),
     Output("r-filled-sub", "children"),
     Output("r-exec", "children"),
-    Output("r-slip", "children"),
     Output("r-banner", "children"),
     Input("ticker", "n_intervals"),
     Input("ticker", "disabled"),
@@ -1094,24 +902,21 @@ def fills(tick, orders):
 )
 def release_kpis(tick, paused, orders):
     if not orders:
-        return "—", "—", "", "—", "—", ""
+        return "—", "—", "", "—", ""
     states = [o | desk.fill_state(o, tick or 0) for o in orders]
     shares = sum(s["qty"] for s in states)
     filled = sum(s["filled"] for s in states)
     executed = sum(s["filled"] * s["avg_px"] for s in states if s["avg_px"])
-    slip_num = sum(s["filled"] * s["avg_px"] * (s["avg_px"] / s["price"] - 1) * (1 if s["side"] == "Buy" else -1)
-                   for s in states if s["avg_px"])
-    slip = slip_num / executed * 1e4 if executed else 0
     complete = sum(s["status"] == "Filled" for s in states)
     resting = len(states) - complete
     if paused:
-        banner = [html.I(className="dot ok"), html.B("Session closed. "),
-                  f"{complete} orders filled" + (f", {resting} limit orders resting for the rest of the day" if resting else "")]
+        banner = [html.I(className="dot ok"), html.B("Done. "),
+                  f"{complete} orders filled" + (f", {resting} limit orders still waiting for their price" if resting else "")]
     else:
-        banner = [html.I(className="live"), html.B("Routing. "), f"Fills stream in every {FILL_TICK_MS} ms "
-                  "as row transactions; changed cells flash"]
-    return (len(states), f"{int(filled / shares * 1000) / 10:.1f}%", f"{complete} of {len(states)} complete", fmt_money(executed),
-            f"{slip:+.1f} bp", banner)
+        banner = [html.I(className="live"), html.B("Filling. "), "The table updates about once a second; "
+                  "changed cells flash"]
+    return (len(states), f"{int(filled / shares * 1000) / 10:.1f}%", f"{complete} of {len(states)} complete",
+            fmt_money(executed), banner)
 
 
 @app.callback(

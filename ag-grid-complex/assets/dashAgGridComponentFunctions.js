@@ -46,10 +46,9 @@ dagcomponentfuncs.DriftBar = (props) => {
 };
 
 const STATUS_CLASS = {
-  "Out of band": "bad", Watch: "warn", "In band": "ok",
+  "Off target": "bad", "On target": "ok",
   pass: "ok", warn: "warn", fail: "bad",
-  Routed: "idle", Working: "info", Partial: "warn", Filled: "ok",
-  Short: "warn", Long: "ok",
+  Sent: "idle", Working: "info", "Partly filled": "warn", Filled: "ok",
 };
 
 dagcomponentfuncs.Pill = (props) => {
@@ -67,21 +66,12 @@ dagcomponentfuncs.ModelTag = (props) => {
   return e("span", { className: "model m-" + key }, props.value);
 };
 
-const AC_COLORS = {
-  "US Equity": "#5aa9ff", "Intl Equity": "#a78bfa", "EM Equity": "#f472b6",
-  "Fixed Income": "#f5c451", "Real Assets": "#fb923c", Cash: "#8892a2",
-};
-dagcomponentfuncs.AssetClass = (props) =>
-  props.value
-    ? e("span", { className: "ac" }, e("i", { style: { background: AC_COLORS[props.value] } }), props.value)
-    : null;
-
-// Security cell: ticker over name, with a drill affordance
+// Fund cell: plain name over ticker, with a drill affordance. Total rows have no name
 dagcomponentfuncs.Security = (props) => {
-  if (!props.data || !props.data.ticker) return props.value || null;
+  if (!props.data || !props.data.name) return props.value || null;
   return e("div", { className: "sec" + (props.drill ? " drillable" : "") },
-    e("b", null, props.data.ticker),
-    e("span", null, props.data.name)
+    e("b", null, props.data.name),
+    e("span", null, props.data.ticker)
   );
 };
 
@@ -92,7 +82,7 @@ dagcomponentfuncs.Drill = (props) => {
     e("div", { className: "drill-text" }, e("b", null, props.value), e("span", null, props.data.id + " · " + props.data.registration)),
     e("button", {
       className: "drill-btn",
-      title: "Open holdings",
+      title: "See what this client owns",
       onClick: (ev) => {
         ev.stopPropagation();
         props.setData({ action: "drill", id: props.data.id });
@@ -132,5 +122,3 @@ dagcomponentfuncs.WeightBar = (props) => {
   );
 };
 
-// Drag handle header for the priority column
-dagcomponentfuncs.Rank = (props) => e("span", { className: "rank" }, props.node.rowIndex + 1);

@@ -1,0 +1,4 @@
+-r requirements.txt
+# Only needed to rebuild data/ and assets/structures/ with scripts/build_data.py
+numpy==2.5.4
+rdkit==2026.9.1
